@@ -2,475 +2,160 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Influencers Involved | Become a Pioneer</title>
-<meta name="description" content="Become a pioneer of the 1% Influence Challenge, make your creator pledge, and create a social-ready Pioneer Pledge Certificate.">
+<meta name="description" content="Become one of the first creators in the 1% Influence Challenge. Pledge 1% to a cause you believe in and create a social-ready Pioneer Certificate.">
 <meta name="theme-color" content="#0b2035">
 <style>
-:root{
-  --navy:#0b2035;
-  --navy-2:#163b5d;
-  --ink:#10243a;
-  --muted:#52677d;
-  --paper:#f4f7fa;
-  --white:#ffffff;
-  --coral:#f05245;
-  --coral-dark:#c9382e;
-  --gold:#f3bd4f;
-  --sky:#dceefa;
-  --line:#d6e0e9;
-  --success:#13795b;
-  --shadow:0 18px 50px rgba(11,32,53,.15);
-  --radius:24px;
-  --max:1160px;
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--white);line-height:1.62}
-a{color:var(--coral-dark);text-underline-offset:3px}
-a:hover{color:var(--coral)}
-button,input,select,textarea{font:inherit}
-.container{width:min(var(--max),calc(100% - 40px));margin:auto}
-.header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-.nav{min-height:78px;display:flex;align-items:center;justify-content:space-between;gap:22px}
-.brand{display:flex;align-items:center;gap:12px;color:var(--navy);text-decoration:none;font-weight:900;letter-spacing:-.025em}
-.brand-logo{width:48px;height:48px;display:block;filter:drop-shadow(0 8px 14px rgba(11,32,53,.18))}
-.brand-name{font-size:1.05rem}
-.links{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
-.links a{color:var(--ink);text-decoration:none;font-size:.95rem;font-weight:780}
-.links .cta{background:var(--coral);color:var(--white);padding:11px 18px;border-radius:999px;box-shadow:0 10px 24px rgba(240,82,69,.24)}
-.links .cta:hover{background:var(--coral-dark);color:var(--white)}
-.menu{display:none;border:1px solid var(--line);background:var(--white);padding:9px 12px;border-radius:12px;font-weight:800;color:var(--navy)}
-.hero{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 72%,#1f4d72 100%);color:var(--white);padding:104px 0 92px}
-.hero:before{content:"";position:absolute;width:520px;height:520px;border-radius:50%;right:-190px;top:-240px;background:radial-gradient(circle,rgba(243,189,79,.40),rgba(243,189,79,0) 68%)}
-.hero:after{content:"";position:absolute;width:420px;height:420px;border-radius:50%;left:-230px;bottom:-260px;background:radial-gradient(circle,rgba(240,82,69,.40),rgba(240,82,69,0) 68%)}
-.hero-grid{display:grid;grid-template-columns:1.18fr .82fr;gap:52px;align-items:center;position:relative;z-index:1}
-.eyebrow{text-transform:uppercase;letter-spacing:.15em;font-size:.76rem;font-weight:900;color:var(--coral-dark)}
-.hero .eyebrow{color:var(--gold)}
-h1,h2,h3{line-height:1.12;letter-spacing:-.038em;margin-top:0}
-h1{font-size:clamp(3.15rem,7vw,6.5rem);margin-bottom:24px;max-width:900px}
-h2{font-size:clamp(2.1rem,4.5vw,3.8rem);margin-bottom:18px}
-h3{font-size:1.3rem;margin-bottom:10px}
-.lede{font-size:clamp(1.12rem,2vw,1.35rem);max-width:800px}
-.hero .lede{color:#e8f1f8}
-.actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:31px}
-.button{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 22px;border-radius:999px;border:1px solid transparent;text-decoration:none;font-weight:900;cursor:pointer;transition:.2s transform,.2s background,.2s color}
-.button:hover{transform:translateY(-1px)}
-.primary{background:var(--coral);color:var(--white);box-shadow:0 13px 30px rgba(240,82,69,.28)}
-.primary:hover{background:var(--coral-dark);color:var(--white)}
-.secondary{border-color:rgba(255,255,255,.72);color:var(--white);background:transparent}
-.secondary:hover{background:var(--white);color:var(--navy)}
-.dark-button{background:var(--navy);color:var(--white)}
-.dark-button:hover{background:#061421;color:var(--white)}
-.outline-button{border-color:var(--navy);color:var(--navy);background:var(--white)}
-.outline-button:hover{background:var(--navy);color:var(--white)}
-.hero-card{background:var(--white);color:var(--ink);border-radius:28px;padding:34px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.45)}
-.hero-card .big{font-size:4.6rem;font-weight:950;line-height:.95;color:var(--coral)}
-.hero-card p{color:var(--muted)}
-.pioneer-ribbon{display:inline-flex;align-items:center;gap:8px;background:#fff5d8;color:#70500b;border:1px solid #f1d888;border-radius:999px;padding:7px 11px;font-size:.82rem;font-weight:900;margin-bottom:18px}
-.badges{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
-.badge{display:inline-flex;align-items:center;background:rgba(255,255,255,.12);color:var(--white);border:1px solid rgba(255,255,255,.20);padding:8px 12px;border-radius:999px;font-size:.86rem;font-weight:830}
-.section{padding:82px 0}
-.section.alt{background:var(--paper)}
-.section.navy{background:var(--navy);color:var(--white)}
-.section.navy .section-copy,.section.navy .lede{color:#e2edf5}
-.section-head{max-width:830px;margin-bottom:36px}
-.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:28px}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-.card{background:var(--white);color:var(--ink);border:1px solid var(--line);border-radius:var(--radius);padding:28px;box-shadow:0 12px 34px rgba(11,32,53,.07)}
-.card p{color:var(--muted)}
-.card h3,.card li{color:var(--ink)}
-.icon{width:48px;height:48px;display:grid;place-items:center;border-radius:15px;background:var(--sky);color:var(--navy);font-weight:950;margin-bottom:18px}
-.callout{background:#fff8e7;border-left:6px solid var(--gold);padding:24px 26px;border-radius:0 18px 18px 0;color:var(--ink)}
-.pioneer-callout{background:linear-gradient(135deg,#fff5d8,#fffaf0);border:1px solid #efd98d;border-radius:22px;padding:26px;color:var(--ink)}
-.pioneer-callout strong{color:var(--coral-dark)}
-.steps{counter-reset:step;display:grid;gap:14px}
-.step{counter-increment:step;display:grid;grid-template-columns:52px 1fr;gap:18px;align-items:start;background:var(--white);border:1px solid var(--line);border-radius:18px;padding:20px}
-.step:before{content:counter(step);width:42px;height:42px;display:grid;place-items:center;border-radius:50%;background:var(--navy);color:var(--white);font-weight:950}
-.pledge-wrap{display:grid;grid-template-columns:.85fr 1.15fr;gap:34px;align-items:start}
-.pledge-intro{position:sticky;top:106px}
-.pledge-panel{background:var(--white);border:1px solid var(--line);border-radius:28px;padding:32px;box-shadow:var(--shadow)}
-.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
-.field{display:grid;gap:7px}
-.field.full{grid-column:1/-1}
-label{font-weight:850;color:var(--navy)}
-.hint{font-size:.88rem;color:var(--muted);font-weight:500}
-input,select{width:100%;border:2px solid #cbd7e3;border-radius:13px;padding:13px 14px;color:var(--ink);background:var(--white)}
-input:focus,select:focus{outline:3px solid rgba(240,82,69,.20);border-color:var(--coral)}
-.checkbox{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--paper)}
-.checkbox input{width:18px;height:18px;margin-top:3px;accent-color:var(--coral)}
-.form-note{font-size:.9rem;color:var(--muted);background:var(--sky);padding:14px 16px;border-radius:14px}
-.form-status{min-height:1.5em;font-weight:800;color:var(--success)}
-.certificate-section{display:none;padding-top:0}
-.certificate-section.show{display:block}
-.certificate-layout{display:grid;grid-template-columns:1.05fr .95fr;gap:30px;align-items:start}
-.certificate-frame{background:#eaf0f5;padding:18px;border-radius:24px;border:1px solid var(--line)}
-.certificate-frame img{display:block;width:100%;border-radius:16px;box-shadow:0 14px 36px rgba(11,32,53,.16)}
-.share-panel{background:var(--white);border:1px solid var(--line);border-radius:24px;padding:28px;box-shadow:0 12px 34px rgba(11,32,53,.07)}
-.share-actions{display:grid;gap:12px;margin-top:20px}
-.share-actions .button{width:100%}
-.caption-box{width:100%;min-height:145px;border:1px solid var(--line);border-radius:14px;padding:14px;color:var(--ink);background:var(--paper);resize:vertical}
-.privacy-line{font-size:.86rem;color:var(--muted)}
-.status-list{padding-left:1.15rem;color:var(--ink)}
-.status-list li{margin-bottom:.65rem}
-.stage-card{position:relative;overflow:hidden}
-.stage-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:7px;background:var(--gold)}
-.next-card:before{background:var(--coral)}
-.stage-number{font-size:.78rem;letter-spacing:.13em;text-transform:uppercase;font-weight:950;color:var(--coral-dark);margin-bottom:12px}
-.about-table{width:100%;border-collapse:collapse;background:var(--white);border:1px solid var(--line);border-radius:18px;overflow:hidden}
-.about-table th,.about-table td{padding:15px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-.about-table th{width:35%;background:#edf3f8;color:var(--navy)}
-.contact-band{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;background:var(--coral);color:var(--white);border-radius:28px;padding:34px}
-.contact-band p{color:#fff5f3}
-.contact-band a{color:var(--white);font-weight:900}
-.footer{padding:44px 0;background:#071827;color:var(--white)}
-.footer p{color:#c9d7e2}
-.footer a{color:var(--white)}
-.small{font-size:.9rem}
-.muted{color:var(--muted)}
-.visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
-@media(max-width:920px){
-  .hero-grid,.grid2,.grid3,.pledge-wrap,.certificate-layout,.contact-band{grid-template-columns:1fr}
-  .pledge-intro{position:static}
-  .hero{padding-top:78px}
-  .menu{display:block}
-  .links{display:none;position:absolute;top:70px;left:20px;right:20px;background:var(--white);padding:18px;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
-  .links.open{display:flex;flex-direction:column;align-items:stretch}
-  .links .cta{text-align:center}
-}
-@media(max-width:620px){
-  .container{width:calc(100% - 26px)}
-  h1{font-size:3.15rem}
-  .section{padding:62px 0}
-  .form-grid{grid-template-columns:1fr}
-  .field.full{grid-column:auto}
-  .actions .button{width:100%}
-  .pledge-panel{padding:22px}
-  .contact-band{padding:25px}
-  .brand-name{font-size:.95rem}
-}
+:root{--navy:#0b2035;--navy2:#173d5d;--ink:#10243a;--muted:#53677b;--paper:#f4f7fa;--white:#fff;--coral:#f05245;--coral2:#c9382e;--gold:#f3bd4f;--sky:#dceefa;--line:#d6e0e9;--success:#13795b;--shadow:0 18px 50px rgba(11,32,53,.15);--radius:24px;--max:1160px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--white);line-height:1.62}a{color:var(--coral2);text-underline-offset:3px}button,input,select,textarea{font:inherit}.container{width:min(var(--max),calc(100% - 40px));margin:auto}
+.header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.nav{min-height:78px;display:flex;align-items:center;justify-content:space-between;gap:22px}.brand{display:flex;align-items:center;gap:12px;color:var(--navy);text-decoration:none;font-weight:950;letter-spacing:-.025em}.brand-logo{width:48px;height:48px;display:block;filter:drop-shadow(0 8px 14px rgba(11,32,53,.18))}.brand-name{font-size:1.05rem}.links{display:flex;align-items:center;gap:18px;flex-wrap:wrap}.links a{color:var(--ink);text-decoration:none;font-size:.95rem;font-weight:800}.links .cta{background:var(--coral);color:var(--white);padding:11px 18px;border-radius:999px;box-shadow:0 10px 24px rgba(240,82,69,.24)}.menu{display:none;border:1px solid var(--line);background:var(--white);padding:9px 12px;border-radius:12px;font-weight:800;color:var(--navy)}
+.hero{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--navy),var(--navy2) 72%,#1f4d72);color:var(--white);padding:104px 0 92px}.hero:before{content:"";position:absolute;width:520px;height:520px;border-radius:50%;right:-190px;top:-240px;background:radial-gradient(circle,rgba(243,189,79,.4),rgba(243,189,79,0) 68%)}.hero:after{content:"";position:absolute;width:420px;height:420px;border-radius:50%;left:-230px;bottom:-260px;background:radial-gradient(circle,rgba(240,82,69,.4),rgba(240,82,69,0) 68%)}.hero-grid{display:grid;grid-template-columns:1.18fr .82fr;gap:52px;align-items:center;position:relative;z-index:1}
+.eyebrow{text-transform:uppercase;letter-spacing:.15em;font-size:.76rem;font-weight:950;color:var(--coral2)}.hero .eyebrow{color:var(--gold)}h1,h2,h3{line-height:1.1;letter-spacing:-.038em;margin-top:0}h1{font-size:clamp(3.1rem,7vw,6.35rem);margin-bottom:24px;max-width:930px}h2{font-size:clamp(2.1rem,4.5vw,3.8rem);margin-bottom:18px}h3{font-size:1.3rem;margin-bottom:10px}.lede{font-size:clamp(1.13rem,2vw,1.38rem);max-width:820px}.hero .lede{color:#e8f1f8}.actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:31px}.button{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 22px;border-radius:999px;border:1px solid transparent;text-decoration:none;font-weight:950;cursor:pointer;transition:.2s transform,.2s background,.2s color}.button:hover{transform:translateY(-1px)}.primary{background:var(--coral);color:var(--white);box-shadow:0 13px 30px rgba(240,82,69,.28)}.primary:hover{background:var(--coral2);color:var(--white)}.secondary{border-color:rgba(255,255,255,.72);color:var(--white);background:transparent}.secondary:hover{background:var(--white);color:var(--navy)}.dark-button{background:var(--navy);color:var(--white)}.outline-button{border-color:var(--navy);color:var(--navy);background:var(--white)}
+.hero-card{background:var(--white);color:var(--ink);border-radius:28px;padding:34px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.45)}.hero-card .big{font-size:5.2rem;font-weight:950;line-height:.92;color:var(--coral)}.hero-card p{color:var(--muted)}.pioneer-ribbon{display:inline-flex;background:#fff5d8;color:#70500b;border:1px solid #f1d888;border-radius:999px;padding:7px 11px;font-size:.82rem;font-weight:950;margin-bottom:18px}.badges{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}.badge{display:inline-flex;background:rgba(255,255,255,.12);color:var(--white);border:1px solid rgba(255,255,255,.2);padding:8px 12px;border-radius:999px;font-size:.86rem;font-weight:850}
+.section{padding:82px 0}.section.alt{background:var(--paper)}.section.navy{background:var(--navy);color:var(--white)}.section.navy .lede{color:#e2edf5}.section-head{max-width:850px;margin-bottom:36px}.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:28px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}.card{background:var(--white);color:var(--ink);border:1px solid var(--line);border-radius:var(--radius);padding:28px;box-shadow:0 12px 34px rgba(11,32,53,.07)}.card h3,.card p,.card li{color:var(--ink)}.card p{color:var(--muted)}.icon{width:48px;height:48px;display:grid;place-items:center;border-radius:15px;background:var(--sky);color:var(--navy);font-weight:950;margin-bottom:18px}.pioneer-callout{background:linear-gradient(135deg,#fff5d8,#fffaf0);border:1px solid #efd98d;border-radius:22px;padding:26px;color:var(--ink)}.pioneer-callout strong{color:var(--coral2)}
+.pledge-wrap{display:grid;grid-template-columns:.85fr 1.15fr;gap:34px;align-items:start}.pledge-intro{position:sticky;top:106px}.pledge-panel{background:var(--white);border:1px solid var(--line);border-radius:28px;padding:32px;box-shadow:var(--shadow)}.pledge-banner{background:var(--navy);color:var(--white);border-radius:20px;padding:22px 24px;margin-bottom:22px}.pledge-banner strong{font-size:1.5rem}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.field{display:grid;gap:7px}.field.full{grid-column:1/-1}label{font-weight:850;color:var(--navy)}.hint{font-size:.88rem;color:var(--muted);font-weight:500}input,select{width:100%;border:2px solid #cbd7e3;border-radius:13px;padding:13px 14px;color:var(--ink);background:var(--white)}input:focus,select:focus{outline:3px solid rgba(240,82,69,.2);border-color:var(--coral)}.checkbox{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--paper)}.checkbox input{width:18px;height:18px;margin-top:3px;accent-color:var(--coral)}.form-note{font-size:.9rem;color:var(--muted);background:var(--sky);padding:14px 16px;border-radius:14px}.form-status{min-height:1.5em;font-weight:800;color:var(--success)}
+.certificate-section{display:none;padding-top:0}.certificate-section.show{display:block}.certificate-layout{display:grid;grid-template-columns:1.05fr .95fr;gap:30px;align-items:start}.certificate-frame{background:#eaf0f5;padding:18px;border-radius:24px;border:1px solid var(--line)}.certificate-frame img{display:block;width:100%;border-radius:16px;box-shadow:0 14px 36px rgba(11,32,53,.16)}.share-panel{background:var(--white);border:1px solid var(--line);border-radius:24px;padding:28px;box-shadow:0 12px 34px rgba(11,32,53,.07)}.share-actions{display:grid;gap:12px;margin-top:20px}.share-actions .button{width:100%}.caption-box{width:100%;min-height:165px;border:1px solid var(--line);border-radius:14px;padding:14px;color:var(--ink);background:var(--paper);resize:vertical}.privacy-line{font-size:.86rem;color:var(--muted)}
+.stage-card{position:relative;overflow:hidden;padding-left:34px}.stage-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:8px;background:var(--gold)}.next-card:before{background:var(--coral)}.stage-number{font-size:.78rem;letter-spacing:.13em;text-transform:uppercase;font-weight:950;color:var(--coral2);margin-bottom:12px}.stage-quote{font-size:1.3rem;font-weight:900;color:var(--navy);line-height:1.38}.status-list{padding-left:1.15rem;color:var(--ink)}.status-list li{margin-bottom:.65rem}.contact-band{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;background:var(--coral);color:var(--white);border-radius:28px;padding:34px}.contact-band p{color:#fff5f3}.copy-email{background:var(--navy);color:var(--white)}
+.footer{padding:44px 0;background:#071827;color:var(--white)}.footer p{color:#c9d7e2}.small{font-size:.9rem}.muted{color:var(--muted)}.visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+@media(max-width:920px){.hero-grid,.grid2,.grid3,.pledge-wrap,.certificate-layout,.contact-band{grid-template-columns:1fr}.pledge-intro{position:static}.hero{padding-top:78px}.menu{display:block}.links{display:none;position:absolute;top:70px;left:20px;right:20px;background:var(--white);padding:18px;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}.links.open{display:flex;flex-direction:column;align-items:stretch}.links .cta{text-align:center}}
+@media(max-width:620px){.container{width:calc(100% - 26px)}h1{font-size:3.05rem}.section{padding:62px 0}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.actions .button{width:100%}.pledge-panel{padding:22px}.contact-band{padding:25px}.brand-name{font-size:.95rem}}
 </style>
 </head>
 <body>
 <header class="header">
-  <div class="container nav">
-    <a class="brand" href="#top" aria-label="Influencers Involved home">
-      <svg class="brand-logo" viewBox="0 0 64 64" role="img" aria-label="II logo">
-        <rect x="2" y="2" width="60" height="60" rx="18" fill="#0b2035"/>
-        <rect x="16" y="14" width="10" height="36" rx="5" fill="#ffffff"/>
-        <rect x="38" y="14" width="10" height="36" rx="5" fill="#f3bd4f"/>
-        <path d="M25 30 C30 24 34 24 39 30" fill="none" stroke="#f05245" stroke-width="6" stroke-linecap="round"/>
-      </svg>
-      <span class="brand-name">Influencers Involved</span>
-    </a>
-    <button class="menu" aria-expanded="false" aria-label="Open navigation">Menu</button>
-    <nav class="links" aria-label="Primary navigation">
-      <a href="#how">How it works</a>
-      <a href="#stages">Pioneer Stage</a>
-      <a href="#mission">Mission</a>
-      <a class="cta" href="#pledge">Become a Pioneer</a>
-    </nav>
-  </div>
+<div class="container nav">
+<a class="brand" href="#top" aria-label="Influencers Involved home">
+<svg class="brand-logo" viewBox="0 0 64 64" role="img" aria-label="II logo">
+<rect x="2" y="2" width="60" height="60" rx="18" fill="#0b2035"/>
+<path d="M18 15h10v34H18z" fill="#fff"/>
+<path d="M36 15h10v34H36z" fill="#f05245"/>
+<circle cx="23" cy="11" r="4" fill="#f3bd4f"/>
+<circle cx="41" cy="53" r="4" fill="#f3bd4f"/>
+</svg>
+<span class="brand-name">Influencers Involved</span>
+</a>
+<button class="menu" aria-expanded="false" aria-label="Open navigation">Menu</button>
+<nav class="links" aria-label="Primary navigation">
+<a href="#how">How it works</a><a href="#pioneer">Pioneer Stage</a><a href="#mission">Mission</a><a class="cta" href="#pledge">Become a Pioneer</a>
+</nav>
+</div>
 </header>
 <main id="top">
 <section class="hero">
-  <div class="container hero-grid">
-    <div>
-      <p class="eyebrow">The 1% Influence Challenge · Pioneer Stage</p>
-      <h1>You can be one of the creators who makes this real.</h1>
-      <p class="lede">This movement will not happen because an organization says it should. It will happen because creators choose to lead, pledge, give, post, and invite the next person. Become a Pioneer and help establish charitable giving as part of creator culture.</p>
-      <div class="actions">
-        <a class="button primary" href="#pledge">Become a Pioneer now</a>
-        <a class="button secondary" href="#stages">See where this is going</a>
-      </div>
-      <div class="badges">
-        <span class="badge">Pioneer Stage now open</span>
-        <span class="badge">Direct-to-charity giving</span>
-        <span class="badge">Built by creators together</span>
-      </div>
-    </div>
-    <aside class="hero-card" aria-label="Pioneer opportunity">
-      <span class="pioneer-ribbon">FOUNDING PIONEER OPPORTUNITY</span>
-      <div class="big">1%</div>
-      <h3>Your action becomes the proof.</h3>
-      <p>Pledge approximately 1% of creator income—or another meaningful recurring amount—to a cause or eligible charity you choose.</p>
-      <p><strong>You are not joining something that is already complete.</strong> Your participation is one of the actions that makes the movement possible.</p>
-    </aside>
-  </div>
+<div class="container hero-grid">
+<div>
+<p class="eyebrow">The 1% Influence Challenge · Pioneer Stage</p>
+<h1>Be one of the first creators to turn influence into a tradition of giving.</h1>
+<p class="lede">Every movement has a first circle of people who believe before the world catches on. This is your opportunity to be one of them. Pledge <strong>1%</strong> of your creator income to a cause you believe in, share your Pioneer Certificate, and invite the next creator.</p>
+<div class="actions"><a class="button primary" href="#pledge">Claim your place as a Pioneer</a><a class="button secondary" href="#pioneer">Discover the Pioneer Stage</a></div>
+<div class="badges"><span class="badge">Pioneer Stage now open</span><span class="badge">The first circle of creators</span><span class="badge">1% can inspire millions</span></div>
+</div>
+<aside class="hero-card">
+<span class="pioneer-ribbon">FOUNDING PIONEER OPPORTUNITY</span>
+<div class="big">1%</div>
+<h3>Go first. Make it matter.</h3>
+<p>The creators who step forward now will always be the pioneers who helped begin a new culture of creator-led philanthropy.</p>
+<p><strong>Your pledge can become someone else’s reason to give.</strong></p>
+</aside>
+</div>
 </section>
 <section class="section alt" id="how">
-  <div class="container">
-    <div class="section-head">
-      <p class="eyebrow">How pioneers lead</p>
-      <h2>Pledge. Give directly. Make it visible. Invite the next creator.</h2>
-      <p class="lede muted">The Pioneer Stage is intentionally simple so creators can lead now instead of waiting for a complicated platform.</p>
-    </div>
-    <div class="grid3">
-      <article class="card"><div class="icon">01</div><h3>Make your Pioneer Pledge</h3><p>Choose the public name, social handle, and charity or cause you want shown on your certificate.</p></article>
-      <article class="card"><div class="icon">02</div><h3>Act on your commitment</h3><p>During the Pioneer Stage, you donate directly to the eligible charity you choose. Your action—not II—creates the charitable impact.</p></article>
-      <article class="card"><div class="icon">03</div><h3>Invite the next pioneer</h3><p>Share your certificate, tell your audience why you joined, and challenge another creator to help build the movement.</p></article>
-    </div>
-  </div>
+<div class="container">
+<div class="section-head"><p class="eyebrow">How pioneers lead</p><h2>Make the pledge. Make the gift. Make it visible.</h2><p class="lede muted">A simple act becomes a movement when others can see it and follow.</p></div>
+<div class="grid3">
+<article class="card"><div class="icon">01</div><h3>Pledge 1%</h3><p>Commit 1% of your creator income to a cause or eligible charity that matters to you.</p></article>
+<article class="card"><div class="icon">02</div><h3>Give with purpose</h3><p>Support your chosen charity directly and connect your creator work to something bigger than yourself.</p></article>
+<article class="card"><div class="icon">03</div><h3>Invite the next Pioneer</h3><p>Share your certificate, tell your audience why you joined, and challenge another creator to go first with you.</p></article>
+</div>
+</div>
+</section>
+<section class="section navy" id="pioneer">
+<div class="container">
+<div class="section-head"><p class="eyebrow" style="color:var(--gold)">The Pioneer Stage</p><h2>Before there is a movement, there are pioneers.</h2><p class="lede">Pioneers are the creators willing to believe early, act publicly, and give others the courage to follow. The first circle will shape the story, energy, and future of the 1% Influence Challenge.</p></div>
+<div class="grid2">
+<article class="card stage-card">
+<div class="stage-number">Stage One · Now</div>
+<h3>Become part of the first circle</h3>
+<p class="stage-quote">“I was there when creators began making giving part of creator culture.”</p>
+<ul class="status-list"><li>Pledge 1% to a cause you believe in.</li><li>Receive a Pioneer Certificate made for social sharing.</li><li>Inspire your audience through visible action.</li><li>Invite another creator into the first circle.</li><li>Be recognized as one of the people who helped begin the movement.</li></ul>
+</article>
+<article class="card stage-card next-card">
+<div class="stage-number">Stage Two · What pioneers unlock</div>
+<h3>The Connected Giving Stage</h3>
+<p>When enough pioneers have stepped forward to carry the movement into its next chapter, the 1% Influence Challenge will advance to the Connected Giving Stage.</p>
+<p>That stage will make pledging, giving, recognition, shared impact, and movement growth more connected in one experience.</p>
+<p><strong>The next stage begins because the pioneers made the first one real.</strong></p>
+</article>
+</div>
+</div>
 </section>
 <section class="section" id="pledge">
-  <div class="container pledge-wrap">
-    <div class="pledge-intro">
-      <p class="eyebrow">Become a Pioneer</p>
-      <h2>Create your Pioneer Pledge Certificate.</h2>
-      <p class="lede muted">Complete the form and your certificate will be generated instantly as a square image suitable for Instagram, LinkedIn, X, Facebook, TikTok, and other platforms.</p>
-      <div class="pioneer-callout">
-        <h3>You are helping create the beginning.</h3>
-        <p>The first pioneers provide the participation, social proof, and momentum that allow the challenge to grow into its next model.</p>
-      </div>
-      <div class="callout" style="margin-top:18px">
-        <h3>What stays private</h3>
-        <p>This form does not ask for your income, donation amount, address, phone number, or payment information.</p>
-      </div>
-    </div>
-    <div class="pledge-panel">
-      <form id="pledgeForm" novalidate>
-        <div class="form-grid">
-          <div class="field">
-            <label for="displayName">Name shown on certificate</label>
-            <input id="displayName" name="displayName" type="text" maxlength="60" autocomplete="name" required placeholder="Creator or channel name">
-          </div>
-          <div class="field">
-            <label for="handle">Social handle <span class="hint">(optional)</span></label>
-            <input id="handle" name="handle" type="text" maxlength="50" placeholder="@yourhandle">
-          </div>
-          <div class="field">
-            <label for="platform">Primary platform</label>
-            <select id="platform" name="platform" required>
-              <option value="">Select a platform</option>
-              <option>Instagram</option><option>TikTok</option><option>YouTube</option><option>LinkedIn</option><option>X</option><option>Facebook</option><option>Twitch</option><option>Podcast</option><option>Newsletter</option><option>Other</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="pledgeDate">Pledge date</label>
-            <input id="pledgeDate" name="pledgeDate" type="date" required>
-          </div>
-          <div class="field full">
-            <label for="cause">Charity or cause shown on certificate</label>
-            <input id="cause" name="cause" type="text" maxlength="90" required placeholder="Example: Local food security or an eligible charity name">
-            <span class="hint">You are responsible for confirming that any named organization is eligible to receive charitable donations.</span>
-          </div>
-          <div class="field full">
-            <label for="commitment">Public pledge statement</label>
-            <select id="commitment" name="commitment" required>
-              <option value="1% of my creator income">I pledge approximately 1% of my creator income</option>
-              <option value="a meaningful recurring portion of my creator income">I pledge a meaningful recurring portion of my creator income</option>
-              <option value="a meaningful charitable contribution connected to my creator work">I pledge a meaningful charitable contribution connected to my creator work</option>
-            </select>
-          </div>
-          <div class="field full">
-            <label class="checkbox" for="attestation">
-              <input id="attestation" name="attestation" type="checkbox" required>
-              <span>I am voluntarily making this Pioneer Pledge in good faith. I understand that the certificate is a pledge statement—not proof of a completed donation, verification badge, tax receipt, or legal certification.</span>
-            </label>
-          </div>
-          <div class="field full">
-            <p class="form-note"><strong>Privacy:</strong> The certificate is generated locally in your browser. This preliminary form does not transmit or store your entries.</p>
-          </div>
-          <div class="field full">
-            <button class="button primary" type="submit">Create my Pioneer Certificate</button>
-            <div id="formStatus" class="form-status" role="status" aria-live="polite"></div>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
+<div class="container pledge-wrap">
+<div class="pledge-intro">
+<p class="eyebrow">Become a Pioneer</p>
+<h2>Your place in the beginning starts with one pledge.</h2>
+<p class="lede muted">Create a square Pioneer Certificate for Instagram, LinkedIn, X, Facebook, TikTok, and other platforms.</p>
+<div class="pioneer-callout"><h3>What will your influence stand for?</h3><p>The first creators who join will help define this movement for everyone who comes after them.</p></div>
+</div>
+<div class="pledge-panel">
+<div class="pledge-banner"><strong>My Pioneer Pledge</strong><br>I pledge 1% of my creator income to a cause I believe in.</div>
+<form id="pledgeForm" novalidate>
+<div class="form-grid">
+<div class="field"><label for="displayName">Name shown on certificate</label><input id="displayName" type="text" maxlength="60" autocomplete="name" required placeholder="Creator or channel name"></div>
+<div class="field"><label for="handle">Social handle <span class="hint">(optional)</span></label><input id="handle" type="text" maxlength="50" placeholder="@yourhandle"></div>
+<div class="field"><label for="platform">Primary platform</label><select id="platform" required><option value="">Select a platform</option><option>Instagram</option><option>TikTok</option><option>YouTube</option><option>LinkedIn</option><option>X</option><option>Facebook</option><option>Twitch</option><option>Podcast</option><option>Newsletter</option><option>Other</option></select></div>
+<div class="field"><label for="pledgeDate">Pledge date</label><input id="pledgeDate" type="date" required></div>
+<div class="field full"><label for="cause">Charity or cause shown on certificate</label><input id="cause" type="text" maxlength="90" required placeholder="A cause or eligible charity you believe in"></div>
+<div class="field full"><label class="checkbox" for="attestation"><input id="attestation" type="checkbox" required><span>I am making the Pioneer Pledge in good faith and committing 1% of my creator income to charitable giving.</span></label></div>
+<div class="field full"><p class="form-note"><strong>Privacy:</strong> Your certificate is generated in your browser. The form does not ask for your income amount, donation amount, address, phone number, or payment information.</p></div>
+<div class="field full"><button class="button primary" type="submit">Create my Pioneer Certificate</button><div id="formStatus" class="form-status" role="status" aria-live="polite"></div></div>
+</div>
+</form>
+</div>
+</div>
 </section>
 <section class="section alt certificate-section" id="certificateSection" aria-live="polite">
-  <div class="container">
-    <div class="section-head">
-      <p class="eyebrow">Pioneer pledge complete</p>
-      <h2>Your social-ready Pioneer Certificate is ready.</h2>
-      <p class="lede muted">Download it, share it, and invite another creator to become a pioneer.</p>
-    </div>
-    <div class="certificate-layout">
-      <div class="certificate-frame">
-        <img id="certificatePreview" alt="Generated Influencers Involved Pioneer Pledge Certificate">
-        <canvas id="certificateCanvas" width="1080" height="1080" class="visually-hidden"></canvas>
-      </div>
-      <aside class="share-panel">
-        <h3>Suggested social caption</h3>
-        <textarea id="shareCaption" class="caption-box" readonly></textarea>
-        <div class="share-actions">
-          <button id="downloadCertificate" class="button primary" type="button">Download certificate PNG</button>
-          <button id="shareCertificate" class="button dark-button" type="button">Share certificate</button>
-          <button id="copyCaption" class="button outline-button" type="button">Copy caption</button>
-          <button id="copyPledge" class="button outline-button" type="button">Copy pledge details</button>
-          <button id="newPledge" class="button outline-button" type="button">Create another pledge</button>
-        </div>
-        <p class="privacy-line">The downloaded certificate is a self-issued pledge statement and is not a donation receipt or verification of payment.</p>
-        <div id="shareStatus" class="form-status" role="status" aria-live="polite"></div>
-      </aside>
-    </div>
-  </div>
-</section>
-<section class="section navy" id="stages">
-  <div class="container">
-    <div class="section-head">
-      <p class="eyebrow" style="color:var(--gold)">How the movement grows</p>
-      <h2>The Pioneer Stage creates the foundation. Then we move forward together.</h2>
-      <p class="lede">II provides the structure, tools, recognition, and stewardship. Pioneers provide the action that makes the movement real.</p>
-    </div>
-    <div class="grid2">
-      <article class="card stage-card">
-        <div class="stage-number">Stage One · Now</div>
-        <h3>The Pioneer Stage</h3>
-        <ul class="status-list">
-          <li>Pioneers make a voluntary public pledge.</li>
-          <li>They donate directly to eligible charities they choose.</li>
-          <li>They create visible proof that creator-led giving can become a shared norm.</li>
-          <li>They invite other creators and build the first circle of participation.</li>
-          <li>Their collective action determines the strength of the movement.</li>
-        </ul>
-      </article>
-      <article class="card stage-card next-card">
-        <div class="stage-number">Stage Two · What pioneers unlock</div>
-        <h3>The Connected Giving Model</h3>
-        <p>Once enough pioneers have shown that creators are ready to make this happen together, the challenge will move into its next model.</p>
-        <p>That next model will provide a more connected experience designed to make participation easier to complete, recognize, measure, and grow at scale.</p>
-        <p><strong>The transition is not something pioneers need to solve.</strong> Their role is to lead through action. II's role is to build the next structure around the momentum they create.</p>
-      </article>
-    </div>
-  </div>
+<div class="container">
+<div class="section-head"><p class="eyebrow">Welcome, Pioneer</p><h2>Your Pioneer Certificate is ready.</h2><p class="lede muted">Share it proudly. Your example may become the moment another creator decides to join.</p></div>
+<div class="certificate-layout">
+<div class="certificate-frame"><img id="certificatePreview" alt="Generated Influencers Involved Pioneer Certificate"><canvas id="certificateCanvas" width="1080" height="1080" class="visually-hidden"></canvas></div>
+<aside class="share-panel"><h3>Your social caption</h3><textarea id="shareCaption" class="caption-box" readonly></textarea><div class="share-actions"><button id="downloadCertificate" class="button primary" type="button">Download certificate PNG</button><button id="shareCertificate" class="button dark-button" type="button">Share certificate</button><button id="copyCaption" class="button outline-button" type="button">Copy caption</button><button id="newPledge" class="button outline-button" type="button">Create another pledge</button></div><p class="privacy-line">The certificate records a public pledge and is not a donation receipt or proof of payment.</p><div id="shareStatus" class="form-status" role="status" aria-live="polite"></div></aside>
+</div>
+</div>
 </section>
 <section class="section" id="mission">
-  <div class="container grid2">
-    <div>
-      <p class="eyebrow">Mission</p>
-      <h2>Make charitable giving a visible part of creator culture.</h2>
-      <p>Creators shape habits, language, purchasing decisions, and social norms. Influencers Involved exists to help creators normalize charitable participation and inspire others through visible, repeatable action.</p>
-      <p>This is creator-led philanthropy. II organizes the challenge and builds the infrastructure, but pioneers are the people who produce the charitable action and social momentum.</p>
-    </div>
-    <div class="steps">
-      <div class="step"><div><h3>Creator choice</h3><p>Pioneers choose a cause or eligible charity aligned with their own values.</p></div></div>
-      <div class="step"><div><h3>Privacy-conscious participation</h3><p>Creators need not publicly disclose income or exact donation amounts.</p></div></div>
-      <div class="step"><div><h3>Social multiplication</h3><p>Every Pioneer Pledge becomes an invitation for another creator to participate.</p></div></div>
-    </div>
-  </div>
+<div class="container grid2">
+<div><p class="eyebrow">The vision</p><h2>A creator culture where giving is part of success.</h2><p>Creators shape what people notice, value, and repeat. The 1% Influence Challenge invites them to make generosity visible—and to show that success can lift others at the same time.</p><p>The movement begins with a small number of pioneers and grows each time one creator inspires another.</p></div>
+<div class="pioneer-callout"><h3>One percent is small enough to begin.</h3><p><strong>But when influence carries it forward, 1% can become a new social norm.</strong></p></div>
+</div>
 </section>
-<section class="section alt" id="about">
-  <div class="container grid2">
-    <div>
-      <p class="eyebrow">About the organization</p>
-      <h2>Infrastructure for a movement led by creators.</h2>
-      <p>Influencers Involved is developing the 1% Influence Challenge, creator outreach systems, privacy-conscious participation and proof-review processes, charity-vetting standards, and an outcomes framework.</p>
-      <p>Operations are founder-led and governed by a volunteer Board of Directors with fiduciary, financial, governance, and compensation oversight.</p>
-    </div>
-    <div>
-      <table class="about-table">
-        <tr><th>Legal name</th><td>Influencers Involved, Inc. NFP</td></tr>
-        <tr><th>Public name</th><td>Influencers Involved / II</td></tr>
-        <tr><th>State</th><td>Illinois</td></tr>
-        <tr><th>Federal status</th><td>IRS-recognized Section 501(c)(3) public charity</td></tr>
-        <tr><th>Current stage</th><td>Pioneer Stage development and participation</td></tr>
-      </table>
-    </div>
-  </div>
-</section>
-<section class="section">
-  <div class="container">
-    <div class="contact-band">
-      <div>
-        <p class="eyebrow" style="color:var(--white)">Creators, charities, funders, and partners</p>
-        <h2>Help pioneers build the movement.</h2>
-        <p>For partnerships, funding, nonprofit collaboration, and program questions, contact <a href="mailto:grants@influencersinvolved.org">grants@influencersinvolved.org</a>.</p>
-      </div>
-      <a class="button dark-button" href="mailto:grants@influencersinvolved.org?subject=Influencers%20Involved%20inquiry">Contact II</a>
-    </div>
-  </div>
+<section class="section alt">
+<div class="container"><div class="contact-band"><div><p class="eyebrow" style="color:var(--white)">Partners, charities, and funders</p><h2>Stand behind the pioneers.</h2><p>Partnership and funding inquiries: <strong>grants@influencersinvolved.org</strong></p></div><button id="copyEmail" class="button copy-email" type="button">Copy contact email</button></div><div id="emailStatus" class="form-status" role="status" aria-live="polite"></div></div>
 </section>
 </main>
-<footer class="footer">
-  <div class="container">
-    <a class="brand" href="#top" style="color:var(--white)">
-      <svg class="brand-logo" viewBox="0 0 64 64" aria-hidden="true">
-        <rect x="2" y="2" width="60" height="60" rx="18" fill="#ffffff"/>
-        <rect x="16" y="14" width="10" height="36" rx="5" fill="#0b2035"/>
-        <rect x="38" y="14" width="10" height="36" rx="5" fill="#f3bd4f"/>
-        <path d="M25 30 C30 24 34 24 39 30" fill="none" stroke="#f05245" stroke-width="6" stroke-linecap="round"/>
-      </svg>
-      <span class="brand-name">Influencers Involved</span>
-    </a>
-    <p class="small">Influencers Involved, Inc. NFP is an Illinois nonprofit corporation recognized by the IRS as a Section 501(c)(3) public charity.</p>
-    <p class="small">This preliminary website does not process donations or provide tax receipts. © <span id="year"></span> Influencers Involved, Inc. NFP</p>
-  </div>
-</footer>
+<footer class="footer"><div class="container"><strong>Influencers Involved</strong><p class="small">Influencers Involved, Inc. NFP is an Illinois nonprofit corporation recognized by the IRS as a Section 501(c)(3) public charity.</p><p class="small">The Pioneer Stage uses direct-to-charity giving. © <span id="year"></span> Influencers Involved, Inc. NFP</p></div></footer>
 <script>
-const menuButton=document.querySelector('.menu');
-const navLinks=document.querySelector('.links');
-menuButton.addEventListener('click',()=>{const open=navLinks.classList.toggle('open');menuButton.setAttribute('aria-expanded',String(open));});
-document.querySelectorAll('.links a').forEach(link=>link.addEventListener('click',()=>navLinks.classList.remove('open')));
+const menuButton=document.querySelector('.menu'),navLinks=document.querySelector('.links');
+menuButton.addEventListener('click',()=>{const open=navLinks.classList.toggle('open');menuButton.setAttribute('aria-expanded',String(open))});
+document.querySelectorAll('.links a').forEach(a=>a.addEventListener('click',()=>navLinks.classList.remove('open')));
 document.getElementById('year').textContent=new Date().getFullYear();
-const dateInput=document.getElementById('pledgeDate');
-dateInput.value=new Date().toISOString().slice(0,10);
-const form=document.getElementById('pledgeForm');
-const formStatus=document.getElementById('formStatus');
-const certificateSection=document.getElementById('certificateSection');
-const preview=document.getElementById('certificatePreview');
-const canvas=document.getElementById('certificateCanvas');
-const ctx=canvas.getContext('2d');
-const caption=document.getElementById('shareCaption');
-const shareStatus=document.getElementById('shareStatus');
-let currentPledge=null;
-function normalizeHandle(value){const clean=value.trim();if(!clean)return'';return clean.startsWith('@')?clean:'@'+clean;}
-function formatDate(value){const d=new Date(value+'T12:00:00');return d.toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'});}
-function pledgeId(name,date){let hash=0;for(const c of name+date){hash=((hash<<5)-hash)+c.charCodeAt(0);hash|=0;}return 'II-'+date.replaceAll('-','')+'-'+Math.abs(hash).toString(36).toUpperCase().slice(0,5).padStart(5,'0');}
-function wrapText(context,text,x,y,maxWidth,lineHeight,maxLines=5){const words=text.split(/\s+/);let line='';let lines=[];for(const word of words){const test=line?line+' '+word:word;if(context.measureText(test).width>maxWidth&&line){lines.push(line);line=word;}else{line=test;}}if(line)lines.push(line);if(lines.length>maxLines){lines=lines.slice(0,maxLines);let last=lines[maxLines-1];while(context.measureText(last+'…').width>maxWidth&&last.length>1)last=last.slice(0,-1);lines[maxLines-1]=last+'…';}lines.forEach((l,i)=>context.fillText(l,x,y+i*lineHeight));return y+lines.length*lineHeight;}
-function roundedRect(context,x,y,w,h,r){context.beginPath();context.roundRect(x,y,w,h,r);context.fill();}
-function drawIILogo(context,x,y,size,darkBackground=false){
-  context.save();
-  const bg=darkBackground?'#ffffff':'#0b2035';
-  const first=darkBackground?'#0b2035':'#ffffff';
-  context.fillStyle=bg;roundedRect(context,x,y,size,size,size*.28);
-  context.fillStyle=first;roundedRect(context,x+size*.23,y+size*.20,size*.16,size*.58,size*.08);
-  context.fillStyle='#f3bd4f';roundedRect(context,x+size*.61,y+size*.20,size*.16,size*.58,size*.08);
-  context.beginPath();context.moveTo(x+size*.38,y+size*.48);context.bezierCurveTo(x+size*.46,y+size*.37,x+size*.54,y+size*.37,x+size*.62,y+size*.48);context.strokeStyle='#f05245';context.lineWidth=size*.09;context.lineCap='round';context.stroke();
-  context.restore();
-}
-function drawCertificate(data){
-  const W=1080,H=1080;
-  ctx.clearRect(0,0,W,H);
-  const gradient=ctx.createLinearGradient(0,0,W,H);gradient.addColorStop(0,'#0b2035');gradient.addColorStop(.70,'#163b5d');gradient.addColorStop(1,'#1f4d72');ctx.fillStyle=gradient;ctx.fillRect(0,0,W,H);
-  ctx.fillStyle='rgba(243,189,79,.18)';ctx.beginPath();ctx.arc(930,120,250,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='rgba(240,82,69,.17)';ctx.beginPath();ctx.arc(100,970,290,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#ffffff';ctx.globalAlpha=.99;roundedRect(ctx,58,58,964,964,34);ctx.globalAlpha=1;
-  drawIILogo(ctx,92,88,118,false);
-  ctx.textAlign='left';ctx.textBaseline='alphabetic';ctx.fillStyle='#0b2035';ctx.font='900 37px Arial, sans-serif';ctx.fillText('INFLUENCERS INVOLVED',236,132);
-  ctx.fillStyle='#c9382e';ctx.font='900 22px Arial, sans-serif';ctx.fillText('THE 1% INFLUENCE CHALLENGE',236,170);
-  ctx.fillStyle='#d7e0e9';ctx.fillRect(92,230,896,2);
-  ctx.textAlign='center';ctx.fillStyle='#c9382e';ctx.font='900 25px Arial, sans-serif';ctx.fillText('PIONEER PLEDGE CERTIFICATE',540,290);
-  ctx.fillStyle='#7a5a13';ctx.font='900 18px Arial, sans-serif';ctx.fillText('FOUNDING PIONEER · BUILDING THE MOVEMENT FROM THE BEGINNING',540,328);
-  ctx.fillStyle='#52677d';ctx.font='600 22px Arial, sans-serif';ctx.fillText('This Pioneer Pledge belongs to',540,374);
-  ctx.fillStyle='#0b2035';ctx.font='900 55px Arial, sans-serif';wrapText(ctx,data.displayName,540,442,770,62,2);
-  if(data.handle){ctx.fillStyle='#c9382e';ctx.font='800 25px Arial, sans-serif';ctx.fillText(data.handle+' · '+data.platform,540,535);}else{ctx.fillStyle='#c9382e';ctx.font='800 25px Arial, sans-serif';ctx.fillText(data.platform,540,535);}
-  ctx.fillStyle='#52677d';ctx.font='600 24px Arial, sans-serif';ctx.fillText('who is helping make creator-led giving real by pledging',540,598);
-  ctx.fillStyle='#0b2035';ctx.font='900 31px Arial, sans-serif';wrapText(ctx,data.commitment,540,650,790,38,2);
-  ctx.fillStyle='#52677d';ctx.font='600 24px Arial, sans-serif';ctx.fillText('to support',540,748);
-  ctx.fillStyle='#0b2035';ctx.font='900 35px Arial, sans-serif';wrapText(ctx,data.cause,540,802,800,43,2);
-  ctx.fillStyle='#f05245';roundedRect(ctx,280,890,520,60,30);ctx.fillStyle='#ffffff';ctx.font='900 23px Arial, sans-serif';ctx.fillText('I AM A PIONEER. I CHALLENGE YOU.',540,928);
-  ctx.textAlign='left';ctx.fillStyle='#52677d';ctx.font='600 18px Arial, sans-serif';ctx.fillText(formatDate(data.date),92,978);ctx.textAlign='right';ctx.fillText(data.id,988,978);
-  ctx.textAlign='center';ctx.fillStyle='#0b2035';ctx.font='900 20px Arial, sans-serif';ctx.fillText('INFLUENCERSINVOLVED.ORG',540,1012);
-  ctx.fillStyle='#6f7f90';ctx.font='500 13px Arial, sans-serif';ctx.fillText('Self-issued pledge statement · Not a donation receipt or proof of payment',540,1040);
-  preview.src=canvas.toDataURL('image/png');
-}
-function buildCaption(data){return `I became a Pioneer in the 1% Influence Challenge through Influencers Involved. I pledged ${data.commitment} to support ${data.cause}. This movement becomes real when creators choose to lead, so I am challenging the next creator to join us.\n\nBecome a Pioneer: https://influencersinvolved.org\n\n#InfluencersInvolved #IIPioneer #OnePercentInfluence #CreatorPhilanthropy`;}
-function buildPledgeText(data){return `Influencers Involved · Pioneer Pledge\nPledge ID: ${data.id}\nPublic name: ${data.displayName}\nSocial handle: ${data.handle||'Not provided'}\nPlatform: ${data.platform}\nPledge: ${data.commitment}\nCause or charity: ${data.cause}\nDate: ${formatDate(data.date)}`;}
-form.addEventListener('submit',event=>{
-  event.preventDefault();formStatus.textContent='';shareStatus.textContent='';
-  if(!form.checkValidity()){form.reportValidity();formStatus.textContent='Please complete all required fields.';return;}
-  const data={displayName:document.getElementById('displayName').value.trim(),handle:normalizeHandle(document.getElementById('handle').value),platform:document.getElementById('platform').value,cause:document.getElementById('cause').value.trim(),commitment:document.getElementById('commitment').value,date:dateInput.value};
-  data.id=pledgeId(data.displayName,data.date);currentPledge=data;drawCertificate(data);caption.value=buildCaption(data);
-  certificateSection.classList.add('show');formStatus.textContent='Pioneer Certificate created.';certificateSection.scrollIntoView({behavior:'smooth',block:'start'});
-});
-document.getElementById('downloadCertificate').addEventListener('click',()=>{if(!currentPledge)return;const link=document.createElement('a');link.download=`II-pioneer-${currentPledge.displayName.replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').toLowerCase()||'certificate'}.png`;link.href=canvas.toDataURL('image/png');link.click();shareStatus.textContent='Certificate downloaded.';});
-document.getElementById('copyCaption').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(caption.value);shareStatus.textContent='Caption copied.';}catch{caption.select();document.execCommand('copy');shareStatus.textContent='Caption copied.';}});
-document.getElementById('copyPledge').addEventListener('click',async()=>{if(!currentPledge)return;const text=buildPledgeText(currentPledge);try{await navigator.clipboard.writeText(text);shareStatus.textContent='Pledge details copied.';}catch{shareStatus.textContent='Copy was unavailable in this browser.';}});
-document.getElementById('shareCertificate').addEventListener('click',()=>{if(!currentPledge)return;canvas.toBlob(async blob=>{const file=new File([blob],'II-pioneer-certificate.png',{type:'image/png'});try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({title:'My Pioneer Pledge',text:caption.value,files:[file]});shareStatus.textContent='Share sheet opened.';}else if(navigator.share){await navigator.share({title:'My Pioneer Pledge',text:caption.value,url:'https://influencersinvolved.org'});shareStatus.textContent='Share sheet opened. Download the image separately if needed.';}else{await navigator.clipboard.writeText(caption.value);shareStatus.textContent='Sharing is not supported in this browser. The caption was copied; download the image to post it.';}}catch(error){if(error.name!=='AbortError')shareStatus.textContent='Sharing was unavailable. Download the image and copy the caption instead.';}},'image/png');});
-document.getElementById('newPledge').addEventListener('click',()=>{form.reset();dateInput.value=new Date().toISOString().slice(0,10);certificateSection.classList.remove('show');currentPledge=null;formStatus.textContent='';shareStatus.textContent='';document.getElementById('pledge').scrollIntoView({behavior:'smooth'});});
+const dateInput=document.getElementById('pledgeDate');dateInput.value=new Date().toISOString().slice(0,10);
+const form=document.getElementById('pledgeForm'),formStatus=document.getElementById('formStatus'),certificateSection=document.getElementById('certificateSection'),preview=document.getElementById('certificatePreview'),canvas=document.getElementById('certificateCanvas'),ctx=canvas.getContext('2d'),caption=document.getElementById('shareCaption'),shareStatus=document.getElementById('shareStatus');let currentPledge=null;
+function normalizeHandle(v){const s=v.trim();return s?(s.startsWith('@')?s:'@'+s):''}
+function formatDate(v){return new Date(v+'T12:00:00').toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'})}
+function pledgeId(name,date){let h=0;for(const c of name+date){h=((h<<5)-h)+c.charCodeAt(0);h|=0}return'II-'+date.replaceAll('-','')+'-'+Math.abs(h).toString(36).toUpperCase().slice(0,5).padStart(5,'0')}
+function roundedRect(c,x,y,w,h,r){c.beginPath();c.roundRect(x,y,w,h,r);c.fill()}
+function wrap(c,text,x,y,maxWidth,lineHeight,maxLines=4){const words=text.split(/\s+/);let line='',lines=[];for(const word of words){const test=line?line+' '+word:word;if(c.measureText(test).width>maxWidth&&line){lines.push(line);line=word}else line=test}if(line)lines.push(line);lines=lines.slice(0,maxLines);lines.forEach((l,i)=>c.fillText(l,x,y+i*lineHeight))}
+function drawLogo(c,x,y,size){c.fillStyle='#0b2035';roundedRect(c,x,y,size,size,size*.28);c.fillStyle='#fff';c.fillRect(x+size*.25,y+size*.22,size*.15,size*.56);c.fillStyle='#f05245';c.fillRect(x+size*.60,y+size*.22,size*.15,size*.56);c.fillStyle='#f3bd4f';c.beginPath();c.arc(x+size*.325,y+size*.15,size*.06,0,Math.PI*2);c.fill();c.beginPath();c.arc(x+size*.675,y+size*.85,size*.06,0,Math.PI*2);c.fill()}
+function drawCertificate(d){const W=1080,H=1080;ctx.clearRect(0,0,W,H);const g=ctx.createLinearGradient(0,0,W,H);g.addColorStop(0,'#0b2035');g.addColorStop(.7,'#173d5d');g.addColorStop(1,'#1f4d72');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);ctx.fillStyle='rgba(243,189,79,.18)';ctx.beginPath();ctx.arc(930,120,250,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(240,82,69,.17)';ctx.beginPath();ctx.arc(100,970,290,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';roundedRect(ctx,58,58,964,964,34);drawLogo(ctx,92,88,118);ctx.textAlign='left';ctx.fillStyle='#0b2035';ctx.font='900 37px Arial';ctx.fillText('INFLUENCERS INVOLVED',236,132);ctx.fillStyle='#c9382e';ctx.font='900 22px Arial';ctx.fillText('THE 1% INFLUENCE CHALLENGE',236,170);ctx.fillStyle='#d7e0e9';ctx.fillRect(92,230,896,2);ctx.textAlign='center';ctx.fillStyle='#c9382e';ctx.font='900 25px Arial';ctx.fillText('FOUNDING PIONEER CERTIFICATE',540,290);ctx.fillStyle='#7a5a13';ctx.font='900 18px Arial';ctx.fillText('ONE OF THE CREATORS HELPING BEGIN THE MOVEMENT',540,328);ctx.fillStyle='#52677d';ctx.font='600 22px Arial';ctx.fillText('Presented to',540,378);ctx.fillStyle='#0b2035';ctx.font='900 55px Arial';wrap(ctx,d.displayName,540,445,770,62,2);ctx.fillStyle='#c9382e';ctx.font='800 25px Arial';ctx.fillText((d.handle?d.handle+' · ':'')+d.platform,540,535);ctx.fillStyle='#52677d';ctx.font='600 24px Arial';ctx.fillText('for making the Pioneer Pledge',540,602);ctx.fillStyle='#0b2035';ctx.font='900 34px Arial';ctx.fillText('1% OF MY CREATOR INCOME',540,660);ctx.fillStyle='#52677d';ctx.font='600 24px Arial';ctx.fillText('to support',540,730);ctx.fillStyle='#0b2035';ctx.font='900 35px Arial';wrap(ctx,d.cause,540,790,800,43,3);ctx.fillStyle='#f05245';roundedRect(ctx,275,890,530,62,31);ctx.fillStyle='#fff';ctx.font='900 23px Arial';ctx.fillText('I AM A PIONEER. WHO WILL JOIN ME?',540,929);ctx.textAlign='left';ctx.fillStyle='#52677d';ctx.font='600 18px Arial';ctx.fillText(formatDate(d.date),92,978);ctx.textAlign='right';ctx.fillText(d.id,988,978);ctx.textAlign='center';ctx.fillStyle='#0b2035';ctx.font='900 20px Arial';ctx.fillText('INFLUENCERSINVOLVED.ORG',540,1012);ctx.fillStyle='#6f7f90';ctx.font='500 13px Arial';ctx.fillText('Pioneer pledge statement · Not a donation receipt or proof of payment',540,1040);preview.src=canvas.toDataURL('image/png')}
+function buildCaption(d){return`I am proud to become a Founding Pioneer in the 1% Influence Challenge. I pledge 1% of my creator income to support ${d.cause}.\n\nI believe influence can do more than reach people—it can move people to give. I am challenging another creator to become a Pioneer with me.\n\nJoin the first circle: https://influencersinvolved.org\n\n#InfluencersInvolved #FoundingPioneer #OnePercentInfluence #CreatorPhilanthropy`}
+form.addEventListener('submit',e=>{e.preventDefault();formStatus.textContent='';shareStatus.textContent='';if(!form.checkValidity()){form.reportValidity();formStatus.textContent='Please complete the Pioneer Pledge.';return}const d={displayName:document.getElementById('displayName').value.trim(),handle:normalizeHandle(document.getElementById('handle').value),platform:document.getElementById('platform').value,cause:document.getElementById('cause').value.trim(),date:dateInput.value};d.id=pledgeId(d.displayName,d.date);currentPledge=d;drawCertificate(d);caption.value=buildCaption(d);certificateSection.classList.add('show');formStatus.textContent='Your Pioneer Certificate is ready.';certificateSection.scrollIntoView({behavior:'smooth',block:'start'})});
+document.getElementById('downloadCertificate').addEventListener('click',()=>{if(!currentPledge)return;const a=document.createElement('a');a.download=`II-pioneer-${currentPledge.displayName.replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').toLowerCase()||'certificate'}.png`;a.href=canvas.toDataURL('image/png');a.click();shareStatus.textContent='Certificate downloaded.'});
+document.getElementById('copyCaption').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(caption.value);shareStatus.textContent='Caption copied.'}catch{caption.select();document.execCommand('copy');shareStatus.textContent='Caption copied.'}});
+document.getElementById('shareCertificate').addEventListener('click',()=>{if(!currentPledge)return;canvas.toBlob(async blob=>{const file=new File([blob],'II-pioneer-certificate.png',{type:'image/png'});try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({title:'My Founding Pioneer Pledge',text:caption.value,files:[file]})}else if(navigator.share){await navigator.share({title:'My Founding Pioneer Pledge',text:caption.value,url:'https://influencersinvolved.org'})}else{await navigator.clipboard.writeText(caption.value);shareStatus.textContent='Caption copied. Download the certificate to post it.'}}catch(err){if(err.name!=='AbortError')shareStatus.textContent='Download the image and copy the caption to share.'}},'image/png')});
+document.getElementById('newPledge').addEventListener('click',()=>{form.reset();dateInput.value=new Date().toISOString().slice(0,10);certificateSection.classList.remove('show');currentPledge=null;formStatus.textContent='';shareStatus.textContent='';document.getElementById('pledge').scrollIntoView({behavior:'smooth'})});
+document.getElementById('copyEmail').addEventListener('click',async()=>{try{await navigator.clipboard.writeText('grants@influencersinvolved.org');document.getElementById('emailStatus').textContent='Contact email copied.'}catch{document.getElementById('emailStatus').textContent='Email: grants@influencersinvolved.org'}});
 </script>
 </body>
 </html>
