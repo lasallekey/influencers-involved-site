@@ -1,6 +1,8 @@
 const SPREADSHEET_ID = '1F6iRlQ4a02JZiAR_hXqjD2E3zFp1UCcDPojcS-53FDo';
 const PRIVATE_SHEET = 'Pioneers Private';
 const SITE_URL = 'https://influencersinvolved.org';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwm4mtlV4JgX4ou0WU1Gibvk9DbDVOQuRIlwstQ3im9ojynxNddKKqUetdSvBVNxMbpAA/exec';
+const SENDER_ALIAS = 'grants@influencersinvolved.org';
 const CONSENT_VERSION = '2026-07-26-v1';
 
 function doPost(e) {
@@ -13,6 +15,8 @@ function doPost(e) {
     if (missing.length) return textResponse('Missing required fields: ' + missing.join(', '));
     if (!isValidEmail(p.email)) return textResponse('Invalid email address.');
     if (!/^https:\/\//i.test(String(p.profileUrl))) return textResponse('Profile URL must begin with https://');
+
+    assertOrganizationalSenderAvailable();
 
     const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(PRIVATE_SHEET);
     if (!sheet) throw new Error('Registry sheet not found.');
@@ -156,9 +160,19 @@ function buildPublicStats() {
   };
 }
 
+function assertOrganizationalSenderAvailable() {
+  const aliases = GmailApp.getAliases().map(alias => String(alias).toLowerCase());
+  if (!aliases.includes(SENDER_ALIAS.toLowerCase())) {
+    throw new Error(
+      'The Apps Script deployment account cannot send as ' + SENDER_ALIAS +
+      '. Deploy and authorize this script while signed in as ho@influencersinvolved.org, ' +
+      'with grants@influencersinvolved.org configured as a Gmail send-as alias.'
+    );
+  }
+}
+
 function sendVerificationEmail(email, displayName, token, pledgeId) {
-  const webAppUrl = ScriptApp.getService().getUrl();
-  const verifyUrl = webAppUrl + '?action=verify&token=' + encodeURIComponent(token);
+  const verifyUrl = WEB_APP_URL + '?action=verify&token=' + encodeURIComponent(token);
   const subject = 'Confirm your place as an Influencers Involved Pioneer';
   const body = [
     'Hello ' + displayName + ',',
@@ -175,7 +189,12 @@ function sendVerificationEmail(email, displayName, token, pledgeId) {
     'Influencers Involved',
     SITE_URL
   ].join('\n');
-  MailApp.sendEmail(email, subject, body);
+
+  GmailApp.sendEmail(email, subject, body, {
+    from: SENDER_ALIAS,
+    name: 'Influencers Involved',
+    replyTo: SENDER_ALIAS
+  });
 }
 
 function verificationPage(success, message) {
