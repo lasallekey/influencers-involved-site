@@ -1,4 +1,4 @@
-const REGISTRY_URL='https://script.google.com/macros/s/AKfycbzQnkOlGKFGbj6xuqK67L_x--H1j_iYDIifE2ogFfqljC79AlSTpUt7B9X0aTZPa4mt/exec';
+const REGISTRY_URL='';
 
 const menuButton=document.querySelector('.menu');
 const navLinks=document.querySelector('.links');
@@ -20,6 +20,9 @@ const caption=document.getElementById('shareCaption');
 const shareStatus=document.getElementById('shareStatus');
 let currentPledge=null;
 
+function registryIsConnected(){
+  return /^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(REGISTRY_URL);
+}
 function normalizeHandle(value){
   const clean=String(value||'').trim();
   return clean?(clean.startsWith('@')?clean:'@'+clean):'';
@@ -29,10 +32,22 @@ function formatDate(value){
 }
 function makePledgeId(date){
   const random=crypto.getRandomValues(new Uint32Array(1))[0].toString(36).toUpperCase().slice(0,6).padStart(6,'0');
-  return 'II-'+date.replaceAll('-','')+'-'+random;
+  return 'II-'+date.replace(/-/g,'')+'-'+random;
 }
 function roundedRect(context,x,y,w,h,r){
-  context.beginPath();context.roundRect(x,y,w,h,r);context.fill();
+  context.beginPath();
+  if(typeof context.roundRect==='function'){
+    context.roundRect(x,y,w,h,r);
+  }else{
+    const radius=Math.min(r,w/2,h/2);
+    context.moveTo(x+radius,y);
+    context.arcTo(x+w,y,x+w,y+h,radius);
+    context.arcTo(x+w,y+h,x,y+h,radius);
+    context.arcTo(x,y+h,x,y,radius);
+    context.arcTo(x,y,x+w,y,radius);
+    context.closePath();
+  }
+  context.fill();
 }
 function wrap(context,text,x,y,maxWidth,lineHeight,maxLines=4){
   const words=String(text).split(/\s+/);let line='',lines=[];
@@ -110,6 +125,8 @@ function referralSource(){
   const params=new URLSearchParams(location.search);
   return params.get('utm_source')||params.get('ref')||document.referrer||'Direct';
 }
+function yesNo(checked){return checked?'Yes':'No';}
+
 form.addEventListener('submit',event=>{
   event.preventDefault();
   formStatus.textContent='';shareStatus.textContent='';
@@ -118,8 +135,14 @@ form.addEventListener('submit',event=>{
     formStatus.textContent='Please complete the Pioneer Registry form.';
     return;
   }
+  if(!registryIsConnected()){
+    formStatus.textContent='The Pioneer Registry connection is being updated. Please return shortly.';
+    return;
+  }
+
   submitButton.disabled=true;
   submitButton.textContent='Saving your Pioneer Pledge…';
+
   const displayPreference=document.getElementById('publicDisplayPreference').value;
   const data={
     id:makePledgeId(dateInput.value),
@@ -133,9 +156,12 @@ form.addEventListener('submit',event=>{
     audienceBand:document.getElementById('audienceBand').value,
     cause:document.getElementById('cause').value.trim(),
     date:dateInput.value,
-    publicDisplayPreference:displayPreference
+    publicDisplayPreference:displayPreference,
+    generalContactConsent:document.getElementById('generalContactConsent').checked,
+    nextPhaseContactConsent:document.getElementById('nextPhaseConsent').checked
   };
   const publicConsent=['Name and handle','Handle only'].includes(displayPreference)?'Yes':'No';
+
   postToRegistry({
     pledgeId:data.id,
     displayName:data.displayName,
@@ -150,15 +176,16 @@ form.addEventListener('submit',event=>{
     pledgeDate:data.date,
     publicDisplayPreference:data.publicDisplayPreference,
     publicListingConsent:publicConsent,
-    nextPhaseContactConsent:'Yes',
-    generalContactConsent:'Yes',
+    nextPhaseContactConsent:yesNo(data.nextPhaseContactConsent),
+    generalContactConsent:yesNo(data.generalContactConsent),
     referralSource:referralSource()
   });
+
   currentPledge=data;
   drawCertificate(data);
   caption.value=buildCaption(data);
   certificateSection.classList.add('show');
-  formStatus.textContent='Your pledge was sent to the Pioneer Registry. Check your email to confirm your place.';
+  formStatus.textContent='Your pledge was added to the Pioneer Registry. Your certificate is ready.';
   submitButton.disabled=false;
   submitButton.textContent='Claim my place and create my certificate';
   certificateSection.scrollIntoView({behavior:'smooth',block:'start'});
@@ -179,11 +206,15 @@ document.getElementById('copyCaption').addEventListener('click',async()=>{
 document.getElementById('shareCertificate').addEventListener('click',()=>{
   if(!currentPledge)return;
   canvas.toBlob(async blob=>{
-    const file=new File([blob],'II-pioneer-certificate.png',{type:'image/png'});
     try{
-      if(navigator.canShare&&navigator.canShare({files:[file]})){
-        await navigator.share({title:'My Founding Pioneer Pledge',text:caption.value,files:[file]});
-      }else if(navigator.share){
+      if(typeof File!=='undefined'&&navigator.canShare){
+        const file=new File([blob],'II-pioneer-certificate.png',{type:'image/png'});
+        if(navigator.canShare({files:[file]})){
+          await navigator.share({title:'My Founding Pioneer Pledge',text:caption.value,files:[file]});
+          return;
+        }
+      }
+      if(navigator.share){
         await navigator.share({title:'My Founding Pioneer Pledge',text:caption.value,url:'https://influencersinvolved.org'});
       }else{
         await navigator.clipboard.writeText(caption.value);
@@ -208,8 +239,7 @@ document.getElementById('copyEmail').addEventListener('click',async()=>{
 window.renderPioneerStats=function(data){
   const values={
     totalPledges:data.totalPledges||0,
-    emailVerifiedPioneers:data.emailVerifiedPioneers||0,
-    verifiedCharitableActions:data.verifiedCharitableActions||0,
+    publiclyListedPioneers:data.publiclyListedPioneers||0,
     platformsRepresented:data.platformsRepresented||0,
     countriesRepresented:data.countriesRepresented||0
   };
@@ -219,7 +249,7 @@ window.renderPioneerStats=function(data){
   const pioneers=Array.isArray(data.pioneers)?data.pioneers:[];
   if(!pioneers.length){
     const empty=document.createElement('div');empty.className='empty-state';
-    empty.textContent='The public Pioneer roll will appear here as creators confirm their pledges and choose to be listed.';
+    empty.textContent='The public Pioneer roll will appear here as creators make pledges and choose to be listed.';
     list.appendChild(empty);return;
   }
   pioneers.forEach(item=>{
@@ -229,12 +259,16 @@ window.renderPioneerStats=function(data){
     if(item.profileUrl&&/^https:\/\//i.test(item.profileUrl)){
       const link=document.createElement('a');link.href=item.profileUrl;link.target='_blank';link.rel='noopener noreferrer';link.textContent=label;heading.appendChild(link);
     }else heading.textContent=label;
-    const meta=document.createElement('p');meta.textContent=[item.handle&&item.name?item.handle:'',item.platform,item.status].filter(Boolean).join(' · ');
+    const meta=document.createElement('p');meta.textContent=[item.handle&&item.name?item.handle:'',item.platform,'Pioneer'].filter(Boolean).join(' · ');
     const cause=document.createElement('p');cause.textContent=item.cause?'Pledged for: '+item.cause:'';
     card.append(heading,meta,cause);list.appendChild(card);
   });
 };
 function loadPioneerStats(){
+  if(!registryIsConnected()){
+    document.getElementById('statsStatus').textContent='The live registry connection is being updated.';
+    return;
+  }
   const existing=document.getElementById('pioneerStatsScript');if(existing)existing.remove();
   const script=document.createElement('script');script.id='pioneerStatsScript';
   script.src=REGISTRY_URL+'?action=stats&callback=renderPioneerStats&_='+Date.now();
