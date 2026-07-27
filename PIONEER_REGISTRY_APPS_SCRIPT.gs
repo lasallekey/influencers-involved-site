@@ -1,7 +1,6 @@
 const SPREADSHEET_ID = '1F6iRlQ4a02JZiAR_hXqjD2E3zFp1UCcDPojcS-53FDo';
 const PRIVATE_SHEET = 'Pioneers Private';
 const SITE_URL = 'https://influencersinvolved.org';
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwm4mtlV4JgX4ou0WU1Gibvk9DbDVOQuRIlwstQ3im9ojynxNddKKqUetdSvBVNxMbpAA/exec';
 const SENDER_ALIAS = 'grants@influencersinvolved.org';
 const CONSENT_VERSION = '2026-07-26-v1';
 
@@ -172,7 +171,9 @@ function assertOrganizationalSenderAvailable() {
 }
 
 function sendVerificationEmail(email, displayName, token, pledgeId) {
-  const verifyUrl = WEB_APP_URL + '?action=verify&token=' + encodeURIComponent(token);
+  const webAppUrl = ScriptApp.getService().getUrl();
+  if (!webAppUrl) throw new Error('The script is not deployed as a web app.');
+  const verifyUrl = webAppUrl.replace(/\/dev$/, '/exec') + '?action=verify&token=' + encodeURIComponent(token);
   const subject = 'Confirm your place as an Influencers Involved Pioneer';
   const body = [
     'Hello ' + displayName + ',',
