@@ -1,4 +1,4 @@
-const REGISTRY_URL='https://script.google.com/macros/s/AKfycbwm4mtlV4JgX4ou0WU1Gibvk9DbDVOQuRIlwstQ3im9ojynxNddKKqUetdSvBVNxMbpAA/exec';
+const REGISTRY_URL='https://script.google.com/macros/s/AKfycbzQnkOlGKFGbj6xuqK67L_x--H1j_iYDIifE2ogFfqljC79AlSTpUt7B9X0aTZPa4mt/exec';
 
 const menuButton=document.querySelector('.menu');
 const navLinks=document.querySelector('.links');
