@@ -60,11 +60,10 @@
 
 <section class="section" id="progress">
 <div class="container">
-<div class="section-head"><p class="eyebrow">Live Pioneer progress</p><h2>Every confirmed pledge makes the movement more real.</h2><p class="lede muted">The Pioneer Registry creates a measurable record of creator participation while respecting each creator’s public-display choice.</p></div>
+<div class="section-head"><p class="eyebrow">Live Pioneer progress</p><h2>Every pledge makes the movement more real.</h2><p class="lede muted">The Pioneer Registry creates a measurable record of creator participation while respecting each creator’s public-display choice.</p></div>
 <div class="progress-grid" aria-live="polite">
 <div class="stat"><strong id="totalPledges">0</strong><span>Pioneer pledges</span></div>
-<div class="stat"><strong id="emailVerifiedPioneers">0</strong><span>Email-confirmed pioneers</span></div>
-<div class="stat"><strong id="verifiedCharitableActions">0</strong><span>Verified charitable actions</span></div>
+<div class="stat"><strong id="publiclyListedPioneers">0</strong><span>Publicly recognized Pioneers</span></div>
 <div class="stat"><strong id="platformsRepresented">0</strong><span>Platforms represented</span></div>
 <div class="stat"><strong id="countriesRepresented">0</strong><span>Countries represented</span></div>
 </div>
@@ -96,7 +95,7 @@
 <div class="container pledge-wrap">
 <div class="pledge-intro">
 <p class="eyebrow">Become a Pioneer</p><h2>Your place in the beginning starts with one pledge.</h2>
-<p class="lede muted">Join the Pioneer Registry, confirm your email, and create a square Pioneer Certificate for social sharing.</p>
+<p class="lede muted">Join the Pioneer Registry and create a square Pioneer Certificate for social sharing.</p>
 <div class="pioneer-callout"><h3>What will your influence stand for?</h3><p>The first creators who join will help define this movement for everyone who comes after them.</p></div>
 </div>
 <div class="pledge-panel">
@@ -114,9 +113,9 @@
 <div class="field"><label for="region">State or region <span class="hint">(optional)</span></label><input id="region" name="region" type="text" maxlength="80" autocomplete="address-level1"></div>
 <div class="field full"><label for="cause">Charity or cause shown on certificate</label><input id="cause" name="cause" type="text" maxlength="90" required placeholder="A cause or eligible charity you believe in"></div>
 <div class="field full"><label for="publicDisplayPreference">How may II recognize your pledge publicly?</label><select id="publicDisplayPreference" name="publicDisplayPreference" required><option value="">Choose a privacy option</option><option value="Name and handle">Show my creator name and handle</option><option value="Handle only">Show my handle only</option><option value="Anonymous in totals">Count me anonymously in public totals</option><option value="Private">Keep my pledge completely private</option></select></div>
-<div class="field full"><label class="checkbox" for="nextPhaseConsent"><input id="nextPhaseConsent" type="checkbox" required><span>Email me to verify this pledge and notify me when the Connected Giving Stage opens. I may unsubscribe or ask II to remove my registry record.</span></label></div>
-<div class="field full"><label class="checkbox" for="attestation"><input id="attestation" type="checkbox" required><span>I am making the Pioneer Pledge in good faith and committing 1% of my creator income to charitable giving.</span></label></div>
-<div class="field full"><p class="form-note"><strong>Your registry record:</strong> II retains your email and pledge information privately so the movement can count real participation, reconnect with Pioneers, and document momentum. Only the public information you authorize will appear on the website. No income amount, donation amount, address, phone number, or payment information is requested.</p></div>
+<div class="field full"><label class="checkbox" for="generalContactConsent"><input id="generalContactConsent" type="checkbox" checked><span>II may contact me about Pioneer community news, progress, and opportunities. I may unsubscribe at any time.</span></label></div>
+<div class="field full"><label class="checkbox" for="nextPhaseConsent"><input id="nextPhaseConsent" type="checkbox" checked><span>Notify me when the Connected Giving Stage opens and invite me to participate.</span></label></div>
+<div class="field full"><p class="form-note"><strong>Your registry record:</strong> By submitting this form, you make the Pioneer Pledge in good faith. II retains your email and pledge information privately so the movement can count participation, reconnect with Pioneers who permit contact, and document momentum. Only the public information you authorize will appear on the website. No income amount, donation amount, address, phone number, or payment information is requested.</p></div>
 <div class="field full"><button id="submitPledge" class="button primary" type="submit">Claim my place and create my certificate</button><div id="formStatus" class="form-status" role="status" aria-live="polite"></div></div>
 </div>
 </form>
@@ -127,7 +126,7 @@
 
 <section class="section certificate-section" id="certificateSection" aria-live="polite">
 <div class="container">
-<div class="section-head"><p class="eyebrow">Welcome, Pioneer</p><h2>Your Pioneer Certificate is ready.</h2><p class="lede muted">Check your email to confirm your registry record. Then share your certificate proudly—the next Pioneer may be watching.</p></div>
+<div class="section-head"><p class="eyebrow">Welcome, Pioneer</p><h2>Your Pioneer Certificate is ready.</h2><p class="lede muted">Share your certificate proudly—the next Pioneer may be watching.</p></div>
 <div class="certificate-layout">
 <div class="certificate-frame"><img id="certificatePreview" alt="Generated Influencers Involved Pioneer Certificate"><canvas id="certificateCanvas" width="1080" height="1080" class="visually-hidden"></canvas></div>
 <aside class="share-panel"><h3>Your social caption</h3><textarea id="shareCaption" class="caption-box" readonly></textarea><div class="share-actions"><button id="downloadCertificate" class="button primary" type="button">Download certificate PNG</button><button id="shareCertificate" class="button dark-button" type="button">Share certificate</button><button id="copyCaption" class="button outline-button" type="button">Copy caption</button><button id="newPledge" class="button outline-button" type="button">Create another pledge</button></div><p class="privacy-line">The certificate records a public pledge and is not a donation receipt or proof of payment.</p><div id="shareStatus" class="form-status" role="status" aria-live="polite"></div></aside>
