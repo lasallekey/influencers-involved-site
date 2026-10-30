@@ -152,6 +152,16 @@
     return ok;
   }
 
+  // Clear a field's error as soon as the person corrects it.
+  function clearOn(ev) {
+    var t = ev.target; if (!t || !t.id) { if (t && t.name === 'privacy_preference') $('#privacy_preference-e').textContent = ''; return; }
+    var e = document.getElementById(t.id + '-e'); if (!e || !e.textContent) return;
+    var empty = t.type === 'checkbox' ? !t.checked : !String(t.value || '').trim();
+    if (!empty) { e.textContent = ''; t.removeAttribute('aria-invalid'); }
+  }
+  form.addEventListener('input', clearOn); form.addEventListener('change', clearOn);
+  $$('input[name=privacy_preference]').forEach(function (r) { r.addEventListener('change', function () { $('#privacy_preference-e').textContent = ''; }); });
+
   function payload() {
     var v = function (id) { return (document.getElementById(id).value || '').trim(); };
     var charity = v('charity_select') === '__other__' ? v('charity_other') : v('charity_select');
@@ -243,8 +253,8 @@
       ctx.strokeStyle = '#012f70'; ctx.lineWidth = 8; ctx.strokeRect(40, 40, W - 80, H - 80);
       ctx.lineWidth = 2; ctx.strokeStyle = '#7bdc0a'; ctx.strokeRect(62, 62, W - 124, H - 124);
       ctx.textAlign = 'center'; ctx.fillStyle = '#0d2147';
-      if (logo) { var lw = 560, lh = lw * logo.height / logo.width; ctx.drawImage(logo, (W - lw) / 2, 110, lw, lh); }
-      var y = 470;
+      if (logo) { var lw = 720, lh = lw * logo.height / logo.width; ctx.drawImage(logo, (W - lw) / 2, 120, lw, lh); }
+      var y = 450;
       ctx.fillStyle = '#2e6c05'; ctx.font = '700 30px ' + SANS; try { ctx.letterSpacing = '8px'; } catch (e) {}
       ctx.fillText('PIONEER PLEDGE CERTIFICATE', W / 2, y); try { ctx.letterSpacing = '0px'; } catch (e) {}
       ctx.fillStyle = '#47557a'; ctx.font = 'italic 30px ' + SERIF; ctx.fillText('Presented to', W / 2, y + 85);

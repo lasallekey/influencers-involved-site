@@ -22,6 +22,7 @@ main:focus{outline:none}
 .skip:focus{top:0}
 .wrap{width:min(100% - 2*var(--gutter),71rem);margin-inline:auto}
 .narrow{max-width:46rem}
+.wrap.narrow{max-width:none}.wrap.narrow>*{max-width:46rem}
 
 /* Header */
 .site-header{background:var(--white);border-bottom:1px solid var(--rule);position:sticky;top:0;z-index:50}
