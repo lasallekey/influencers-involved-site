@@ -25,6 +25,16 @@
 4. **Trust strip** — Illinois nonprofit, 501(c)(3), EIN, "we never collect your 1%", link to Transparency.
 5. **Closing invitation** — "Be one of the first Pioneers." + the same single action.
 
+## Interior pages (same language, different stories)
+Shared layer: `src/static/movement.css` (people kit, buttons, hero, bands, steps, rows, checklist) + `src/partials/people.html` (SVG symbols, included with `{{people}}`). Each page has a blue hero with its own original scene, then its own compositions. Do not copy the homepage sections; reuse the kit.
+- **Challenge:** hero = creator holding a Pioneer certificate; illustrated three-step journey; "after you join" rows; green "A pledge, not a payment" band; the registration form is unchanged and deliberately calm (white, standard fields).
+- **About:** "A movement of creators who give"; emblem over a growing crowd; one-to-many ripple of avatars; monograms (not likenesses) for the real leaders; plain legal facts; closing invitation.
+- **Transparency:** speech bubble with three checks; two full-bleed halves that make the key distinction visible (your 1% → your charity vs gifts → II); friendly checklist of commitments.
+- **Donate:** person holding a big heart; prominent Zeffy buttons (hero and after "what a gift helps us do"); no impact claims; green band separating a creator's pledge from gifts to II; approved international notice verbatim; no PayPal.
+- **Contact:** "Let's talk." with waving people; the homepage's "Find your place" rows as mailto links with a subject per audience (creators, charities, companies, funders, other), one inbox.
+- **Privacy:** shorter hero (shield), a three-line plain summary, and a sticky table of contents; every original disclosure kept in full.
+Rules that keep scenes readable: people in front of the blue hero use `pi`/`pj`/`pc`/`pe`/`ph` (never the blue-topped `pa`/`pg`, which vanish into the background); illustrated characters are never presented as real Pioneers, donors, partners or beneficiaries.
+
 ## Assets: source and rights
 | Asset | Source / license |
 |---|---|

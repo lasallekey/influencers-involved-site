@@ -19,6 +19,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="/assets/fonts/bricolage-grotesque-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/movement.css">
 
 
 <script src="/assets/site-config.js"></script>
@@ -38,35 +39,152 @@
   </div>
 </header>
 <main id="main" tabindex="-1">
-<div class="page-head"><div class="wrap">
-  <p class="eyebrow">Privacy notice</p>
-  <h1>Privacy &amp; <em>Pioneer participation</em></h1>
-  <p class="lede">Here’s what we collect when you join the Pioneer Registry, what can be public, and how to reach us about your information.</p>
-</div></div>
+<svg class="sv-defs" width="0" height="0" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="b-short" viewBox="0 0 100 300">
+      <path class="sv-top" d="M6 120C6 84 26 72 50 72s44 12 44 48v180H6z"/>
+      <rect class="sv-skin" x="42" y="58" width="16" height="24" rx="6"/>
+      <ellipse class="sv-skin" cx="50" cy="44" rx="21" ry="24"/>
+      <path class="sv-hair" d="M28 42C26 22 37 13 50 13s24 9 22 29c-6-8-14-12-22-12s-16 4-22 12z"/>
+      <circle class="sv-eye" cx="43" cy="46" r="1.9"/><circle class="sv-eye" cx="57" cy="46" r="1.9"/>
+      <path class="sv-smile" d="M43 55q7 6 14 0"/>
+    </symbol>
+    <symbol id="b-bun" viewBox="0 0 100 300">
+      <path class="sv-top" d="M6 120C6 84 26 72 50 72s44 12 44 48v180H6z"/>
+      <circle class="sv-hair" cx="50" cy="9" r="10"/>
+      <rect class="sv-skin" x="42" y="58" width="16" height="24" rx="6"/>
+      <ellipse class="sv-skin" cx="50" cy="44" rx="21" ry="24"/>
+      <path class="sv-hair" d="M28 42C26 22 37 13 50 13s24 9 22 29c-6-8-14-12-22-12s-16 4-22 12z"/>
+      <circle class="sv-eye" cx="43" cy="46" r="1.9"/><circle class="sv-eye" cx="57" cy="46" r="1.9"/>
+      <path class="sv-smile" d="M43 55q7 6 14 0"/>
+    </symbol>
+    <symbol id="b-curly" viewBox="0 0 100 300">
+      <path class="sv-top" d="M6 120C6 84 26 72 50 72s44 12 44 48v180H6z"/>
+      <g class="sv-hair"><circle cx="30" cy="34" r="12"/><circle cx="41" cy="20" r="12"/><circle cx="57" cy="18" r="12"/><circle cx="69" cy="28" r="12"/><circle cx="73" cy="44" r="11"/><circle cx="27" cy="50" r="10"/></g>
+      <rect class="sv-skin" x="42" y="58" width="16" height="24" rx="6"/>
+      <ellipse class="sv-skin" cx="50" cy="45" rx="21" ry="24"/>
+      <path class="sv-hair" d="M31 38C37 26 63 26 69 38c-7-4-12-6-19-6s-12 2-19 6z"/>
+      <circle class="sv-eye" cx="43" cy="47" r="1.9"/><circle class="sv-eye" cx="57" cy="47" r="1.9"/>
+      <path class="sv-smile" d="M43 56q7 6 14 0"/>
+    </symbol>
+    <symbol id="b-long" viewBox="0 0 100 300">
+      <path class="sv-hair" d="M25 46C21 20 36 11 50 11s29 9 25 35l4 38c-9 5-49 5-58 0z"/>
+      <path class="sv-top" d="M6 120C6 84 26 72 50 72s44 12 44 48v180H6z"/>
+      <rect class="sv-skin" x="42" y="58" width="16" height="24" rx="6"/>
+      <ellipse class="sv-skin" cx="50" cy="45" rx="21" ry="24"/>
+      <path class="sv-hair" d="M27 44C26 24 37 15 50 15s24 9 23 29c-4-9-11-13-23-13s-19 4-23 13z"/>
+      <circle class="sv-eye" cx="43" cy="47" r="1.9"/><circle class="sv-eye" cx="57" cy="47" r="1.9"/>
+      <path class="sv-smile" d="M43 56q7 6 14 0"/>
+    </symbol>
+    <symbol id="b-beard" viewBox="0 0 100 300">
+      <path class="sv-top" d="M6 120C6 84 26 72 50 72s44 12 44 48v180H6z"/>
+      <rect class="sv-skin" x="42" y="58" width="16" height="24" rx="6"/>
+      <ellipse class="sv-skin" cx="50" cy="44" rx="21" ry="24"/>
+      <path class="sv-hair" d="M29 48c1 20 14 26 21 26s20-6 21-26c-3 8-10 11-21 11S32 56 29 48z"/>
+      <path class="sv-hair" d="M28 40C26 22 37 13 50 13s24 9 22 27c-6-8-14-12-22-12s-16 4-22 12z"/>
+      <circle class="sv-eye" cx="43" cy="45" r="1.9"/><circle class="sv-eye" cx="57" cy="45" r="1.9"/>
+      <path class="sv-smile-l" d="M44 56q6 4 12 0"/>
+    </symbol>
+    <symbol id="b-glasses" viewBox="0 0 100 300">
+      <path class="sv-top" d="M6 120C6 84 26 72 50 72s44 12 44 48v180H6z"/>
+      <rect class="sv-skin" x="42" y="58" width="16" height="24" rx="6"/>
+      <ellipse class="sv-skin" cx="50" cy="44" rx="21" ry="24"/>
+      <path class="sv-hair" d="M28 42C26 22 37 13 50 13s24 9 22 29c-6-8-14-12-22-12s-16 4-22 12z"/>
+      <g class="sv-glass"><circle cx="42" cy="46" r="7"/><circle cx="58" cy="46" r="7"/><path d="M49 46h2"/></g>
+      <path class="sv-smile" d="M43 57q7 6 14 0"/>
+    </symbol>
+    <symbol id="hp" viewBox="0 0 100 300">
+      <path class="sv-band" d="M27 44C26 14 74 14 73 44"/>
+      <rect class="sv-cup" x="20" y="38" width="9" height="18" rx="4"/><rect class="sv-cup" x="71" y="38" width="9" height="18" rx="4"/>
+    </symbol>
+    <symbol id="heart" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></symbol>
+  
+    <clipPath id="avclip"><circle cx="50" cy="50" r="50"/></clipPath>
+    <symbol id="av-short" viewBox="0 0 100 100"><g clip-path="url(#avclip)"><rect class="sv-avbg" width="100" height="100"/><use href="#b-short" x="0" y="14" width="100" height="300"/></g></symbol>
+    <symbol id="av-bun" viewBox="0 0 100 100"><g clip-path="url(#avclip)"><rect class="sv-avbg" width="100" height="100"/><use href="#b-bun" x="0" y="14" width="100" height="300"/></g></symbol>
+    <symbol id="av-curly" viewBox="0 0 100 100"><g clip-path="url(#avclip)"><rect class="sv-avbg" width="100" height="100"/><use href="#b-curly" x="0" y="14" width="100" height="300"/></g></symbol>
+    <symbol id="av-long" viewBox="0 0 100 100"><g clip-path="url(#avclip)"><rect class="sv-avbg" width="100" height="100"/><use href="#b-long" x="0" y="14" width="100" height="300"/></g></symbol>
+    <symbol id="av-beard" viewBox="0 0 100 100"><g clip-path="url(#avclip)"><rect class="sv-avbg" width="100" height="100"/><use href="#b-beard" x="0" y="14" width="100" height="300"/></g></symbol>
+    <symbol id="av-glasses" viewBox="0 0 100 100"><g clip-path="url(#avclip)"><rect class="sv-avbg" width="100" height="100"/><use href="#b-glasses" x="0" y="14" width="100" height="300"/></g></symbol>
+    <symbol id="av-hp" viewBox="0 0 100 100"><g clip-path="url(#avclip)"><rect class="sv-avbg" width="100" height="100"/><use href="#b-short" x="0" y="14" width="100" height="300"/><use href="#hp" x="0" y="14" width="100" height="300"/></g></symbol>
+    <symbol id="p-cert" viewBox="0 0 120 86"><rect x="2" y="2" width="116" height="82" rx="4" fill="#fff" stroke="#012f70" stroke-width="4"/><rect x="9" y="9" width="102" height="68" rx="2" fill="none" stroke="#7bdc0a" stroke-width="2"/><rect x="34" y="16" width="52" height="5" rx="2.5" fill="#3d8a07"/><rect x="26" y="30" width="68" height="9" rx="4.5" fill="#012f70"/><rect x="38" y="46" width="44" height="4" rx="2" fill="#9cc3ee"/><rect x="30" y="54" width="60" height="4" rx="2" fill="#cfe0f5"/><use href="#heart" x="53" y="62" width="14" height="14" fill="#7bdc0a"/></symbol>
+    <symbol id="p-shield" viewBox="0 0 100 120"><path d="M50 4l40 14v34c0 28-18 46-40 64C28 98 10 80 10 52V18z" fill="#012f70"/><path d="M50 14l31 11v27c0 22-14 37-31 51C33 89 19 74 19 52V25z" fill="#7bdc0a"/><path d="M34 58l12 12 22-26" fill="none" stroke="#012f70" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="p-bubble" viewBox="0 0 120 90"><path d="M16 4h88a12 12 0 0112 12v42a12 12 0 01-12 12H52L30 86V70H16A12 12 0 014 58V16A12 12 0 0116 4z" fill="#fff"/></symbol>
+    <symbol id="p-envelope" viewBox="0 0 120 84"><rect x="3" y="3" width="114" height="78" rx="8" fill="#fff"/><path d="M8 12l52 40 52-40" fill="none" stroke="#005eca" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+    <symbol id="i-people" viewBox="0 0 64 64"><circle cx="32" cy="22" r="9" fill="#012f70"/><path d="M14 52c0-11 8-18 18-18s18 7 18 18z" fill="#012f70"/><circle cx="14" cy="28" r="6" fill="#7bdc0a"/><path d="M2 50c0-8 5-13 12-13 3 0 5 1 7 2-3 3-5 7-5 11z" fill="#7bdc0a"/><circle cx="50" cy="28" r="6" fill="#7bdc0a"/><path d="M62 50c0-8-5-13-12-13-3 0-5 1-7 2 3 3 5 7 5 11z" fill="#7bdc0a"/></symbol>
+    <symbol id="i-laptop" viewBox="0 0 64 64"><rect x="10" y="14" width="44" height="30" rx="4" fill="#012f70"/><rect x="14" y="18" width="36" height="22" rx="2" fill="#7bdc0a"/><path d="M4 48h56l-4 8H8z" fill="#005eca"/></symbol>
+    <symbol id="i-sprout" viewBox="0 0 64 64"><path d="M32 58V30" stroke="#012f70" stroke-width="5" stroke-linecap="round"/><path d="M32 34C32 20 22 12 8 14c0 14 8 22 24 20z" fill="#7bdc0a"/><path d="M32 28c0-12 8-20 24-18 0 14-8 22-24 18z" fill="#005eca"/></symbol>
+  </defs>
+</svg>
 
-<section aria-labelledby="collect">
-  <div class="wrap side"><div class="side-h"><h2 id="collect">Information we collect</h2></div><div class="side-b"><p>To administer Pioneer registration, II collects your creator name, private email, country, selected charity and pledge date, the social profiles you list, your public-display choice and per-account approvals, optional communication and collaboration choices, and email-verification status. We also record the date and version of the choices you agreed to. II does not request income amounts or proof of giving.</p>
+<section class="m-hero m-hero-short">
+  <div class="wrap m-hero-grid">
+    <div class="m-copy">
+      <h1>Your information, your choices.</h1>
+      <p class="m-sub">Here’s what we collect when you join the Pioneer Registry, what can be public, and how to reach us about your information.</p>
+    </div>
+    <div class="m-scene" role="img" aria-label="Illustration: a smiling person next to a large shield with a checkmark, symbolising protected information.">
+      <svg viewBox="0 0 600 520" aria-hidden="true" focusable="false">
+        <use href="#b-bun" class="pe" x="24" y="330" width="100" height="300"/>
+        <use href="#b-curly" class="pd" x="476" y="326" width="100" height="300"/>
+        <use href="#b-short" class="pi" x="120" y="150" width="190" height="570"/>
+        <g class="prop"><use href="#p-shield" x="318" y="96" width="210" height="252"/></g>
+        <use href="#heart" class="hz h1" x="70" y="268" width="26" height="26"/>
+        <use href="#heart" class="hz h2" x="548" y="244" width="28" height="28"/>
+        <use href="#heart" class="hz h3" x="262" y="104" width="22" height="22"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section class="m-sec m-sky m-short" aria-label="In short">
+  <div class="wrap">
+    <ul class="m-checks wide">
+      <li><span><b>We never publish your email.</b> Only a verified, publicly opted-in Pioneer and the profiles they approve can appear in public listings.</span></li>
+      <li><span><b>You decide what’s public.</b> Anonymous Pioneers are counted in totals but never identified.</span></li>
+      <li><span><b>Optional emails are always your choice.</b> News and collaboration invitations are separate, unchecked opt-ins you can withdraw at any time.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="m-sec">
+  <div class="wrap m-privgrid">
+    <nav class="m-privnav" aria-label="On this page">
+      <ul class="m-toc">
+          <li><a href="#collect">Information we collect</a></li>
+          <li><a href="#public">What may be public</a></li>
+          <li><a href="#private">Private information and communications</a></li>
+          <li><a href="#handling">Corrections, withdrawal and data handling</a></li>
+          <li><a href="#q">Questions</a></li>
+          </ul>
+    </nav>
+    <div class="m-privbody">
+      <section class="m-priv" id="collect" aria-labelledby="collect-h">
+        <h2 id="collect-h">Information we collect</h2>
+        <p>To administer Pioneer registration, II collects your creator name, private email, country, selected charity and pledge date, the social profiles you list, your public-display choice and per-account approvals, optional communication and collaboration choices, and email-verification status. We also record the date and version of the choices you agreed to. II does not request income amounts or proof of giving.</p>
     <p>To limit abuse, the registration service briefly keeps a one-way (hashed) form of your network address to rate-limit requests. It is not used to identify you and is deleted automatically after a short period.</p>
-  </div></div>
-</section>
-<section class="band" aria-labelledby="public">
-  <div class="wrap side"><div class="side-h"><h2 id="public">What may be public</h2></div><div class="side-b"><p>You control public recognition. Only a verified, publicly opted-in Pioneer, and only the social profiles that Pioneer explicitly approved, may appear in public listings. Anonymous records contribute only to privacy-safe aggregate totals; breakdowns small enough to point to an individual are suppressed. Your email address, country, collaboration responses and verification details are never displayed.</p>
+      </section>
+      <section class="m-priv" id="public" aria-labelledby="public-h">
+        <h2 id="public-h">What may be public</h2>
+        <p>You control public recognition. Only a verified, publicly opted-in Pioneer, and only the social profiles that Pioneer explicitly approved, may appear in public listings. Anonymous records contribute only to privacy-safe aggregate totals; breakdowns small enough to point to an individual are suppressed. Your email address, country, collaboration responses and verification details are never displayed.</p>
     <p>A downloaded certificate shows your creator name only if you chose public recognition; otherwise it reads “Anonymous Pioneer”.</p>
-  </div></div>
-</section>
-<section aria-labelledby="private">
-  <div class="wrap side"><div class="side-h"><h2 id="private">Private information and communications</h2></div><div class="side-b"><p>We send the essential registration and email-verification messages needed to administer your pledge. Verification only confirms you control the inbox; it is not consent to marketing. Optional news emails and collaboration invitations each require their own unchecked opt-in, may be withdrawn at any time, and every optional message includes an unsubscribe link. Answering “Maybe” or “Yes” to collaboration does not by itself allow us to email you.</p>
-  </div></div>
-</section>
-<section class="band" aria-labelledby="handling">
-  <div class="wrap side"><div class="side-h"><h2 id="handling">Corrections, withdrawal and data handling</h2></div><div class="side-b"><p>Request correction, removal, or consent withdrawal through <a href="mailto:grants@influencersinvolved.org">grants@influencersinvolved.org</a>. Registration records are held in a Cloudflare D1 database that is encrypted at rest by the provider and accessed over TLS; only the registration service and authorized II administrators can read private records. This is provider-managed encryption, not end-to-end encryption.</p>
+      </section>
+      <section class="m-priv" id="private" aria-labelledby="private-h">
+        <h2 id="private-h">Private information and communications</h2>
+        <p>We send the essential registration and email-verification messages needed to administer your pledge. Verification only confirms you control the inbox; it is not consent to marketing. Optional news emails and collaboration invitations each require their own unchecked opt-in, may be withdrawn at any time, and every optional message includes an unsubscribe link. Answering “Maybe” or “Yes” to collaboration does not by itself allow us to email you.</p>
+      </section>
+      <section class="m-priv" id="handling" aria-labelledby="handling-h">
+        <h2 id="handling-h">Corrections, withdrawal and data handling</h2>
+        <p>Request correction, removal, or consent withdrawal through <a href="mailto:grants@influencersinvolved.org">grants@influencersinvolved.org</a>. Registration records are held in a Cloudflare D1 database that is encrypted at rest by the provider and accessed over TLS; only the registration service and authorized II administrators can read private records. This is provider-managed encryption, not end-to-end encryption.</p>
     <p>Verification emails are sent through a transactional email provider that II configures for its own domain. This site sets no advertising or analytics cookies. Donations are handled entirely by Zeffy on its own site under its own privacy policy.</p>
     <p class="fine">Retention period and the final named email provider will be confirmed here before public launch.</p>
-  </div></div>
-</section>
-<section aria-labelledby="q">
-  <div class="wrap side"><div class="side-h"><h2 id="q">Questions</h2></div><div class="side-b"><p>Contact: <a href="mailto:grants@influencersinvolved.org">grants@influencersinvolved.org</a></p>
-  </div></div>
+      </section>
+      <section class="m-priv" id="q" aria-labelledby="q-h">
+        <h2 id="q-h">Questions</h2>
+        <p>Contact: <a href="mailto:grants@influencersinvolved.org">grants@influencersinvolved.org</a></p>
+      </section>
+      </div>
+  </div>
 </section>
 
 </main>

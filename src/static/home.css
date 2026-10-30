@@ -6,28 +6,6 @@
 .page-home h1,.page-home h2,.page-home h3{font-family:var(--display);font-weight:700;color:var(--navy);letter-spacing:-.035em;line-height:1;text-wrap:balance;margin:0}
 .page-home p{max-width:38em}
 .page-home section{padding-block:0}
-.sv-defs{position:absolute;width:0;height:0;overflow:hidden}
-
-/* ───── People kit (illustrations) ───── */
-.sv-top{fill:var(--top)}.sv-skin{fill:var(--skin)}.sv-hair{fill:var(--hair)}.sv-eye{fill:#1b1b1b}
-.sv-smile{fill:none;stroke:#1b1b1b;stroke-opacity:.6;stroke-width:2.2;stroke-linecap:round}
-.sv-smile-l{fill:none;stroke:#fff;stroke-opacity:.85;stroke-width:2.2;stroke-linecap:round}
-.sv-glass{fill:none;stroke:#012f70;stroke-width:2.4}
-.sv-band{fill:none;stroke:#012f70;stroke-width:5;stroke-linecap:round}
-.sv-cup{fill:var(--leaf)}
-.sv-sleeve{stroke:var(--top)}
-.sv-heart{fill:#012f70}
-.pa{--skin:#f1c59b;--hair:#3a2312;--top:#005eca}
-.pb{--skin:#8d5a3b;--hair:#141414;--top:#3d8a07}
-.pc{--skin:#c98f62;--hair:#5a3118;--top:#012f70}
-.pd{--skin:#5e3b27;--hair:#0e0e0e;--top:#9cc3ee}
-.pe{--skin:#ffdcb8;--hair:#b5651d;--top:#7bdc0a}
-.pf{--skin:#e1ab7e;--hair:#1d1d1d;--top:#ffffff}
-.pg{--skin:#a8704a;--hair:#2a1608;--top:#005eca}
-.ph{--skin:#f0bf94;--hair:#9a9a9a;--top:#3d8a07}
-.hz{fill:var(--leaf)}
-.hz.h2,.hz.h4{fill:#fff}.hz.h5{fill:#fff}
-.hz2{fill:var(--leaf)}
 
 /* ───── Shared bits ───── */
 .h-btn{display:inline-flex;align-items:center;justify-content:center;min-height:3.5rem;padding:.8rem 2.1rem;border-radius:999px;background:var(--leaf);color:#0a2205;font:700 1.15rem/1 var(--sans);text-decoration:none;border:2px solid var(--leaf);transition:background .15s,transform .15s}
@@ -55,9 +33,6 @@
 .scene .phone{animation:h-rise .9s .3s cubic-bezier(.2,.8,.2,1) both;transform-origin:410px 170px}
 .scene .hz{transform-box:fill-box;transform-origin:center;animation:h-pop .6s cubic-bezier(.3,1.6,.5,1) both}
 .scene .h1{animation-delay:.9s}.scene .h2{animation-delay:1.05s}.scene .h3{animation-delay:1.2s}.scene .h4{animation-delay:1.35s}.scene .h5{animation-delay:1.5s}
-@keyframes h-ripple{from{transform:translate(-50%,-50%) scale(.15);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
-@keyframes h-rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
-@keyframes h-pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
 
 /* ───── How it works ───── */
 .h-how{padding-block:clamp(4rem,9vw,7.5rem)!important}

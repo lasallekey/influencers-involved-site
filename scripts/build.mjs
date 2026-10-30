@@ -8,6 +8,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const src = join(root, 'src');
 const out = join(root, 'site');
 const config = JSON.parse(readFileSync(join(src, 'config.json'), 'utf8'));
+const peopleKit = readFileSync(join(src, 'partials', 'people.html'), 'utf8');
 const countries = JSON.parse(readFileSync(join(root, 'shared/countries.json'), 'utf8'));
 
 const NAV = [
@@ -40,6 +41,7 @@ const tokens = {
   countryOptions: countries.map(([c, n]) => opt(c, n, c === 'US' ? ' selected' : '')).join(''),
   charityOptions: [...config.charities.map((c) => opt(c)), opt('__other__', 'Other / My charity is not listed')].join(''),
   platformOptions: config.platforms.map((p) => opt(p)).join(''),
+  people: peopleKit,
   socialLinks: socials.map(([k, label]) => `<a href="${esc(config.social[k])}" rel="me noopener" target="_blank">${label}<span class="sr-only"> (opens in a new tab)</span></a>`).join(''),
   sameAsJson: JSON.stringify(socials.map(([k]) => config.social[k])),
 };

@@ -3,33 +3,73 @@ description: What Influencers Involved collects through Pioneer registration, wh
 path: /privacy/
 class: page-privacy
 ---
-<div class="page-head"><div class="wrap">
-  <p class="eyebrow">Privacy notice</p>
-  <h1>Privacy &amp; <em>Pioneer participation</em></h1>
-  <p class="lede">Here’s what we collect when you join the Pioneer Registry, what can be public, and how to reach us about your information.</p>
-</div></div>
+{{people}}
+<section class="m-hero m-hero-short">
+  <div class="wrap m-hero-grid">
+    <div class="m-copy">
+      <h1>Your information, your choices.</h1>
+      <p class="m-sub">Here’s what we collect when you join the Pioneer Registry, what can be public, and how to reach us about your information.</p>
+    </div>
+    <div class="m-scene" role="img" aria-label="Illustration: a smiling person next to a large shield with a checkmark, symbolising protected information.">
+      <svg viewBox="0 0 600 520" aria-hidden="true" focusable="false">
+        <use href="#b-bun" class="pe" x="24" y="330" width="100" height="300"/>
+        <use href="#b-curly" class="pd" x="476" y="326" width="100" height="300"/>
+        <use href="#b-short" class="pi" x="120" y="150" width="190" height="570"/>
+        <g class="prop"><use href="#p-shield" x="318" y="96" width="210" height="252"/></g>
+        <use href="#heart" class="hz h1" x="70" y="268" width="26" height="26"/>
+        <use href="#heart" class="hz h2" x="548" y="244" width="28" height="28"/>
+        <use href="#heart" class="hz h3" x="262" y="104" width="22" height="22"/>
+      </svg>
+    </div>
+  </div>
+</section>
 
-<section aria-labelledby="collect">
-  <div class="wrap side"><div class="side-h"><h2 id="collect">Information we collect</h2></div><div class="side-b"><p>To administer Pioneer registration, II collects your creator name, private email, country, selected charity and pledge date, the social profiles you list, your public-display choice and per-account approvals, optional communication and collaboration choices, and email-verification status. We also record the date and version of the choices you agreed to. II does not request income amounts or proof of giving.</p>
+<section class="m-sec m-sky m-short" aria-label="In short">
+  <div class="wrap">
+    <ul class="m-checks wide">
+      <li><span><b>We never publish your email.</b> Only a verified, publicly opted-in Pioneer and the profiles they approve can appear in public listings.</span></li>
+      <li><span><b>You decide what’s public.</b> Anonymous Pioneers are counted in totals but never identified.</span></li>
+      <li><span><b>Optional emails are always your choice.</b> News and collaboration invitations are separate, unchecked opt-ins you can withdraw at any time.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="m-sec">
+  <div class="wrap m-privgrid">
+    <nav class="m-privnav" aria-label="On this page">
+      <ul class="m-toc">
+          <li><a href="#collect">Information we collect</a></li>
+          <li><a href="#public">What may be public</a></li>
+          <li><a href="#private">Private information and communications</a></li>
+          <li><a href="#handling">Corrections, withdrawal and data handling</a></li>
+          <li><a href="#q">Questions</a></li>
+          </ul>
+    </nav>
+    <div class="m-privbody">
+      <section class="m-priv" id="collect" aria-labelledby="collect-h">
+        <h2 id="collect-h">Information we collect</h2>
+        <p>To administer Pioneer registration, II collects your creator name, private email, country, selected charity and pledge date, the social profiles you list, your public-display choice and per-account approvals, optional communication and collaboration choices, and email-verification status. We also record the date and version of the choices you agreed to. II does not request income amounts or proof of giving.</p>
     <p>To limit abuse, the registration service briefly keeps a one-way (hashed) form of your network address to rate-limit requests. It is not used to identify you and is deleted automatically after a short period.</p>
-  </div></div>
-</section>
-<section class="band" aria-labelledby="public">
-  <div class="wrap side"><div class="side-h"><h2 id="public">What may be public</h2></div><div class="side-b"><p>You control public recognition. Only a verified, publicly opted-in Pioneer, and only the social profiles that Pioneer explicitly approved, may appear in public listings. Anonymous records contribute only to privacy-safe aggregate totals; breakdowns small enough to point to an individual are suppressed. Your email address, country, collaboration responses and verification details are never displayed.</p>
+      </section>
+      <section class="m-priv" id="public" aria-labelledby="public-h">
+        <h2 id="public-h">What may be public</h2>
+        <p>You control public recognition. Only a verified, publicly opted-in Pioneer, and only the social profiles that Pioneer explicitly approved, may appear in public listings. Anonymous records contribute only to privacy-safe aggregate totals; breakdowns small enough to point to an individual are suppressed. Your email address, country, collaboration responses and verification details are never displayed.</p>
     <p>A downloaded certificate shows your creator name only if you chose public recognition; otherwise it reads “Anonymous Pioneer”.</p>
-  </div></div>
-</section>
-<section aria-labelledby="private">
-  <div class="wrap side"><div class="side-h"><h2 id="private">Private information and communications</h2></div><div class="side-b"><p>We send the essential registration and email-verification messages needed to administer your pledge. Verification only confirms you control the inbox; it is not consent to marketing. Optional news emails and collaboration invitations each require their own unchecked opt-in, may be withdrawn at any time, and every optional message includes an unsubscribe link. Answering “Maybe” or “Yes” to collaboration does not by itself allow us to email you.</p>
-  </div></div>
-</section>
-<section class="band" aria-labelledby="handling">
-  <div class="wrap side"><div class="side-h"><h2 id="handling">Corrections, withdrawal and data handling</h2></div><div class="side-b"><p>Request correction, removal, or consent withdrawal through <a href="mailto:{{email}}">{{email}}</a>. Registration records are held in a Cloudflare D1 database that is encrypted at rest by the provider and accessed over TLS; only the registration service and authorized II administrators can read private records. This is provider-managed encryption, not end-to-end encryption.</p>
+      </section>
+      <section class="m-priv" id="private" aria-labelledby="private-h">
+        <h2 id="private-h">Private information and communications</h2>
+        <p>We send the essential registration and email-verification messages needed to administer your pledge. Verification only confirms you control the inbox; it is not consent to marketing. Optional news emails and collaboration invitations each require their own unchecked opt-in, may be withdrawn at any time, and every optional message includes an unsubscribe link. Answering “Maybe” or “Yes” to collaboration does not by itself allow us to email you.</p>
+      </section>
+      <section class="m-priv" id="handling" aria-labelledby="handling-h">
+        <h2 id="handling-h">Corrections, withdrawal and data handling</h2>
+        <p>Request correction, removal, or consent withdrawal through <a href="mailto:{{email}}">{{email}}</a>. Registration records are held in a Cloudflare D1 database that is encrypted at rest by the provider and accessed over TLS; only the registration service and authorized II administrators can read private records. This is provider-managed encryption, not end-to-end encryption.</p>
     <p>Verification emails are sent through a transactional email provider that II configures for its own domain. This site sets no advertising or analytics cookies. Donations are handled entirely by Zeffy on its own site under its own privacy policy.</p>
     <p class="fine">Retention period and the final named email provider will be confirmed here before public launch.</p>
-  </div></div>
-</section>
-<section aria-labelledby="q">
-  <div class="wrap side"><div class="side-h"><h2 id="q">Questions</h2></div><div class="side-b"><p>Contact: <a href="mailto:{{email}}">{{email}}</a></p>
-  </div></div>
+      </section>
+      <section class="m-priv" id="q" aria-labelledby="q-h">
+        <h2 id="q-h">Questions</h2>
+        <p>Contact: <a href="mailto:{{email}}">{{email}}</a></p>
+      </section>
+      </div>
+  </div>
 </section>

@@ -45,7 +45,7 @@ for (const [label, vp] of Object.entries(SIZES)) {
   // 3. Donate: Zeffy active, PayPal absent, notice shown verbatim.
   await page.goto(BASE + '/donate/');
   const donate = await page.evaluate(() => ({ z: [...document.querySelectorAll('a')].filter((a) => a.href.includes('zeffy.com')).map((a) => a.href), paypal: /paypal/i.test(document.body.innerText), text: document.body.innerText }));
-  ok(donate.z.length === 1 && donate.z[0] === 'https://www.zeffy.com/en-US/donation-form/support-influencers-involved', `${label} donate: Zeffy link exact`);
+  ok(donate.z.length >= 1 && donate.z.every((u) => u === 'https://www.zeffy.com/en-US/donation-form/support-influencers-involved'), `${label} donate: ${donate.z.length} prominent Zeffy button(s), all exact`);
   ok(!donate.paypal && donate.text.includes('We have not yet established a separate international donation method. Please check back for updates.'), `${label} donate: no PayPal; approved international notice shown`);
 
   // 4. Full registration flow (desktop only for the writes; mobile validates UX).
