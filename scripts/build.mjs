@@ -1,5 +1,5 @@
 // Renders src/ page fragments into the static site/ directory. No dependencies.
-import { readFileSync, writeFileSync, mkdirSync, readdirSync, copyFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, copyFileSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -101,12 +101,15 @@ for (const f of readdirSync(join(src, 'pages')).filter((n) => n.endsWith('.html'
 writeFileSync(join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemap.map((p) => `  <url><loc>${config.domain}${p}</loc><lastmod>${dateStr}</lastmod></url>`).join('\n')}\n</urlset>\n`);
 writeFileSync(join(out, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${config.domain}/sitemap.xml\n`);
 
-// Static files (css/js) and shared data used by the browser.
+// Static files (css/js/fonts) copied recursively into site/assets.
 const staticDir = join(src, 'static');
-for (const n of readdirSync(staticDir)) {
-  mkdirSync(join(out, 'assets'), { recursive: true });
-  copyFileSync(join(staticDir, n), join(out, 'assets', n));
-}
+(function copyDir(from, to) {
+  mkdirSync(to, { recursive: true });
+  for (const n of readdirSync(from)) {
+    const f = join(from, n);
+    statSync(f).isDirectory() ? copyDir(f, join(to, n)) : copyFileSync(f, join(to, n));
+  }
+})(staticDir, join(out, 'assets'));
 // Runtime config for the browser: only public values.
 writeFileSync(join(out, 'assets', 'site-config.js'), `window.II_CONFIG=${JSON.stringify({ apiBase: config.apiBase, email: config.email, platforms: config.platforms })};\n`);
 // Security headers (honored by Cloudflare Workers assets/Pages). GitHub Pages ignores this file.

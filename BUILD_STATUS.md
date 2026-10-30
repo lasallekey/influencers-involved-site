@@ -8,6 +8,11 @@ Branch: `claude/happy-brown-0ytqwr` (rebuild; `main` untouched). Legacy root fil
 - Pledge form (repeatable accounts, separate unchecked consents), canvas certificate (anonymous-safe), registry display.
 - Docs: `docs/OPERATIONS.md`, admin recipes `worker/admin-queries.sql`, desktop/mobile screenshots in `docs/screenshots/`.
 
+## Design pass 2 (visual redesign)
+- UI UX Pro Max installed project-level (`.claude/skills/ui-ux-pro-max/`, CLI 2.15.0, offline template install; package reviewed first: no install hooks, no network on this path, nothing global). Used as a checklist only; its auto-recommended "Liquid Glass / black-gold" style was rejected as off-brand.
+- New system: Newsreader (display) + Source Sans 3 (text), both self-hosted (OFL, ~150 KB, no third-party requests); deep-navy/paper palette from the logos; pillar-capital and ripple motifs drawn in CSS; editorial two-column sections; solid sticky header with "Become a Pioneer" CTA (not an extra nav destination); navy footer.
+- Homepage recomposed: poster hero, manifesto band, three-step journey, sample certificate (labelled "Sample layout"), "two pillars" paths, closing call. Same approved copy, seven-page structure and functionality.
+
 ## Tested
 - `npm test` — 25 passing: registration/rollback/idempotency/duplicate email, consents (Maybe ≠ opt-in), anonymous handling, URL/date/country validation, rate limit, origin checks, token replay/expiry/malformed, email-provider failure ≠ failed pledge, resend throttle, unsubscribe, public-listing privacy, aggregate suppression, static site checks.
 - `node scripts/e2e.mjs` (Playwright against `npm run dev`) — all pass on desktop 1366 and mobile 390: page loads, no overflow, nav, mobile menu by keyboard, Zeffy/PayPal/notice, form validation, full registration → certificate download → emailed link → verify → replay rejected → public listing shows only approved profile, no console errors.

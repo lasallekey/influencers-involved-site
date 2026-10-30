@@ -17,6 +17,7 @@
 <meta property="og:url" content="https://influencersinvolved.org/challenge/">
 <meta property="og:image" content="https://influencersinvolved.org/assets/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="/assets/fonts/newsreader-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site.css">
 
 <script src="/assets/site-config.js"></script>
@@ -27,10 +28,11 @@
 <header class="site-header">
   <div class="wrap bar">
     <a class="brand" href="/" aria-label="Influencers Involved — home"><img src="/assets/logo-horizontal.webp" width="900" height="211" alt="Influencers Involved"></a>
-    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav"><span class="menu-label">Menu</span><span class="menu-icon" aria-hidden="true"></span></button>
     <nav id="site-nav" class="site-nav" aria-label="Main">
       <ul><li><a href="/">Home</a></li><li><a href="/challenge/" aria-current="page">1% Challenge</a></li><li><a href="/about/">About</a></li><li><a href="/transparency/">Transparency</a></li><li><a href="/donate/">Donate</a></li><li><a href="/contact/">Contact</a></li><li><a href="/privacy/">Privacy</a></li></ul>
     </nav>
+    <a class="btn header-cta" href="/challenge/#join">Become a Pioneer</a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav"><span class="menu-label">Menu</span><span class="menu-icon" aria-hidden="true"></span></button>
   </div>
 </header>
 <main id="main" tabindex="-1">
@@ -40,7 +42,7 @@
 <div class="page-head">
   <div class="wrap">
     <p class="eyebrow">Program overview</p>
-    <h1>The 1% Influence Challenge</h1>
+    <h1>The <em>1%</em> Influence Challenge</h1>
     <p class="lede">A simple pledge. A charity you choose. A ripple effect you create. Join other creators in making charitable giving visible by pledging 1% of your creator income to a cause that matters to you.</p>
     <div class="cta-row">
       <a class="btn" href="#join">Become a Pioneer</a>
@@ -55,9 +57,9 @@
     <p class="eyebrow">The Pioneer stage, in order</p>
     <h2 id="stage">Pledge, join, get recognized.</h2>
     <ol class="steps">
-      <li><div><h3>Pledge</h3><p>Choose a charity and pledge 1% of your creator income. You decide the amount calculation and when to give; II does not ask for your income or payment details.</p></div></li>
-      <li><div><h3>Join</h3><p>Enter your details and social accounts, select a public display preference, and submit.</p></div></li>
-      <li><div><h3>Get recognized</h3><p>After successful registration, receive your Pioneer ID and an optional pledge certificate.</p></div></li>
+      <li><span class="n" aria-hidden="true">1</span><h3>Pledge</h3><p>Choose a charity and pledge 1% of your creator income. You decide the amount calculation and when to give; II does not ask for your income or payment details.</p></li>
+      <li><span class="n" aria-hidden="true">2</span><h3>Join</h3><p>Enter your details and social accounts, select a public display preference, and submit.</p></li>
+      <li><span class="n" aria-hidden="true">3</span><h3>Get recognized</h3><p>After successful registration, receive your Pioneer ID and an optional pledge certificate.</p></li>
     </ol>
   </div>
 </section>
@@ -74,11 +76,8 @@
 </section>
 
 <section aria-labelledby="trust">
-  <div class="wrap narrow">
-    <p class="eyebrow">Privacy and trust</p>
-    <h2 id="trust">A pledge, not a payment.</h2>
-    <p>Pioneer recognition is based on a pledge, not donation verification. You choose whether to appear publicly; anonymous Pioneers are counted but never identified. We may ask you to verify your email to protect the registry; verification does not delay your pledge certificate. Read the <a href="/privacy/">privacy notice</a> or <a href="/transparency/">how giving works</a>.</p>
-  </div>
+  <div class="wrap side"><div class="side-h"><p class="eyebrow">Privacy and trust</p><h2 id="trust">A pledge, not a payment.</h2></div><div class="side-b"><p>Pioneer recognition is based on a pledge, not donation verification. You choose whether to appear publicly; anonymous Pioneers are counted but never identified. We may ask you to verify your email to protect the registry; verification does not delay your pledge certificate. Read the <a href="/privacy/">privacy notice</a> or <a href="/transparency/">how giving works</a>.</p>
+  </div></div>
 </section>
 
 <section class="band-blue" id="pioneers" aria-labelledby="reg" hidden>
@@ -193,9 +192,10 @@
 
 </main>
 <footer class="site-footer">
+  <div class="wrap foot-top"><p>Make <em>1%</em> of your influence count.</p></div>
   <div class="wrap foot-grid">
     <div class="foot-id">
-      <img class="foot-logo" src="/assets/logo-vertical.webp" width="600" height="512" alt="Influencers Involved" loading="lazy">
+      <img class="foot-logo" src="/assets/logo-vertical.webp" width="600" height="512" alt="Influencers Involved">
     </div>
     <div class="foot-org">
       <p class="foot-name">Influencers Involved, Inc. NFP</p>
