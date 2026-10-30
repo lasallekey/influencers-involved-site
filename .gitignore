@@ -1,0 +1,10 @@
+# Never commit secrets, local database state or generated artifacts
+.env
+.env.*
+.dev.vars
+.dev.vars.*
+*.sqlite
+*.sqlite3
+.wrangler/
+node_modules/
+.DS_Store
