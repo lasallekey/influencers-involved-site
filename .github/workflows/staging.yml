@@ -1,7 +1,11 @@
 name: Deploy staging
-# Manual only. Deploys a fresh, separate staging Worker + D1 database on Cloudflare's free tier and runs a smoke test.
-# One-time setup (repository Settings → Secrets and variables → Actions) is described in docs/STAGING.md.
+# Deploys a fresh, separate staging Worker + D1 database on Cloudflare's free tier and runs a smoke test.
+# Runs on every push to the PR branch (staging only; never touches production) and on demand.
+# Until the two Cloudflare secrets exist the job skips itself with a notice. Setup: docs/STAGING.md.
+# (GitHub only shows the manual "Run workflow" button for workflows on the default branch, hence the push trigger.)
 on:
+  push:
+    branches: [claude/happy-brown-0ytqwr]
   workflow_dispatch:
 concurrency:
   group: staging
@@ -21,26 +25,37 @@ jobs:
       CI: "1"
     steps:
       - name: Check configuration
+        id: cfg
         run: |
           if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
-            echo "::error::Missing repository secrets CLOUDFLARE_API_TOKEN and/or CLOUDFLARE_ACCOUNT_ID. See docs/STAGING.md, step 2."
-            exit 1
+            echo "::notice title=Staging not configured yet::Add repository secrets CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID (docs/STAGING.md, steps 1-3), then re-run this workflow."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
           fi
       - uses: actions/checkout@v4
+        if: steps.cfg.outputs.ready == 'true'
       - uses: actions/setup-node@v4
+        if: steps.cfg.outputs.ready == 'true'
         with:
           node-version: 22
           cache: npm
       - run: npm ci
+        if: steps.cfg.outputs.ready == 'true'
       - name: Tests
+        if: steps.cfg.outputs.ready == 'true'
         run: npm test
       - name: Build staging site (banner + noindex)
+        if: steps.cfg.outputs.ready == 'true'
         run: STAGING=1 npm run build
       - name: Create the staging database if needed
+        if: steps.cfg.outputs.ready == 'true'
         run: node scripts/staging-provision.mjs
       - name: Apply database migrations
+        if: steps.cfg.outputs.ready == 'true'
         run: npx wrangler d1 migrations apply ii-pioneer-registry-staging --remote --env staging --config worker/wrangler.toml
       - name: Deploy Worker and site
+        if: steps.cfg.outputs.ready == 'true'
         id: deploy
         run: |
           ARGS=()
@@ -50,6 +65,7 @@ jobs:
           if [ -z "$URL" ]; then echo "::error::Could not find the deployed URL. If the log mentions a workers.dev subdomain, open Cloudflare → Workers & Pages once to choose it (docs/STAGING.md)."; exit 1; fi
           echo "url=$URL" >> "$GITHUB_OUTPUT"
       - name: Set Worker secrets
+        if: steps.cfg.outputs.ready == 'true'
         run: |
           NAMES=$(npx wrangler secret list --env staging --config worker/wrangler.toml --format json || echo "[]")
           if ! echo "$NAMES" | grep -q '"TOKEN_SECRET"'; then
@@ -59,8 +75,10 @@ jobs:
             printf '%s' "$EMAIL_API_KEY" | npx wrangler secret put EMAIL_API_KEY --env staging --config worker/wrangler.toml
           fi
       - name: Smoke test
+        if: steps.cfg.outputs.ready == 'true'
         run: node scripts/smoke-staging.mjs "${{ steps.deploy.outputs.url }}"
       - name: Summary
+        if: steps.cfg.outputs.ready == 'true'
         run: |
           {
             echo "### Staging is live"
