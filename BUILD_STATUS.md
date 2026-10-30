@@ -12,12 +12,12 @@ Updated: 2026-10-30
 ## Validation status
 - Static construction checks completed for six standalone page HTML resources and the Challenge form.
 - Approved logo PNG raw blobs copied from shared Drive; SHA-backed in Git repository.
-- Node tests have been authored but NOT YET EXECUTED in this session.
+- GitHub Actions smoke tests now PASS: 8/8 (run 41130950792). These cover static page structure and pure input validation, not deployed D1 or email.
 - No real D1 transaction, email delivery, live accessibility or screenshot QA executed.
 - This is a code-review milestone, not a live website or functioning registry.
 
 ## Outstanding (required before public launch)
-1. Run `npm test`; inspect desktop/mobile visuals and correct meaningful issues.
+1. Smoke checks pass in GitHub Actions; still inspect desktop/mobile visuals and correct meaningful issues.
 2. Configure a brand-new Cloudflare D1 database and staging Worker, after owner authorizes access. Do not connect old Apps Script.
 3. Test registration, duplicate/idempotency, permission handling, anonymous counts, verification, consent, rate limiting with synthetic records.
 4. Confirm verified organizational sending domain, actual emails and unsubscribe/withdrawal processes; add anti-abuse controls as needed.
@@ -26,4 +26,4 @@ Updated: 2026-10-30
 7. Obtain owner approval before production DNS change, `main` merge or cutover.
 
 ## Next action
-Run smoke tests in the cloud development environment, review main pages at 375px and desktop widths, verify frontend/backend staging integration with a fresh D1 and sender, then prepare pull request review. Keep this status file concise, updating only at meaningful milestones.
+Review main pages at 375px and desktop widths, verify frontend/backend staging integration with a fresh D1 and sender, then prepare pull request review. Keep this status file concise, updating only at meaningful milestones.
