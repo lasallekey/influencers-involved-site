@@ -18,7 +18,7 @@ test('Approved brand assets are present',()=>{
 });
 test('Creator giving and II donation flows stay separate',()=>{
   const home=readFileSync('index.html','utf8'),donate=readFileSync('donate/index.html','utf8');
-  assert.match(home,/donate directly to that charity/i);
+  assert.match(home,/give directly to that charity/i);
   assert.match(donate,/www\.zeffy\.com\/en-US\/donation-form\/support-influencers-involved/);
   assert.match(donate,/separate international donation method/);
   assert.doesNotMatch(donate,/Donate with PayPal/);
