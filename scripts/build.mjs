@@ -78,6 +78,7 @@ for (const f of readdirSync(join(src, 'pages')).filter((n) => n.endsWith('.html'
     canonical: config.domain + path,
     path,
     pageClass: meta.class || '',
+    headExtra: [meta.preload ? `<link rel="preload" href="${meta.preload}" as="font" type="font/woff2" crossorigin>` : '', meta.css ? `<link rel="stylesheet" href="/assets/${meta.css}">` : ''].filter(Boolean).join('\n'),
     nav,
     footNav,
     schemaTag: path === '/' ? `<script type="application/ld+json">${JSON.stringify(JSON.parse(render(readFileSync(join(src, 'schema.json'), 'utf8'))))}</script>` : '',
@@ -95,7 +96,7 @@ for (const f of readdirSync(join(src, 'pages')).filter((n) => n.endsWith('.html'
   const { meta, body } = parsePage(join(src, 'pages-extra', '404.html'));
   const nav = NAV.map(([href, label]) => `<li><a href="${href}">${label}</a></li>`).join('');
   const footNav = NAV.map(([href, label]) => `<a href="${href}">${label}</a>`).join('');
-  writeFileSync(join(out, '404.html'), render(layout, { title: esc(meta.title), description: esc(meta.description), canonical: config.domain + '/', path: '/404', pageClass: 'page-404', nav, footNav, schemaTag: '', main: render(body), robots: 'noindex' }));
+  writeFileSync(join(out, '404.html'), render(layout, { title: esc(meta.title), description: esc(meta.description), canonical: config.domain + '/', path: '/404', pageClass: 'page-404', headExtra: '', nav, footNav, schemaTag: '', main: render(body), robots: 'noindex' }));
 }
 
 writeFileSync(join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemap.map((p) => `  <url><loc>${config.domain}${p}</loc><lastmod>${dateStr}</lastmod></url>`).join('\n')}\n</urlset>\n`);
