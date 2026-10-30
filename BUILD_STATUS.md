@@ -13,11 +13,12 @@ Branch: `claude/happy-brown-0ytqwr` (rebuild; `main` untouched), pushed; draft P
 - New system: Newsreader (display) + Source Sans 3 (text), both self-hosted (OFL, ~150 KB, no third-party requests); deep-navy/paper palette from the logos; pillar-capital and ripple motifs drawn in CSS; editorial two-column sections; solid sticky header with "Become a Pioneer" CTA (not an extra nav destination); navy footer.
 - Homepage recomposed: poster hero, manifesto band, three-step journey, sample certificate (labelled "Sample layout"), "two pillars" paths, closing call. Same approved copy, seven-page structure and functionality.
 
-## Homepage design proposal (awaiting owner review — homepage only)
-- Direction "the feed": the pledge is a post and its ripple is the audience. Blue hero with an illustrated pledge post and fanned creator posts; ripple diagrams for the three steps; a story-format sample certificate; a leaf-green band stating that the 1% never passes through II; two full-bleed paths.
-- Built with guidance from Anthropic's Frontend Design skill (read from its public SKILL.md, not installed): start from the subject's world, avoid stat-hero/eyebrow/accent-word/card-grid defaults, one orchestrated motion moment (hero entrance; respects reduced motion).
-- Scoped to the homepage: `src/pages/home.html` + `src/static/home.css` (loaded only there) + self-hosted Bricolage Grotesque. The other six pages and the backend are unchanged (pixel-compared). The shared footer tagline still uses the earlier serif until the direction is approved.
-- Screenshots: `docs/screenshots/homepage-proposal/` (desktop, tablet, mobile; hero + full page).
+## Human-centered refinement (homepage only — awaiting owner review)
+- Audit vs the owner's addendum found five issues (no people; headline as a rule not an invitation; only two audiences served; too much explanation; trust/donation distinction scattered). All five addressed on the homepage.
+- Homepage now: illustrated hero ("Turn your influence into impact."), three illustrated steps, "Find your place" (creators → registration; companies and charities → Contact; donors → Donate), a compact trust strip, and one closing invitation. Original diverse-people illustrations; no photos, quotes, partners or statistics.
+- The four reference sites were unreachable from the cloud session (network allowlist), so the research summary rests on the addendum. Stated in `docs/CREATIVE_DIRECTION.md`, which is the concise version-controlled direction for future sessions (voice, honesty rules, visual identity, asset licenses).
+- Other six pages and the backend are unchanged. Next after approval: harmonize those six pages and the shared footer tagline.
+- Screenshots: `docs/screenshots/homepage-refinement/`.
 
 ## Tested
 - `npm test` — 25 passing: registration/rollback/idempotency/duplicate email, consents (Maybe ≠ opt-in), anonymous handling, URL/date/country validation, rate limit, origin checks, token replay/expiry/malformed, email-provider failure ≠ failed pledge, resend throttle, unsubscribe, public-listing privacy, aggregate suppression, static site checks.
@@ -31,4 +32,4 @@ Branch: `claude/happy-brown-0ytqwr` (rebuild; `main` untouched), pushed; draft P
 - Production DNS/Pages cutover and merge to `main` require owner approval.
 
 ## Next
-- Owner review of the homepage design proposal, then apply the chosen direction to the other six pages; deploy staging once Cloudflare access exists; run the email deliverability test; final design pass on the live preview.
+- Owner review of the refined homepage, then harmonize the other six pages and the shared footer tagline; deploy staging once Cloudflare access exists; run the email deliverability test; final design pass on the live preview.
