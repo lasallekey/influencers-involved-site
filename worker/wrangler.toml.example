@@ -1,0 +1,15 @@
+name = "ii-pioneer-registry-staging"
+main = "src/index.js"
+compatibility_date = "2026-10-30"
+workers_dev = true
+
+# Bind only a FRESH D1 database; do not connect the old Apps Script registry.
+[[d1_databases]]
+binding = "DB"
+database_name = "ii-pioneers-staging"
+database_id = "REPLACE_WITH_NEW_D1_DATABASE_UUID"
+
+# Non-secret configuration. Do not put API keys or emails of account owners here.
+[vars]
+STAGING_ALLOWED_ORIGIN = "https://STAGING_FRONTEND_ORIGIN.example"
+EMAIL_FROM = "Influencers Involved <grants@influencersinvolved.org>"
