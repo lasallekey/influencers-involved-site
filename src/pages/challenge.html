@@ -1,0 +1,161 @@
+title: The 1% Influence Challenge | Influencers Involved
+description: Pledge 1% of your creator income to a charity you choose and join the Pioneer Registry. Free to join; no donation, income figure or receipt required.
+path: /challenge/
+class: page-challenge
+---
+<div id="verify-banner" class="banner" hidden><div class="wrap"><p id="verify-msg" role="status"></p></div></div>
+
+<div id="challenge-intro">
+<div class="page-head">
+  <div class="wrap">
+    <p class="eyebrow">Program overview</p>
+    <h1>The 1% Influence Challenge</h1>
+    <p class="lede">A simple pledge. A charity you choose. A ripple effect you create. Join other creators in making charitable giving visible by pledging 1% of your creator income to a cause that matters to you.</p>
+    <div class="cta-row">
+      <a class="btn" href="#join">Become a Pioneer</a>
+      <a class="text-link" href="#pioneers">See Pioneer recognition</a>
+      <span class="fine">No donation is required to register.</span>
+    </div>
+  </div>
+</div>
+
+<section aria-labelledby="stage">
+  <div class="wrap">
+    <p class="eyebrow">The Pioneer stage, in order</p>
+    <h2 id="stage">Pledge, join, get recognized.</h2>
+    <ol class="steps">
+      <li><div><h3>Pledge</h3><p>Choose a charity and pledge 1% of your creator income. You decide the amount calculation and when to give; II does not ask for your income or payment details.</p></div></li>
+      <li><div><h3>Join</h3><p>Enter your details and social accounts, select a public display preference, and submit.</p></div></li>
+      <li><div><h3>Get recognized</h3><p>After successful registration, receive your Pioneer ID and an optional pledge certificate.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<section class="band" aria-labelledby="after">
+  <div class="wrap">
+    <p class="eyebrow">After you join</p>
+    <h2 id="after">Two independent actions.</h2>
+    <div class="split">
+      <div><h3>Give directly</h3><p>Donate to your chosen charity through its own giving channel. II does not process or redistribute the 1% pledge. Proof is not required for Pioneer status.</p></div>
+      <div><h3>Share &amp; invite</h3><p>Create a post in your own voice, share your pledge or certificate if you wish, and encourage fellow creators to participate.</p></div>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="trust">
+  <div class="wrap narrow">
+    <p class="eyebrow">Privacy and trust</p>
+    <h2 id="trust">A pledge, not a payment.</h2>
+    <p>Pioneer recognition is based on a pledge, not donation verification. You choose whether to appear publicly; anonymous Pioneers are counted but never identified. We may ask you to verify your email to protect the registry; verification does not delay your pledge certificate. Read the <a href="/privacy/">privacy notice</a> or <a href="/transparency/">how giving works</a>.</p>
+  </div>
+</section>
+
+<section class="band-blue" id="pioneers" aria-labelledby="reg" hidden>
+  <div class="wrap">
+    <p class="eyebrow">Pioneer Registry</p>
+    <h2 id="reg">Pioneers so far</h2>
+    <ul class="stats" id="stats"></ul>
+    <p class="fine" id="stats-note">One person with five social accounts counts as one Pioneer and five accounts.</p>
+    <div id="profiles-wrap" hidden>
+      <h3>Pioneers who chose to be listed</h3>
+      <ul class="profiles" id="profiles"></ul>
+    </div>
+  </div>
+</section>
+</div>
+
+<section class="join-wrap" id="join" aria-labelledby="join-h">
+  <div class="wrap">
+  <div id="join-area">
+    <p class="eyebrow">Join</p>
+    <h2 id="join-h">Become a Pioneer</h2>
+    <p class="lede">Pledge 1% and join the Pioneer Registry. Free to join; no income figure, donation, or receipt required. <span class="req">*</span> means required.</p>
+
+    <div id="form-error" class="form-error" role="alert" hidden><p id="form-error-msg"></p></div>
+
+    <form class="pledge" id="pledge-form" novalidate autocomplete="on">
+      <fieldset>
+        <legend><small>Step 1</small>Your pledge</legend>
+        <div class="row two">
+          <div class="field"><label for="creator_name">Creator or channel name <span class="req">*</span></label><input type="text" id="creator_name" name="creator_name" maxlength="120" autocomplete="name" required aria-describedby="creator_name-e"><p class="err" id="creator_name-e"></p></div>
+          <div class="field"><label for="email">Private email <span class="req">*</span></label><input type="email" id="email" name="email" maxlength="254" autocomplete="email" inputmode="email" placeholder="name@example.com" required aria-describedby="email-h email-e"><p class="hint" id="email-h">Never shown publicly.</p><p class="err" id="email-e"></p></div>
+        </div>
+        <div class="row two">
+          <div class="field"><label for="country">Country <span class="req">*</span></label><select id="country" name="country" autocomplete="country" required aria-describedby="country-e">{{countryOptions}}</select><p class="err" id="country-e"></p></div>
+          <div class="field"><label for="pledge_date">Pledge date <span class="req">*</span></label><input type="date" id="pledge_date" name="pledge_date" required aria-describedby="pledge_date-e"><p class="err" id="pledge_date-e"></p></div>
+        </div>
+        <div class="field"><label for="charity_select">Which charity will you support? <span class="req">*</span></label>
+          <select id="charity_select" name="charity_select" required aria-describedby="charity-h charity_select-e"><option value="">Choose a charity…</option>{{charityOptions}}</select>
+          <p class="hint" id="charity-h">Examples only; listing a charity does not imply vetting or endorsement.</p><p class="err" id="charity_select-e"></p></div>
+        <div class="field" id="charity-other-field" hidden><label for="charity_other">Charity name <span class="req">*</span></label><input type="text" id="charity_other" name="charity_other" maxlength="160" aria-describedby="charity_other-e"><p class="err" id="charity_other-e"></p></div>
+        <div class="check"><input type="checkbox" id="pledge_confirm" name="pledge_confirm" aria-describedby="pledge_confirm-e"><label for="pledge_confirm">I pledge 1% of my creator income to my chosen charity, to give directly on a schedule I choose. This is voluntary, not a payment to II. I confirm that the social profiles I provide are mine or I am authorized to represent them. <span class="req">*</span></label></div>
+        <p class="err" id="pledge_confirm-e"></p>
+      </fieldset>
+
+      <fieldset>
+        <legend><small>Step 2</small>Your social accounts</legend>
+        <div id="accounts"></div>
+        <button type="button" class="link-btn" id="add-account">+ Add another social account</button>
+        <p class="err" id="accounts-e"></p>
+      </fieldset>
+
+      <fieldset>
+        <legend><small>Step 3</small>Your privacy and future participation</legend>
+        <div role="radiogroup" aria-labelledby="pub-l" aria-describedby="privacy_preference-e">
+          <p id="pub-l" class="qlabel">Public recognition <span class="req">*</span></p>
+          <label class="radio"><input type="radio" name="privacy_preference" value="public"><span>Display my creator name and only the social accounts I explicitly approve. <span class="hint">Listing also requires a verified email.</span></span></label>
+          <label class="radio"><input type="radio" name="privacy_preference" value="anonymous"><span>Keep me anonymous — include me in aggregate totals but display no identifying information.</span></label>
+        </div>
+        <p class="err" id="privacy_preference-e"></p>
+
+        <div class="mt-m check"><input type="checkbox" id="general_email_opt_in" name="general_email_opt_in"><label for="general_email_opt_in">Send me occasional II news and program updates. <span class="hint">(Optional; unchecked by default. Unsubscribe anytime.)</span></label></div>
+
+        <div role="radiogroup" aria-labelledby="col-l" class="mt-m">
+          <p id="col-l" class="qlabel">Would you be open to collaborating with II to create content or support a cause you care about?</p>
+          <label class="radio"><input type="radio" name="collaboration_interest" value="Yes"><span>Yes</span></label>
+          <label class="radio"><input type="radio" name="collaboration_interest" value="Maybe"><span>Maybe</span></label>
+          <label class="radio"><input type="radio" name="collaboration_interest" value="Not now" checked><span>Not now</span></label>
+        </div>
+        <div class="sub" id="collab-sub" hidden>
+          <p class="mb-xs fine">Optional — choose any that interest you:</p>
+          <label class="check"><input type="checkbox" name="collab_types" value="content"><span>Create content together</span></label>
+          <label class="check"><input type="checkbox" name="collab_types" value="fundraising"><span>Help fundraise for a charity I choose</span></label>
+          <label class="check"><input type="checkbox" name="collab_types" value="awareness"><span>Spread awareness for a cause I choose</span></label>
+          <label class="check"><input type="checkbox" id="collab_contact_opt_in" name="collab_contact_opt_in"><span>II may email me about my selected interests. <span class="hint">(Optional; unchecked.)</span></span></label>
+        </div>
+        <p class="fine">All collaboration interests and permissions remain private. No obligation. You may choose a different charity or cause later.</p>
+      </fieldset>
+
+      <fieldset>
+        <legend><small>Step 4</small>Submit</legend>
+        <div class="check"><input type="checkbox" id="cert_ack" name="cert_ack" aria-describedby="cert_ack-e"><label for="cert_ack">I understand that this certificate recognizes a pledge, not a completed donation or donation receipt. <span class="req">*</span></label></div>
+        <p class="err" id="cert_ack-e"></p>
+        <div class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+        <div class="cta-row"><button class="btn" type="submit" id="submit-btn">Submit pledge &amp; join</button></div>
+        <p class="mt-s fine">By submitting you agree that II stores this information as described in the <a href="/privacy/">privacy notice</a>.</p>
+      </fieldset>
+    </form>
+  </div>
+
+  <div id="success" class="success" hidden tabindex="-1">
+    <p class="eyebrow">Pledge saved</p>
+    <h2>You’re a Pioneer. Welcome!</h2>
+    <p class="lede">Your pledge is saved. Pioneer ID: <span class="pid" id="pid"></span></p>
+    <p id="verify-line">Check your inbox for an optional email-verification link so we can protect the registry and contact you if you opt in. Your optional Pioneer Certificate is ready now; email verification is separate and is not required to make a pledge or receive recognition.</p>
+    <canvas id="cert" class="cert-canvas" width="1600" height="1130" role="img" aria-label="Your Pioneer pledge certificate"></canvas>
+    <div class="cta-row">
+      <a class="btn" id="cert-download" href="#" download="pioneer-pledge-certificate.png">View / download certificate</a>
+      <button class="btn ghost" type="button" id="cert-print">Print certificate</button>
+    </div>
+    <p class="fine">Download it locally to share if you like. We do not offer a public lookup of registration records.</p>
+    <div class="mt-l split">
+      <div><h3>Give directly</h3><p>Visit your selected charity’s official giving channel and make your gift to it directly. II will not ask you to upload proof.</p></div>
+      <div><h3>Share &amp; invite</h3><p>Post in your own voice. Explain why you made the pledge; share your certificate if you like; invite other creators.</p></div>
+    </div>
+    <h3 class="mt-m">An optional sample — use your own voice</h3>
+    <p class="sample-post">“I joined the 1% Influence Challenge and pledged to support a charity I care about. Fellow creators: consider joining me at influencersinvolved.org.”</p>
+    <p class="fine">An optional example only. Tag II only where an official account exists.</p>
+    <div class="cta-row"><a class="text-link" href="/challenge/">Back to the Challenge</a><a class="text-link" href="/">Visit the homepage</a></div>
+  </div>
+  </div>
+</section>

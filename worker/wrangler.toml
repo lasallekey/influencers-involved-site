@@ -1,0 +1,28 @@
+# Staging/production configuration for the Pioneer Registry Worker.
+# No secrets live here. Set secrets with `wrangler secret put` (see docs/OPERATIONS.md).
+name = "ii-pioneer-registry"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+
+# One Worker serves the static site and the /api/* routes, so the site and API share an origin
+# (no CORS, no cross-site cookies). A workers.dev URL works for staging with no DNS changes.
+[assets]
+directory = "../site"
+binding = "ASSETS"
+run_worker_first = ["/api/*"]
+not_found_handling = "404-page"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "ii-pioneer-registry"
+database_id = "REPLACE_WITH_ID_FROM_wrangler_d1_create"
+migrations_dir = "migrations"
+
+[vars]
+# Public base URL of the site (used for verification redirects). Staging: your workers.dev URL.
+SITE_URL = "https://influencersinvolved.org"
+# Extra browser origins allowed to call the API (comma-separated). Empty = same-origin only.
+ALLOWED_ORIGINS = ""
+EMAIL_FROM = "Influencers Involved <grants@influencersinvolved.org>"
+EMAIL_API_URL = "https://api.resend.com/emails"
+# Secrets (not in this file): TOKEN_SECRET, EMAIL_API_KEY

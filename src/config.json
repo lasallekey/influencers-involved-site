@@ -1,0 +1,28 @@
+{
+  "domain": "https://influencersinvolved.org",
+  "legalName": "Influencers Involved, Inc. NFP",
+  "ein": "39-2242545",
+  "street": "800 W Central Rd, Suite 120",
+  "city": "Mt. Prospect, IL 60056",
+  "email": "grants@influencersinvolved.org",
+  "zeffyUrl": "https://www.zeffy.com/en-US/donation-form/support-influencers-involved",
+  "internationalNotice": "We have not yet established a separate international donation method. Please check back for updates.",
+  "apiBase": "",
+  "social": {
+    "facebook": "https://www.facebook.com/InfluencersInvolved",
+    "instagram": "https://www.instagram.com/influencersinvolved",
+    "linkedin": "https://www.linkedin.com/company/influencersinvolved",
+    "youtube": null,
+    "tiktok": null
+  },
+  "charities": [
+    "American Red Cross",
+    "St. Jude Children’s Research Hospital",
+    "Feeding America",
+    "Doctors Without Borders",
+    "UNICEF USA",
+    "World Central Kitchen",
+    "Habitat for Humanity"
+  ],
+  "platforms": ["YouTube", "Instagram", "TikTok", "Facebook", "Twitch", "LinkedIn", "X", "Other"]
+}

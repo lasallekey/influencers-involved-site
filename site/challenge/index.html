@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The 1% Influence Challenge | Influencers Involved</title>
+<meta name="description" content="Pledge 1% of your creator income to a charity you choose and join the Pioneer Registry. Free to join; no donation, income figure or receipt required.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://influencersinvolved.org/challenge/">
+<meta name="theme-color" content="#012f70">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Influencers Involved, Inc. NFP">
+<meta property="og:title" content="The 1% Influence Challenge | Influencers Involved">
+<meta property="og:description" content="Pledge 1% of your creator income to a charity you choose and join the Pioneer Registry. Free to join; no donation, income figure or receipt required.">
+<meta property="og:url" content="https://influencersinvolved.org/challenge/">
+<meta property="og:image" content="https://influencersinvolved.org/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="/assets/site.css">
+
+<script src="/assets/site-config.js"></script>
+<script src="/assets/site.js" defer></script>
+</head>
+<body class="page-challenge">
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="/" aria-label="Influencers Involved — home"><img src="/assets/logo-horizontal.webp" width="900" height="211" alt="Influencers Involved"></a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav"><span class="menu-label">Menu</span><span class="menu-icon" aria-hidden="true"></span></button>
+    <nav id="site-nav" class="site-nav" aria-label="Main">
+      <ul><li><a href="/">Home</a></li><li><a href="/challenge/" aria-current="page">1% Challenge</a></li><li><a href="/about/">About</a></li><li><a href="/transparency/">Transparency</a></li><li><a href="/donate/">Donate</a></li><li><a href="/contact/">Contact</a></li><li><a href="/privacy/">Privacy</a></li></ul>
+    </nav>
+  </div>
+</header>
+<main id="main" tabindex="-1">
+<div id="verify-banner" class="banner" hidden><div class="wrap"><p id="verify-msg" role="status"></p></div></div>
+
+<div id="challenge-intro">
+<div class="page-head">
+  <div class="wrap">
+    <p class="eyebrow">Program overview</p>
+    <h1>The 1% Influence Challenge</h1>
+    <p class="lede">A simple pledge. A charity you choose. A ripple effect you create. Join other creators in making charitable giving visible by pledging 1% of your creator income to a cause that matters to you.</p>
+    <div class="cta-row">
+      <a class="btn" href="#join">Become a Pioneer</a>
+      <a class="text-link" href="#pioneers">See Pioneer recognition</a>
+      <span class="fine">No donation is required to register.</span>
+    </div>
+  </div>
+</div>
+
+<section aria-labelledby="stage">
+  <div class="wrap">
+    <p class="eyebrow">The Pioneer stage, in order</p>
+    <h2 id="stage">Pledge, join, get recognized.</h2>
+    <ol class="steps">
+      <li><div><h3>Pledge</h3><p>Choose a charity and pledge 1% of your creator income. You decide the amount calculation and when to give; II does not ask for your income or payment details.</p></div></li>
+      <li><div><h3>Join</h3><p>Enter your details and social accounts, select a public display preference, and submit.</p></div></li>
+      <li><div><h3>Get recognized</h3><p>After successful registration, receive your Pioneer ID and an optional pledge certificate.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<section class="band" aria-labelledby="after">
+  <div class="wrap">
+    <p class="eyebrow">After you join</p>
+    <h2 id="after">Two independent actions.</h2>
+    <div class="split">
+      <div><h3>Give directly</h3><p>Donate to your chosen charity through its own giving channel. II does not process or redistribute the 1% pledge. Proof is not required for Pioneer status.</p></div>
+      <div><h3>Share &amp; invite</h3><p>Create a post in your own voice, share your pledge or certificate if you wish, and encourage fellow creators to participate.</p></div>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="trust">
+  <div class="wrap narrow">
+    <p class="eyebrow">Privacy and trust</p>
+    <h2 id="trust">A pledge, not a payment.</h2>
+    <p>Pioneer recognition is based on a pledge, not donation verification. You choose whether to appear publicly; anonymous Pioneers are counted but never identified. We may ask you to verify your email to protect the registry; verification does not delay your pledge certificate. Read the <a href="/privacy/">privacy notice</a> or <a href="/transparency/">how giving works</a>.</p>
+  </div>
+</section>
+
+<section class="band-blue" id="pioneers" aria-labelledby="reg" hidden>
+  <div class="wrap">
+    <p class="eyebrow">Pioneer Registry</p>
+    <h2 id="reg">Pioneers so far</h2>
+    <ul class="stats" id="stats"></ul>
+    <p class="fine" id="stats-note">One person with five social accounts counts as one Pioneer and five accounts.</p>
+    <div id="profiles-wrap" hidden>
+      <h3>Pioneers who chose to be listed</h3>
+      <ul class="profiles" id="profiles"></ul>
+    </div>
+  </div>
+</section>
+</div>
+
+<section class="join-wrap" id="join" aria-labelledby="join-h">
+  <div class="wrap">
+  <div id="join-area">
+    <p class="eyebrow">Join</p>
+    <h2 id="join-h">Become a Pioneer</h2>
+    <p class="lede">Pledge 1% and join the Pioneer Registry. Free to join; no income figure, donation, or receipt required. <span class="req">*</span> means required.</p>
+
+    <div id="form-error" class="form-error" role="alert" hidden><p id="form-error-msg"></p></div>
+
+    <form class="pledge" id="pledge-form" novalidate autocomplete="on">
+      <fieldset>
+        <legend><small>Step 1</small>Your pledge</legend>
+        <div class="row two">
+          <div class="field"><label for="creator_name">Creator or channel name <span class="req">*</span></label><input type="text" id="creator_name" name="creator_name" maxlength="120" autocomplete="name" required aria-describedby="creator_name-e"><p class="err" id="creator_name-e"></p></div>
+          <div class="field"><label for="email">Private email <span class="req">*</span></label><input type="email" id="email" name="email" maxlength="254" autocomplete="email" inputmode="email" placeholder="name@example.com" required aria-describedby="email-h email-e"><p class="hint" id="email-h">Never shown publicly.</p><p class="err" id="email-e"></p></div>
+        </div>
+        <div class="row two">
+          <div class="field"><label for="country">Country <span class="req">*</span></label><select id="country" name="country" autocomplete="country" required aria-describedby="country-e"><option value="AF">Afghanistan</option><option value="AX">Åland Islands</option><option value="AL">Albania</option><option value="DZ">Algeria</option><option value="AS">American Samoa</option><option value="AD">Andorra</option><option value="AO">Angola</option><option value="AI">Anguilla</option><option value="AQ">Antarctica</option><option value="AG">Antigua &amp; Barbuda</option><option value="AR">Argentina</option><option value="AM">Armenia</option><option value="AW">Aruba</option><option value="AU">Australia</option><option value="AT">Austria</option><option value="AZ">Azerbaijan</option><option value="BS">Bahamas</option><option value="BH">Bahrain</option><option value="BD">Bangladesh</option><option value="BB">Barbados</option><option value="BY">Belarus</option><option value="BE">Belgium</option><option value="BZ">Belize</option><option value="BJ">Benin</option><option value="DY">Benin</option><option value="BM">Bermuda</option><option value="BT">Bhutan</option><option value="BO">Bolivia</option><option value="BA">Bosnia &amp; Herzegovina</option><option value="BW">Botswana</option><option value="BV">Bouvet Island</option><option value="BR">Brazil</option><option value="IO">British Indian Ocean Territory</option><option value="VG">British Virgin Islands</option><option value="BN">Brunei</option><option value="BG">Bulgaria</option><option value="BF">Burkina Faso</option><option value="BI">Burundi</option><option value="KH">Cambodia</option><option value="CM">Cameroon</option><option value="CA">Canada</option><option value="CV">Cape Verde</option><option value="BQ">Caribbean Netherlands</option><option value="KY">Cayman Islands</option><option value="CF">Central African Republic</option><option value="TD">Chad</option><option value="CL">Chile</option><option value="CN">China</option><option value="CX">Christmas Island</option><option value="CC">Cocos (Keeling) Islands</option><option value="CO">Colombia</option><option value="KM">Comoros</option><option value="CG">Congo - Brazzaville</option><option value="CD">Congo - Kinshasa</option><option value="CK">Cook Islands</option><option value="CR">Costa Rica</option><option value="CI">Côte d’Ivoire</option><option value="HR">Croatia</option><option value="CU">Cuba</option><option value="CW">Curaçao</option><option value="CY">Cyprus</option><option value="CZ">Czechia</option><option value="DK">Denmark</option><option value="DJ">Djibouti</option><option value="DM">Dominica</option><option value="DO">Dominican Republic</option><option value="EC">Ecuador</option><option value="EG">Egypt</option><option value="SV">El Salvador</option><option value="GQ">Equatorial Guinea</option><option value="ER">Eritrea</option><option value="EE">Estonia</option><option value="SZ">Eswatini</option><option value="ET">Ethiopia</option><option value="FK">Falkland Islands</option><option value="FO">Faroe Islands</option><option value="FJ">Fiji</option><option value="FI">Finland</option><option value="FR">France</option><option value="GF">French Guiana</option><option value="PF">French Polynesia</option><option value="TF">French Southern Territories</option><option value="GA">Gabon</option><option value="GM">Gambia</option><option value="GE">Georgia</option><option value="DE">Germany</option><option value="GH">Ghana</option><option value="GI">Gibraltar</option><option value="GR">Greece</option><option value="GL">Greenland</option><option value="GD">Grenada</option><option value="GP">Guadeloupe</option><option value="GU">Guam</option><option value="GT">Guatemala</option><option value="GG">Guernsey</option><option value="GN">Guinea</option><option value="GW">Guinea-Bissau</option><option value="GY">Guyana</option><option value="HT">Haiti</option><option value="HM">Heard &amp; McDonald Islands</option><option value="HN">Honduras</option><option value="HK">Hong Kong SAR China</option><option value="HU">Hungary</option><option value="IS">Iceland</option><option value="IN">India</option><option value="ID">Indonesia</option><option value="IR">Iran</option><option value="IQ">Iraq</option><option value="IE">Ireland</option><option value="IM">Isle of Man</option><option value="IL">Israel</option><option value="IT">Italy</option><option value="JM">Jamaica</option><option value="JP">Japan</option><option value="JE">Jersey</option><option value="JO">Jordan</option><option value="KZ">Kazakhstan</option><option value="KE">Kenya</option><option value="KI">Kiribati</option><option value="KW">Kuwait</option><option value="KG">Kyrgyzstan</option><option value="LA">Laos</option><option value="LV">Latvia</option><option value="LB">Lebanon</option><option value="LS">Lesotho</option><option value="LR">Liberia</option><option value="LY">Libya</option><option value="LI">Liechtenstein</option><option value="LT">Lithuania</option><option value="LU">Luxembourg</option><option value="MO">Macao SAR China</option><option value="MG">Madagascar</option><option value="MW">Malawi</option><option value="MY">Malaysia</option><option value="MV">Maldives</option><option value="ML">Mali</option><option value="MT">Malta</option><option value="MH">Marshall Islands</option><option value="MQ">Martinique</option><option value="MR">Mauritania</option><option value="MU">Mauritius</option><option value="YT">Mayotte</option><option value="MX">Mexico</option><option value="FM">Micronesia</option><option value="MD">Moldova</option><option value="MC">Monaco</option><option value="MN">Mongolia</option><option value="ME">Montenegro</option><option value="MS">Montserrat</option><option value="MA">Morocco</option><option value="MZ">Mozambique</option><option value="MM">Myanmar (Burma)</option><option value="NA">Namibia</option><option value="NR">Nauru</option><option value="NP">Nepal</option><option value="NL">Netherlands</option><option value="NC">New Caledonia</option><option value="NZ">New Zealand</option><option value="NI">Nicaragua</option><option value="NE">Niger</option><option value="NG">Nigeria</option><option value="NU">Niue</option><option value="NF">Norfolk Island</option><option value="KP">North Korea</option><option value="MK">North Macedonia</option><option value="MP">Northern Mariana Islands</option><option value="NO">Norway</option><option value="OM">Oman</option><option value="PK">Pakistan</option><option value="PW">Palau</option><option value="PS">Palestinian Territories</option><option value="PA">Panama</option><option value="PG">Papua New Guinea</option><option value="PY">Paraguay</option><option value="PE">Peru</option><option value="PH">Philippines</option><option value="PN">Pitcairn Islands</option><option value="PL">Poland</option><option value="PT">Portugal</option><option value="PR">Puerto Rico</option><option value="QA">Qatar</option><option value="RE">Réunion</option><option value="RO">Romania</option><option value="RU">Russia</option><option value="RW">Rwanda</option><option value="WS">Samoa</option><option value="SM">San Marino</option><option value="ST">São Tomé &amp; Príncipe</option><option value="SA">Saudi Arabia</option><option value="SN">Senegal</option><option value="RS">Serbia</option><option value="SC">Seychelles</option><option value="SL">Sierra Leone</option><option value="SG">Singapore</option><option value="SX">Sint Maarten</option><option value="SK">Slovakia</option><option value="SI">Slovenia</option><option value="SB">Solomon Islands</option><option value="SO">Somalia</option><option value="ZA">South Africa</option><option value="GS">South Georgia &amp; South Sandwich Islands</option><option value="KR">South Korea</option><option value="SS">South Sudan</option><option value="ES">Spain</option><option value="LK">Sri Lanka</option><option value="BL">St. Barthélemy</option><option value="SH">St. Helena</option><option value="KN">St. Kitts &amp; Nevis</option><option value="LC">St. Lucia</option><option value="MF">St. Martin</option><option value="PM">St. Pierre &amp; Miquelon</option><option value="VC">St. Vincent &amp; Grenadines</option><option value="SD">Sudan</option><option value="SR">Suriname</option><option value="SJ">Svalbard &amp; Jan Mayen</option><option value="SE">Sweden</option><option value="CH">Switzerland</option><option value="SY">Syria</option><option value="TW">Taiwan</option><option value="TJ">Tajikistan</option><option value="TZ">Tanzania</option><option value="TH">Thailand</option><option value="TL">Timor-Leste</option><option value="TG">Togo</option><option value="TK">Tokelau</option><option value="TO">Tonga</option><option value="TT">Trinidad &amp; Tobago</option><option value="TN">Tunisia</option><option value="TR">Türkiye</option><option value="TM">Turkmenistan</option><option value="TC">Turks &amp; Caicos Islands</option><option value="TV">Tuvalu</option><option value="UM">U.S. Outlying Islands</option><option value="VI">U.S. Virgin Islands</option><option value="UG">Uganda</option><option value="UA">Ukraine</option><option value="AE">United Arab Emirates</option><option value="GB">United Kingdom</option><option value="UK">United Kingdom</option><option value="US" selected>United States</option><option value="UY">Uruguay</option><option value="UZ">Uzbekistan</option><option value="VU">Vanuatu</option><option value="VA">Vatican City</option><option value="VE">Venezuela</option><option value="VN">Vietnam</option><option value="WF">Wallis &amp; Futuna</option><option value="EH">Western Sahara</option><option value="YE">Yemen</option><option value="ZM">Zambia</option><option value="ZW">Zimbabwe</option></select><p class="err" id="country-e"></p></div>
+          <div class="field"><label for="pledge_date">Pledge date <span class="req">*</span></label><input type="date" id="pledge_date" name="pledge_date" required aria-describedby="pledge_date-e"><p class="err" id="pledge_date-e"></p></div>
+        </div>
+        <div class="field"><label for="charity_select">Which charity will you support? <span class="req">*</span></label>
+          <select id="charity_select" name="charity_select" required aria-describedby="charity-h charity_select-e"><option value="">Choose a charity…</option><option value="American Red Cross">American Red Cross</option><option value="St. Jude Children’s Research Hospital">St. Jude Children’s Research Hospital</option><option value="Feeding America">Feeding America</option><option value="Doctors Without Borders">Doctors Without Borders</option><option value="UNICEF USA">UNICEF USA</option><option value="World Central Kitchen">World Central Kitchen</option><option value="Habitat for Humanity">Habitat for Humanity</option><option value="__other__">Other / My charity is not listed</option></select>
+          <p class="hint" id="charity-h">Examples only; listing a charity does not imply vetting or endorsement.</p><p class="err" id="charity_select-e"></p></div>
+        <div class="field" id="charity-other-field" hidden><label for="charity_other">Charity name <span class="req">*</span></label><input type="text" id="charity_other" name="charity_other" maxlength="160" aria-describedby="charity_other-e"><p class="err" id="charity_other-e"></p></div>
+        <div class="check"><input type="checkbox" id="pledge_confirm" name="pledge_confirm" aria-describedby="pledge_confirm-e"><label for="pledge_confirm">I pledge 1% of my creator income to my chosen charity, to give directly on a schedule I choose. This is voluntary, not a payment to II. I confirm that the social profiles I provide are mine or I am authorized to represent them. <span class="req">*</span></label></div>
+        <p class="err" id="pledge_confirm-e"></p>
+      </fieldset>
+
+      <fieldset>
+        <legend><small>Step 2</small>Your social accounts</legend>
+        <div id="accounts"></div>
+        <button type="button" class="link-btn" id="add-account">+ Add another social account</button>
+        <p class="err" id="accounts-e"></p>
+      </fieldset>
+
+      <fieldset>
+        <legend><small>Step 3</small>Your privacy and future participation</legend>
+        <div role="radiogroup" aria-labelledby="pub-l" aria-describedby="privacy_preference-e">
+          <p id="pub-l" class="qlabel">Public recognition <span class="req">*</span></p>
+          <label class="radio"><input type="radio" name="privacy_preference" value="public"><span>Display my creator name and only the social accounts I explicitly approve. <span class="hint">Listing also requires a verified email.</span></span></label>
+          <label class="radio"><input type="radio" name="privacy_preference" value="anonymous"><span>Keep me anonymous — include me in aggregate totals but display no identifying information.</span></label>
+        </div>
+        <p class="err" id="privacy_preference-e"></p>
+
+        <div class="mt-m check"><input type="checkbox" id="general_email_opt_in" name="general_email_opt_in"><label for="general_email_opt_in">Send me occasional II news and program updates. <span class="hint">(Optional; unchecked by default. Unsubscribe anytime.)</span></label></div>
+
+        <div role="radiogroup" aria-labelledby="col-l" class="mt-m">
+          <p id="col-l" class="qlabel">Would you be open to collaborating with II to create content or support a cause you care about?</p>
+          <label class="radio"><input type="radio" name="collaboration_interest" value="Yes"><span>Yes</span></label>
+          <label class="radio"><input type="radio" name="collaboration_interest" value="Maybe"><span>Maybe</span></label>
+          <label class="radio"><input type="radio" name="collaboration_interest" value="Not now" checked><span>Not now</span></label>
+        </div>
+        <div class="sub" id="collab-sub" hidden>
+          <p class="mb-xs fine">Optional — choose any that interest you:</p>
+          <label class="check"><input type="checkbox" name="collab_types" value="content"><span>Create content together</span></label>
+          <label class="check"><input type="checkbox" name="collab_types" value="fundraising"><span>Help fundraise for a charity I choose</span></label>
+          <label class="check"><input type="checkbox" name="collab_types" value="awareness"><span>Spread awareness for a cause I choose</span></label>
+          <label class="check"><input type="checkbox" id="collab_contact_opt_in" name="collab_contact_opt_in"><span>II may email me about my selected interests. <span class="hint">(Optional; unchecked.)</span></span></label>
+        </div>
+        <p class="fine">All collaboration interests and permissions remain private. No obligation. You may choose a different charity or cause later.</p>
+      </fieldset>
+
+      <fieldset>
+        <legend><small>Step 4</small>Submit</legend>
+        <div class="check"><input type="checkbox" id="cert_ack" name="cert_ack" aria-describedby="cert_ack-e"><label for="cert_ack">I understand that this certificate recognizes a pledge, not a completed donation or donation receipt. <span class="req">*</span></label></div>
+        <p class="err" id="cert_ack-e"></p>
+        <div class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+        <div class="cta-row"><button class="btn" type="submit" id="submit-btn">Submit pledge &amp; join</button></div>
+        <p class="mt-s fine">By submitting you agree that II stores this information as described in the <a href="/privacy/">privacy notice</a>.</p>
+      </fieldset>
+    </form>
+  </div>
+
+  <div id="success" class="success" hidden tabindex="-1">
+    <p class="eyebrow">Pledge saved</p>
+    <h2>You’re a Pioneer. Welcome!</h2>
+    <p class="lede">Your pledge is saved. Pioneer ID: <span class="pid" id="pid"></span></p>
+    <p id="verify-line">Check your inbox for an optional email-verification link so we can protect the registry and contact you if you opt in. Your optional Pioneer Certificate is ready now; email verification is separate and is not required to make a pledge or receive recognition.</p>
+    <canvas id="cert" class="cert-canvas" width="1600" height="1130" role="img" aria-label="Your Pioneer pledge certificate"></canvas>
+    <div class="cta-row">
+      <a class="btn" id="cert-download" href="#" download="pioneer-pledge-certificate.png">View / download certificate</a>
+      <button class="btn ghost" type="button" id="cert-print">Print certificate</button>
+    </div>
+    <p class="fine">Download it locally to share if you like. We do not offer a public lookup of registration records.</p>
+    <div class="mt-l split">
+      <div><h3>Give directly</h3><p>Visit your selected charity’s official giving channel and make your gift to it directly. II will not ask you to upload proof.</p></div>
+      <div><h3>Share &amp; invite</h3><p>Post in your own voice. Explain why you made the pledge; share your certificate if you like; invite other creators.</p></div>
+    </div>
+    <h3 class="mt-m">An optional sample — use your own voice</h3>
+    <p class="sample-post">“I joined the 1% Influence Challenge and pledged to support a charity I care about. Fellow creators: consider joining me at influencersinvolved.org.”</p>
+    <p class="fine">An optional example only. Tag II only where an official account exists.</p>
+    <div class="cta-row"><a class="text-link" href="/challenge/">Back to the Challenge</a><a class="text-link" href="/">Visit the homepage</a></div>
+  </div>
+  </div>
+</section>
+
+</main>
+<footer class="site-footer">
+  <div class="wrap foot-grid">
+    <div class="foot-id">
+      <img class="foot-logo" src="/assets/logo-vertical.webp" width="600" height="512" alt="Influencers Involved" loading="lazy">
+    </div>
+    <div class="foot-org">
+      <p class="foot-name">Influencers Involved, Inc. NFP</p>
+      <p>Illinois nonprofit corporation · IRS-recognized 501(c)(3) public charity<br>EIN 39-2242545</p>
+      <p>800 W Central Rd, Suite 120<br>Mt. Prospect, IL 60056</p>
+      <p><a href="mailto:grants@influencersinvolved.org">grants@influencersinvolved.org</a></p>
+    </div>
+    <nav class="foot-nav" aria-label="Footer">
+      <div><a href="/">Home</a><a href="/challenge/">1% Challenge</a><a href="/about/">About</a><a href="/transparency/">Transparency</a><a href="/donate/">Donate</a><a href="/contact/">Contact</a><a href="/privacy/">Privacy</a></div>
+      <div class="foot-social" aria-label="Follow Influencers Involved"><a href="https://www.facebook.com/InfluencersInvolved" rel="me noopener" target="_blank">Facebook<span class="sr-only"> (opens in a new tab)</span></a><a href="https://www.instagram.com/influencersinvolved" rel="me noopener" target="_blank">Instagram<span class="sr-only"> (opens in a new tab)</span></a><a href="https://www.linkedin.com/company/influencersinvolved" rel="me noopener" target="_blank">LinkedIn<span class="sr-only"> (opens in a new tab)</span></a></div>
+    </nav>
+  </div>
+  <div class="wrap foot-base"><p>influencersinvolved.org · For inquiries: <a href="mailto:grants@influencersinvolved.org">grants@influencersinvolved.org</a></p></div>
+</footer>
+</body>
+</html>
