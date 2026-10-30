@@ -77,6 +77,9 @@ jobs:
       - name: Smoke test
         if: steps.cfg.outputs.ready == 'true'
         run: node scripts/smoke-staging.mjs "${{ steps.deploy.outputs.url }}"
+      - name: Remove smoke-test records (keeps staging counts real)
+        if: always() && steps.cfg.outputs.ready == 'true' && steps.deploy.outcome == 'success'
+        run: npx wrangler d1 execute ii-pioneer-registry-staging --remote --env staging --config worker/wrangler.toml --file worker/cleanup-smoke.sql
       - name: Summary
         if: steps.cfg.outputs.ready == 'true'
         run: |

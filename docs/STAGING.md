@@ -25,7 +25,7 @@ If you can't see Settings, the repository owner (`lasallekey`) needs to add them
 
 ## 4. Deploy
 The "Deploy staging" workflow runs by itself on every push to the PR branch (staging only). After adding the secrets, open the **Actions** tab, pick the latest **Deploy staging** run, and click **Re-run all jobs** (or just ask me to push a small update).
-After about three minutes the run summary shows your staging URL (`https://ii-pioneer-registry-staging.<subdomain>.workers.dev`). The workflow creates the database, applies the schema, deploys, and runs an automatic smoke test. Until the secrets exist, the run simply skips itself with a notice.
+After about three minutes the run summary shows your staging URL (`https://ii-pioneer-registry-staging.<subdomain>.workers.dev`). The workflow creates the database, applies the schema, deploys, runs an automatic smoke test, and then deletes the smoke test's own synthetic records so the staging registry starts clean for you. Until the secrets exist, the run simply skips itself with a notice.
 
 ## 5. Email (optional now, free)
 Without email, everything works except the verification message: pledges save and certificates download normally.
