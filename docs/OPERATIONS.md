@@ -16,19 +16,10 @@ Short and practical. Nothing here needs a server you maintain: one Cloudflare Wo
 - **YouTube / TikTok**: set `social.youtube` / `social.tiktok` to the real `https://…` URL. They appear in every footer automatically; `null` hides them.
 - PayPal: there is no PayPal button anywhere. The approved plain notice is on `/donate/`. When an international method exists, change `src/pages/donate.html`.
 
-## One-time staging setup (needs the owner's Cloudflare login — not done in this branch)
-Staging needs no DNS change: it runs at a `*.workers.dev` URL.
-```bash
-npm install
-npx wrangler login
-npx wrangler d1 create ii-pioneer-registry            # copy the database_id into worker/wrangler.toml
-npx wrangler d1 migrations apply ii-pioneer-registry --remote --config worker/wrangler.toml
-npx wrangler secret put TOKEN_SECRET --config worker/wrangler.toml     # any long random string
-npx wrangler secret put EMAIL_API_KEY --config worker/wrangler.toml    # from the email provider
-# set SITE_URL in worker/wrangler.toml to the staging URL, then:
-npm run build && npm run deploy:staging
-```
-Secrets are entered at the prompt and live only in Cloudflare. Never commit them. Without `EMAIL_API_KEY` the site still works: pledges save, certificates issue, and the success page offers a resend later.
+## Staging
+Step-by-step (no command line needed): see [`STAGING.md`](STAGING.md). In short: add two GitHub secrets, run the "Deploy staging" workflow, open the URL it prints. The workflow also runs `npm test`, builds a staging-marked site, creates a separate free D1 database, applies migrations, deploys, sets secrets and smoke-tests. CI (`.github/workflows/ci.yml`) runs the tests, rebuilds `site/` to confirm it is committed, validates the Worker config and runs the browser end-to-end on every pull request.
+
+Production later follows the same pattern with the top-level `worker/wrangler.toml` settings (separate database, real `SITE_URL`) and only after owner approval of DNS/cutover.
 
 ## Email sender (verification links)
 The Worker posts JSON to `EMAIL_API_URL` (default: a Resend-compatible API) from `EMAIL_FROM`. Before turning it on:

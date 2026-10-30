@@ -26,3 +26,32 @@ ALLOWED_ORIGINS = ""
 EMAIL_FROM = "Influencers Involved <grants@influencersinvolved.org>"
 EMAIL_API_URL = "https://api.resend.com/emails"
 # Secrets (not in this file): TOKEN_SECRET, EMAIL_API_KEY
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Staging: separate Worker + separate (fresh) D1 database, free-tier friendly.
+# The GitHub Actions workflow ".github/workflows/staging.yml" creates the database, writes its id in
+# place of the placeholder below, applies migrations, deploys, and sets secrets. SITE_URL is blank on
+# purpose: the Worker then builds verification/unsubscribe links from the URL it is served on.
+# ─────────────────────────────────────────────────────────────────────────────
+[env.staging]
+name = "ii-pioneer-registry-staging"
+workers_dev = true
+
+[env.staging.assets]
+directory = "../site"
+binding = "ASSETS"
+run_worker_first = ["/api/*"]
+not_found_handling = "404-page"
+
+[[env.staging.d1_databases]]
+binding = "DB"
+database_name = "ii-pioneer-registry-staging"
+database_id = "REPLACE_STAGING_D1_ID"
+migrations_dir = "migrations"
+
+[env.staging.vars]
+SITE_URL = ""
+ALLOWED_ORIGINS = ""
+# Resend's shared test sender works before any domain is verified, but only delivers to the account owner's own email.
+EMAIL_FROM = "Influencers Involved <onboarding@resend.dev>"
+EMAIL_API_URL = "https://api.resend.com/emails"

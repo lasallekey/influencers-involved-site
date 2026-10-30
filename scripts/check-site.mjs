@@ -42,6 +42,8 @@ for (const n of need) if (!all.includes(n)) problems.push(`missing required cont
 const bundle = [...pages, join(root, 'assets/site.js'), join(root, 'assets/site-config.js')].map((f) => readFileSync(f, 'utf8')).join('\n');
 for (const bad of [/primushomecare/i, /@gmail\.com/i, /api[_-]?key/i, /BEGIN [A-Z ]*PRIVATE KEY/, /ho@influencersinvolved/i, /inflencers/i]) if (bad.test(bundle)) problems.push(`forbidden pattern in public output: ${bad}`);
 
+if (!process.env.STAGING && /stage-banner|Staging preview/.test(all)) problems.push('staging banner present in a production build');
+
 // Seven routes, in the sitemap, no extras.
 const sm = readFileSync(join(root, 'sitemap.xml'), 'utf8');
 const locs = [...sm.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1].replace('https://influencersinvolved.org', ''));

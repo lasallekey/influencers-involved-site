@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync, mkdirSync, readdirSync, copyFileSync, stat
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+const STAGING = process.env.STAGING === '1'; // staging preview: visible banner + noindex everywhere
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const src = join(root, 'src');
 const out = join(root, 'site');
@@ -62,8 +63,8 @@ function parsePage(file) {
   return { meta, body: raw.slice(i + 5) };
 }
 
+const STAGING_BANNER = '<div class="stage-banner" role="note"><p>Staging preview: test data only. This is not the live website.</p></div>';
 const layout = readFileSync(join(src, 'layout.html'), 'utf8');
-const dateStr = new Date().toISOString().slice(0, 10);
 
 mkdirSync(out, { recursive: true });
 const sitemap = [];
@@ -83,7 +84,8 @@ for (const f of readdirSync(join(src, 'pages')).filter((n) => n.endsWith('.html'
     footNav,
     schemaTag: path === '/' ? `<script type="application/ld+json">${JSON.stringify(JSON.parse(render(readFileSync(join(src, 'schema.json'), 'utf8'))))}</script>` : '',
     main: render(body),
-    robots: meta.robots || 'index,follow',
+    robots: STAGING ? 'noindex,nofollow' : meta.robots || 'index,follow',
+    banner: STAGING ? STAGING_BANNER : '',
   });
   const dir = path === '/' ? out : join(out, path);
   mkdirSync(dir, { recursive: true });
@@ -96,11 +98,11 @@ for (const f of readdirSync(join(src, 'pages')).filter((n) => n.endsWith('.html'
   const { meta, body } = parsePage(join(src, 'pages-extra', '404.html'));
   const nav = NAV.map(([href, label]) => `<li><a href="${href}">${label}</a></li>`).join('');
   const footNav = NAV.map(([href, label]) => `<a href="${href}">${label}</a>`).join('');
-  writeFileSync(join(out, '404.html'), render(layout, { title: esc(meta.title), description: esc(meta.description), canonical: config.domain + '/', path: '/404', pageClass: 'page-404', headExtra: '', nav, footNav, schemaTag: '', main: render(body), robots: 'noindex' }));
+  writeFileSync(join(out, '404.html'), render(layout, { title: esc(meta.title), description: esc(meta.description), canonical: config.domain + '/', path: '/404', pageClass: 'page-404', headExtra: '', nav, footNav, schemaTag: '', main: render(body), robots: 'noindex', banner: STAGING ? STAGING_BANNER : '' }));
 }
 
-writeFileSync(join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemap.map((p) => `  <url><loc>${config.domain}${p}</loc><lastmod>${dateStr}</lastmod></url>`).join('\n')}\n</urlset>\n`);
-writeFileSync(join(out, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${config.domain}/sitemap.xml\n`);
+writeFileSync(join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemap.map((p) => `  <url><loc>${config.domain}${p}</loc></url>`).join('\n')}\n</urlset>\n`);
+writeFileSync(join(out, 'robots.txt'), STAGING ? 'User-agent: *\nDisallow: /\n' : `User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${config.domain}/sitemap.xml\n`);
 
 // Static files (css/js/fonts) copied recursively into site/assets.
 const staticDir = join(src, 'static');
@@ -118,10 +120,10 @@ const api = config.apiBase ? ' ' + new URL(config.apiBase).origin : '';
 writeFileSync(join(out, '_headers'), `/*
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
-  Referrer-Policy: strict-origin-when-cross-origin
+${STAGING ? '  X-Robots-Tag: noindex, nofollow\n' : ''}  Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'${api}; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none'
 /assets/*
   Cache-Control: public, max-age=86400
 `);
-console.log(`Built ${sitemap.length} pages + 404 → site/ (${socials.length} social links published)`);
+console.log(`Built ${sitemap.length} pages + 404 → site/ (${socials.length} social links published${STAGING ? ', STAGING build' : ''})`);
