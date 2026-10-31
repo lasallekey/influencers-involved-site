@@ -6,7 +6,6 @@
   "city": "Mt. Prospect, IL 60056",
   "email": "grants@influencersinvolved.org",
   "zeffyUrl": "https://www.zeffy.com/en-US/donation-form/support-influencers-involved",
-  "internationalNotice": "We have not yet established a separate international donation method. Please check back for updates.",
   "apiBase": "",
   "social": {
     "facebook": "https://www.facebook.com/InfluencersInvolved",
@@ -24,5 +23,11 @@
     "LinkedIn",
     "X",
     "Other"
-  ]
+  ],
+  "donate": {
+    "internationalHeading": "U.S. & International Donations",
+    "internationalDescription": "Support Influencers Involved from the United States or abroad. Donate securely by card through Zeffy.",
+    "feeExplanation": "100% of your intended donation goes to Influencers Involved, with no platform or processing fees deducted by Zeffy. A separate optional contribution to Zeffy may be offered at checkout.",
+    "internationalNote": "Donations are processed in U.S. dollars (USD). Your bank may apply currency conversion or foreign transaction fees. Card availability may vary by country."
+  }
 }

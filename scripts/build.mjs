@@ -37,7 +37,10 @@ const tokens = {
   city: config.city,
   email: config.email,
   zeffyUrl: config.zeffyUrl,
-  intlNotice: config.internationalNotice,
+  intlHeading: esc(config.donate.internationalHeading),
+  intlDescription: esc(config.donate.internationalDescription),
+  feeExplanation: esc(config.donate.feeExplanation),
+  intlNote: esc(config.donate.internationalNote),
   apiBase: config.apiBase,
   countryOptions: countries.map(([c, n]) => opt(c, n, c === 'US' ? ' selected' : '')).join(''),
   // Placeholder, then the two always-visible special choices, then the categorized catalogue (native optgroups).
@@ -123,7 +126,7 @@ const staticDir = join(src, 'static');
   }
 })(staticDir, join(out, 'assets'));
 // Runtime config for the browser: only public values.
-writeFileSync(join(out, 'assets', 'site-config.js'), `window.II_CONFIG=${JSON.stringify({ apiBase: config.apiBase, email: config.email, platforms: config.platforms, charities: charityCatalogue.map((c) => ({ c: c.category, i: c.charities.map((x) => [x.name, ...(x.aliases || [])]) })) })};\n`);
+writeFileSync(join(out, 'assets', 'site-config.js'), `window.II_CONFIG=${JSON.stringify({ apiBase: config.apiBase, email: config.email, platforms: config.platforms })};\n`);
 // Security headers (honored by Cloudflare Workers assets/Pages). GitHub Pages ignores this file.
 const api = config.apiBase ? ' ' + new URL(config.apiBase).origin : '';
 writeFileSync(join(out, '_headers'), `/*

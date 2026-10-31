@@ -166,7 +166,6 @@ body{background:#fff}
 
 /* ───── Form details ───── */
 .opt{font-weight:400;color:var(--muted)}
-.charity-search{margin-bottom:.1rem}
 .notice[hidden]{display:none}
 
 /* ───── "Our Pioneer Community" dashboard: exactly four figures in ONE row ───── */

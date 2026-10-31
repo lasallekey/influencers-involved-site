@@ -14,7 +14,7 @@ Short and practical. Nothing here needs a server you maintain: one Cloudflare Wo
 ## Edit public settings
 - Zeffy link, social URLs, address, charity examples: edit `src/config.json`, run `npm run build`, commit.
 - **YouTube / TikTok**: set `social.youtube` / `social.tiktok` to the real `https://…` URL. They appear in every footer automatically; `null` hides them.
-- PayPal: there is no PayPal button anywhere. The approved plain notice is on `/donate/`. When an international method exists, change `src/pages/donate.html`.
+- Donations: Zeffy is the only active provider; its link is `zeffyUrl` in `src/config.json` and the U.S. & international wording is under `donate` in the same file. There is no PayPal anywhere. Donorbox with Stripe is a possible future second channel (more currencies/regional methods); it is deliberately not on the site, and nothing should be added until it is set up and approved.
 
 ## Staging
 Step-by-step (no command line needed): see [`STAGING.md`](STAGING.md). In short: add two GitHub secrets, run the "Deploy staging" workflow, open the URL it prints. The workflow also runs `npm test`, builds a staging-marked site, creates a separate free D1 database, applies migrations, deploys, sets secrets and smoke-tests. CI (`.github/workflows/ci.yml`) runs the tests, rebuilds `site/` to confirm it is committed, validates the Worker config and runs the browser end-to-end on every pull request.

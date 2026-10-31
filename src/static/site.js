@@ -98,25 +98,8 @@
   accountsEl.appendChild(accountBlock()); renumber();
   addBtn.addEventListener('click', function () { var b = accountBlock(); accountsEl.appendChild(b); renumber(); $('select', b).focus(); syncPrivacy(); });
 
-  // Charity selector: native <select> with categories. The search box rebuilds the grouped list from the same catalogue.
-  var charitySel = $('#charity_select'), charitySearch = $('#charity_search'), charityCount = $('#charity-count');
-  var SPECIALS = $$('option', charitySel).slice(0, 3).map(function (o) { return o.cloneNode(true); });
-  function fold(t) { return String(t).normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/&/g, ' and ').replace(/['’`]/g, '').replace(/[^a-z0-9]+/g, ' ').trim(); }
-  function renderCharities(q) {
-    var key = fold(q), keep = charitySel.value, shown = 0, frag = document.createDocumentFragment();
-    SPECIALS.forEach(function (o) { frag.appendChild(o.cloneNode(true)); });
-    (CFG.charities || []).forEach(function (cat) {
-      var items = cat.i.filter(function (names) { return !key || names.some(function (n) { return fold(n).indexOf(key) !== -1; }); });
-      if (!items.length) return;
-      var g = document.createElement('optgroup'); g.label = cat.c;
-      items.forEach(function (names) { var o = document.createElement('option'); o.value = names[0]; o.textContent = names[0]; g.appendChild(o); shown++; });
-      frag.appendChild(g);
-    });
-    charitySel.textContent = ''; charitySel.appendChild(frag);
-    if ($$('option', charitySel).some(function (o) { return o.value === keep; })) charitySel.value = keep;
-    charityCount.textContent = key ? (shown + (shown === 1 ? ' charity matches' : ' charities match') + ' your search. “Another charity” is always available.') : '';
-  }
-  if (charitySearch && CFG.charities) charitySearch.addEventListener('input', function () { renderCharities(this.value); });
+  // Charity selector: a native <select> with categories; the two special choices sit at the top.
+  var charitySel = $('#charity_select');
   function syncCharity() {
     var v = charitySel.value;
     $('#charity-other-field').hidden = v !== '__other__';

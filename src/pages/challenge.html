@@ -151,10 +151,7 @@ class: page-challenge
         </div>
         <div class="field charity-field">
           <label for="charity_select">Which charity will you support? <span class="req">*</span></label>
-          <label class="sr-only" for="charity_search">Search the charity list</label>
-          <input type="search" id="charity_search" class="charity-search" placeholder="Type to search the list (optional)" autocomplete="off" aria-controls="charity_select" aria-describedby="charity-count">
           <select id="charity_select" name="charity_select" required aria-describedby="charity-h charity_select-e">{{charityOptions}}</select>
-          <p class="sr-only" id="charity-count" role="status" aria-live="polite"></p>
           <p class="hint" id="charity-h">Not sure yet? Choose the second option; it’s completely fine to decide later. The list is a convenience, not an endorsement or a limit: choose “Another charity” to enter any charity you like.</p>
           <p class="err" id="charity_select-e"></p>
         </div>

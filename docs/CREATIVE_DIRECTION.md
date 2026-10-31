@@ -30,7 +30,7 @@ Shared layer: `src/static/movement.css` (people kit, buttons, hero, bands, steps
 - **Challenge:** hero = creator holding a Pioneer certificate; illustrated three-step journey; "after you join" rows; green "A pledge, not a payment" band; the registration form is deliberately calm (white, standard fields; categorized charity list with search and a prominent "not chosen yet" option; optional profile URL). The "Our Pioneer Community" dashboard (four figures in one row) appears only after 20 eligible registrations; see `docs/REGISTRY.md`.
 - **About:** "A movement of creators who give"; emblem over a growing crowd; one-to-many ripple of avatars; plain legal facts (name, status, EIN, address, contact). **No individual leadership names, titles, initials or bios are published**; closing invitation.
 - **Transparency:** speech bubble with three checks; two full-bleed halves that make the key distinction visible (your 1% → your charity vs gifts → II); friendly checklist of commitments.
-- **Donate:** person holding a big heart; prominent Zeffy buttons (hero and after "what a gift helps us do"); no impact claims; green band separating a creator's pledge from gifts to II; approved international notice verbatim; no PayPal.
+- **Donate:** person holding a big heart; prominent Zeffy buttons (hero and after "what a gift helps us do"); no impact claims; green band separating a creator's pledge from gifts to II; a "U.S. & International Donations" section (card via Zeffy, USD processing, Zeffy fee statement, bank-fee note) in the approved wording; no PayPal; no other provider shown.
 - **Contact:** "Let's talk." with waving people; the homepage's "Find your place" rows as mailto links with a subject per audience (creators, charities, companies, funders, other), one inbox.
 - **Privacy:** shorter hero (shield), a three-line plain summary, and a sticky table of contents; every original disclosure kept in full.
 Rules that keep scenes readable: people in front of the blue hero use `pi`/`pj`/`pc`/`pe`/`ph` (never the blue-topped `pa`/`pg`, which vanish into the background); illustrated characters are never presented as real Pioneers, donors, partners or beneficiaries.
@@ -48,3 +48,7 @@ The four primary references (charity: water, Tiltify Impact, GlobalGiving, Pledg
 
 ## Status
 Homepage approved by the owner and applied site-wide (interior pages harmonized, footer tagline "Turn your influence into impact."). The design is frozen: only functional, responsive, accessibility or consistency fixes.
+
+## Future enhancements (not on the site)
+- **Donorbox with Stripe** as a second, independent donation channel for additional currencies and regional payment options. Recorded for later only: no Donorbox/Stripe button, placeholder link or inactive checkout is shown anywhere, and `scripts/check-site.mjs` fails the build if one appears.
+- Real, consented photography of approved creators.

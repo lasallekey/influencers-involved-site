@@ -26,6 +26,8 @@ for (const f of pages) {
   }
   for (const m of html.matchAll(/\sid="([^"]+)"/g)) { if (html.split(`id="${m[1]}"`).length > 2) problems.push(`${name}: duplicate id ${m[1]}`); }
   if (/paypal/i.test(html)) problems.push(`${name}: mentions PayPal`);
+  if (/donorbox|\bstripe\b/i.test(html)) problems.push(`${name}: mentions a donation provider that is not active (Donorbox/Stripe)`);
+  if (/have not yet established a separate international/i.test(html)) problems.push(`${name}: outdated international-donation notice`);
   if (/\sstyle="/.test(html)) problems.push(`${name}: inline style attribute (CSP)`);
   if (/<script(?![^>]*(src=|application\/ld\+json))[^>]*>/.test(html)) problems.push(`${name}: inline script`);
   if (/youtube\.com\/(@|channel|c\/)InfluencersInvolved|tiktok\.com\/@influencers/i.test(html)) problems.push(`${name}: unconfirmed YouTube/TikTok URL`);
@@ -35,7 +37,7 @@ for (const f of pages) {
 
 // Required public facts and links
 const all = pages.map((f) => readFileSync(f, 'utf8')).join('\n');
-const need = ['https://www.zeffy.com/en-US/donation-form/support-influencers-involved', 'https://www.facebook.com/InfluencersInvolved', 'https://www.instagram.com/influencersinvolved', 'https://www.linkedin.com/company/influencersinvolved', 'EIN 39-2242545', '800 W Central Rd, Suite 120', 'grants@influencersinvolved.org', 'We have not yet established a separate international donation method. Please check back for updates.'];
+const need = ['https://www.zeffy.com/en-US/donation-form/support-influencers-involved', 'https://www.facebook.com/InfluencersInvolved', 'https://www.instagram.com/influencersinvolved', 'https://www.linkedin.com/company/influencersinvolved', 'EIN 39-2242545', '800 W Central Rd, Suite 120', 'grants@influencersinvolved.org', 'U.S. &amp; International Donations', 'Support Influencers Involved from the United States or abroad. Donate securely by card through Zeffy.', '100% of your intended donation goes to Influencers Involved, with no platform or processing fees deducted by Zeffy. A separate optional contribution to Zeffy may be offered at checkout.', 'Donations are processed in U.S. dollars (USD). Your bank may apply currency conversion or foreign transaction fees. Card availability may vary by country.'];
 for (const n of need) if (!all.includes(n)) problems.push(`missing required content: ${n}`);
 
 // Nothing private may ship in the public output.

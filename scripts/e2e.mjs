@@ -76,17 +76,18 @@ for (const [label, vp] of Object.entries(SIZES)) {
   await page.goto(BASE + '/donate/');
   const donate = await page.evaluate(() => ({ z: [...document.querySelectorAll('a')].filter((a) => a.href.includes('zeffy.com')).map((a) => a.href), paypal: /paypal/i.test(document.body.innerText), text: document.body.innerText }));
   ok(donate.z.length >= 1 && donate.z.every((u) => u === ZEFFY), `${label} donate: ${donate.z.length} Zeffy button(s), all exact`);
-  ok(!donate.paypal && donate.text.includes('We have not yet established a separate international donation method. Please check back for updates.'), `${label} donate: no PayPal; approved international notice shown`);
+  const need = ['U.S. & International Donations', 'Support Influencers Involved from the United States or abroad. Donate securely by card through Zeffy.', '100% of your intended donation goes to Influencers Involved, with no platform or processing fees deducted by Zeffy. A separate optional contribution to Zeffy may be offered at checkout.', 'Donations are processed in U.S. dollars (USD). Your bank may apply currency conversion or foreign transaction fees. Card availability may vary by country.'];
+  ok(need.every((x) => donate.text.includes(x)), `${label} donate: corrected U.S. & international wording (heading, description, fee explanation, USD note) shown verbatim`);
+  ok(!/have not yet established/i.test(donate.text) && !donate.paypal && !/donorbox|\bstripe\b/i.test(donate.text), `${label} donate: old notice gone; no PayPal, Donorbox or Stripe`);
+  const providers = await page.evaluate(() => [...document.querySelectorAll('a[href^="http"]')].map((a) => new URL(a.href).hostname).filter((h) => !/(^|\.)(facebook|instagram|linkedin)\.com$/.test(h)));
+  ok(providers.length > 0 && providers.every((h) => h.endsWith('zeffy.com')), `${label} donate: Zeffy is the only external donation destination`);
 
-  // 5. Charity selector: undecided + other pinned at the top, 9 categories, ~100 names, search filter.
+  // 5. Charity selector: undecided + other pinned at the top, 9 categories, ~100 names; no search field.
   await page.goto(BASE + '/challenge/#join', { waitUntil: 'networkidle' });
   const sel = await page.evaluate(() => { const s = document.querySelector('#charity_select'); const o = [...s.options]; return { first: o.slice(0, 3).map((x) => x.textContent), groups: s.querySelectorAll('optgroup').length, named: s.querySelectorAll('optgroup option').length }; });
   ok(sel.first[0] === 'Choose a charity…' && sel.first[1] === UNDECIDED && sel.first[2] === OTHER, `${label} form: placeholder, then the undecided option, then "Another charity" at the very top`);
   ok(sel.groups === 9 && sel.named >= 95, `${label} form: ${sel.named} charities in ${sel.groups} categories`);
-  await page.fill('#charity_search', 'red cross');
-  const filtered = await page.evaluate(() => [...document.querySelectorAll('#charity_select option')].map((o) => o.textContent));
-  ok(filtered.includes('American Red Cross') && !filtered.includes('Feeding America') && filtered.includes(UNDECIDED) && filtered.includes(OTHER), `${label} form: search narrows the list but keeps the two special choices`);
-  await page.fill('#charity_search', '');
+  ok((await page.locator('#charity_search, #charity-count, input[type=search]').count()) === 0 && (await page.locator('.charity-field input').count()) === 0, `${label} form: no separate charity search field (only the native dropdown)`);
   await page.click('#submit-btn');
   ok((await page.locator('#email-e').innerText()).length > 0 && (await page.locator('#creator_name').getAttribute('aria-invalid')) === 'true', `${label} form: empty submit shows inline errors`);
   ok((await page.locator('#charity_select-e').innerText()).length > 0, `${label} form: a missing charity choice is flagged`);
