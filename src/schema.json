@@ -9,6 +9,5 @@
   "taxID": "{{ein}}",
   "description": "A nonprofit that mobilizes creators to make charitable giving a visible, repeatable part of creator culture through the 1% Influence Challenge.",
   "address": { "@type": "PostalAddress", "streetAddress": "800 W Central Rd, Suite 120", "addressLocality": "Mt. Prospect", "addressRegion": "IL", "postalCode": "60056", "addressCountry": "US" },
-  "founder": { "@type": "Person", "name": "Ho Chung" },
   "sameAs": {{sameAsJson}}
 }

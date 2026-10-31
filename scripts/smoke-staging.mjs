@@ -19,7 +19,7 @@ ok(health.ok === true, '/api/health responds');
 console.log(`INFO  email sending configured: ${health.email_configured ? 'yes' : 'no (pledges still work; verification emails are skipped)'}`);
 
 const key = 'smoke' + Math.random().toString(36).slice(2) + Date.now().toString(36);
-const body = { idempotency_key: key, consent_version: '2026-10-30', creator_name: 'Smoke Test Creator', email, country: 'US', pledge_date: new Date().toISOString().slice(0, 10), charity: 'Synthetic Test Charity', pledge_confirmed: true, certificate_ack: true, privacy_preference: 'anonymous', general_email_opt_in: false, collaboration_interest: 'Not now', collaboration_types: [], collab_contact_opt_in: false, website: '', accounts: [{ platform: 'YouTube', handle: '@smoke', profile_url: 'https://youtube.com/@smoke', public_display_permission: false }, { platform: 'Instagram', handle: 'smoke', profile_url: 'https://instagram.com/smoke', public_display_permission: false }] };
+const body = { idempotency_key: key, consent_version: '2026-10-30', creator_name: 'Smoke Test Creator', email, country: 'US', pledge_date: new Date().toISOString().slice(0, 10), charity_status: 'selected', charity: 'Synthetic Test Charity', pledge_confirmed: true, certificate_ack: true, privacy_preference: 'anonymous', general_email_opt_in: false, collaboration_interest: 'Not now', collaboration_types: [], collab_contact_opt_in: false, website: '', accounts: [{ platform: 'YouTube', handle: '@smoke', profile_url: 'https://youtube.com/@smoke', public_display_permission: false }, { platform: 'Instagram', handle: 'smoke', public_display_permission: false }] };
 const post = (b) => get('/api/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) });
 const r1 = await post(body); const j1 = await r1.json().catch(() => ({}));
 ok(r1.status === 201 && /^II-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(j1.pioneer_id || ''), `registration saved → ${j1.pioneer_id || r1.status}`);
@@ -28,8 +28,11 @@ ok(r2.status === 200 && j2.pioneer_id === j1.pioneer_id, 'retry with the same ke
 const r3 = await post({ ...body, idempotency_key: key + 'x' });
 ok(r3.status === 409, 'a second registration with the same email is refused');
 const stats = await (await get('/api/stats')).json().catch(() => ({}));
-ok(stats.unique_pioneers >= 1 && stats.participating_accounts >= 2, `aggregate stats respond (${stats.unique_pioneers} Pioneer(s), ${stats.participating_accounts} account(s))`);
+ok(stats.visible === false ? Object.keys(stats).length === 1 : stats.visible === true && stats.pioneers >= 20, stats.visible ? `registry is public (${stats.pioneers} Pioneers)` : 'registry stays hidden below 20 and reveals no numbers (the smoke-test registration is flagged as a test and never counted)');
 const listing = await (await get('/api/pioneers')).text();
 ok(!listing.includes(email) && !listing.includes('Smoke Test Creator'), 'public listing exposes no email and no anonymous Pioneer');
+const undec = await post({ ...body, idempotency_key: key + 'u', email: `smoke+${Date.now()}u@example.invalid`, charity_status: 'undecided', charity: undefined });
+const ju = await undec.json().catch(() => ({}));
+ok(undec.status === 201 && ju.charity === null && ju.charity_status === 'undecided', 'a registration with no charity chosen yet is accepted and never names a charity');
 console.log(failed ? `\n${failed} check(s) FAILED` : '\nStaging smoke test passed');
 process.exit(failed ? 1 : 0);

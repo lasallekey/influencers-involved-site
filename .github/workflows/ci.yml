@@ -28,9 +28,7 @@ jobs:
         run: npx wrangler deploy --dry-run --env staging --outdir "$RUNNER_TEMP/wr" --config worker/wrangler.toml
         env:
           WRANGLER_SEND_METRICS: "false"
-      - name: Browser end-to-end (synthetic data, local preview server)
+      - name: Browser end-to-end (starts its own preview server; synthetic data)
         run: |
           npx playwright install --with-deps chromium
-          (PORT=8787 node --disable-warning=ExperimentalWarning scripts/dev-server.mjs > "$RUNNER_TEMP/dev.log" 2>&1 &)
-          for i in $(seq 1 20); do curl -fs http://127.0.0.1:8787/api/health >/dev/null && break; sleep 1; done
           node scripts/e2e.mjs

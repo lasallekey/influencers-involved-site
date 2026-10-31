@@ -28,9 +28,9 @@
 .scene{position:relative;width:100%;max-width:38rem;justify-self:center;aspect-ratio:1/1;margin-top:clamp(0rem,1vw,1rem)}
 .scene::before{content:"";position:absolute;left:34%;top:34%;width:150%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 5.6rem,rgba(255,255,255,.14) 5.6rem 5.68rem);animation:h-ripple 1.8s cubic-bezier(.16,.8,.24,1) both}
 .scene svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:hidden}
-.phone .ph1{font:800 21px/1 var(--display);fill:#0a2a06;letter-spacing:-.03em}
-.phone .ph2{font:800 54px/1 var(--display);fill:#0a2a06;letter-spacing:-.05em}
-.scene .phone{animation:h-rise .9s .3s cubic-bezier(.2,.8,.2,1) both;transform-origin:410px 170px}
+.phone-tilt .ph1{font:800 21px/1 var(--display);fill:#0a2a06;letter-spacing:-.03em}
+.phone-tilt .ph2{font:800 54px/1 var(--display);fill:#0a2a06;letter-spacing:-.05em}
+.scene .prop{animation:h-rise .9s .3s cubic-bezier(.2,.8,.2,1) both}
 .scene .hz{transform-box:fill-box;transform-origin:center;animation:h-pop .6s cubic-bezier(.3,1.6,.5,1) both}
 .scene .h1{animation-delay:.9s}.scene .h2{animation-delay:1.05s}.scene .h3{animation-delay:1.2s}.scene .h4{animation-delay:1.35s}.scene .h5{animation-delay:1.5s}
 

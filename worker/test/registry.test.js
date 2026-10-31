@@ -26,8 +26,8 @@ let n = 0, ipn = 0;
 const nextIp = () => { ipn++; return `10.${(ipn >> 8) & 255}.${ipn & 255}.7`; };
 const key = () => 'key-' + String(++n).padStart(12, '0') + 'abcdef';
 const good = (o = {}) => ({
-  idempotency_key: key(), consent_version: '2026-10-30', creator_name: 'Test Creator', email: `person${n}@example.test`, country: 'US', pledge_date: new Date().toISOString().slice(0, 10),
-  charity: 'Feeding America', pledge_confirmed: true, certificate_ack: true, privacy_preference: 'public', general_email_opt_in: false,
+  idempotency_key: key(), consent_version: '2026-10-30', creator_name: 'Test Creator', email: `person${n}@creatormail.dev`, country: 'US', pledge_date: new Date().toISOString().slice(0, 10),
+  charity_status: 'selected', charity: 'Feeding America', pledge_confirmed: true, certificate_ack: true, privacy_preference: 'public', general_email_opt_in: false,
   collaboration_interest: 'Not now', collaboration_types: [], collab_contact_opt_in: false, website: '',
   accounts: [{ platform: 'YouTube', handle: '@testcreator', profile_url: 'https://youtube.com/@testcreator', public_display_permission: true }], ...o,
 });
@@ -251,40 +251,146 @@ test('unsubscribe link withdraws both optional consents; forged links do nothing
 
 /* ---- public reads ---- */
 
-test('public listing shows only verified + public Pioneers and only approved profiles; no private fields', async () => {
-  const mk = async (name, over) => { const t = await registerAndToken({ creator_name: name, ...over }); return t; };
+// ---- helpers for the exactly-20 registry rules ----
+const seedOne = async (i, over = {}) => {
+  const r = await register(good({ creator_name: 'Seed ' + i, email: `seed${i}@creatormail.dev`, accounts: [{ platform: 'YouTube', handle: '@seed' + i, profile_url: `https://youtube.com/@seed${i}`, public_display_permission: false }], ...over }));
+  assert.equal(r.status, 201, 'seed ' + i + ' ' + (await r.clone().text()));
+  return r.json();
+};
+const seed = async (n, mk = () => ({}), from = 1) => { for (let i = from; i < from + n; i++) await seedOne(i, mk(i)); };
+const statsJson = async () => (await call('/api/stats')).json();
+
+test('the public registry reveals nothing at 19 eligible registrations and appears at exactly 20', async () => {
+  await seed(19);
+  const r19 = await call('/api/stats'); const t19 = await r19.text();
+  assert.equal(t19, '{"visible":false}', 'stats must expose no numbers before 20');
+  assert.deepEqual(await (await call('/api/pioneers')).json(), { visible: false, pioneers: [] });
+  await seedOne(20);
+  const s = await statsJson();
+  assert.equal(s.visible, true); assert.equal(s.pioneers, 20); assert.equal(s.social_accounts, 20); assert.equal(s.charities, 1); assert.equal(s.countries, 1);
+  assert.deepEqual(Object.keys(s).sort(), ['charities', 'countries', 'pioneers', 'social_accounts', 'visible']);
+});
+
+test('withdrawals below 20 hide the registry again; a new registration restores it', async () => {
+  await seed(20);
+  assert.equal((await statsJson()).visible, true);
+  env.DB.raw.exec(`UPDATE pioneers SET registration_status = 'Withdrawn' WHERE creator_name = 'Seed 7'`);
+  assert.equal(await (await call('/api/stats')).text(), '{"visible":false}');
+  assert.deepEqual(await (await call('/api/pioneers')).json(), { visible: false, pioneers: [] });
+  await seedOne(21);
+  assert.equal((await statsJson()).pioneers, 20);
+});
+
+test('automated and test registrations are flagged and never count toward 20', async () => {
+  for (let i = 0; i < 12; i++) await seedOne(100 + i, { email: `smoke+${i}@creatormail.dev` });
+  for (let i = 0; i < 12; i++) await seedOne(200 + i, { email: `tester${i}@example.invalid` });
+  await seedOne(250, { email: 'owner+test1@creatormail.dev' }); await seedOne(251, { email: 'owner+Test2@creatormail.dev' });
+  for (const d of ['example.com', 'foo.test', 'bar.example', 'site.localhost']) await seedOne(300 + d.length, { email: `x${d.length}@${d}` });
+  assert.equal(q('SELECT COUNT(*) n FROM pioneers WHERE is_test = 1')[0].n, 30);
+  await seed(19);
+  assert.equal(await (await call('/api/stats')).text(), '{"visible":false}', '28 test + 19 genuine must still be hidden');
+  await seedOne(20);
+  assert.equal((await statsJson()).pioneers, 20);
+});
+
+test('anonymous and unverified registrations count in the totals but are never listed', async () => {
+  await seed(20, (i) => (i % 2 ? { privacy_preference: 'anonymous' } : {}));
+  const s = await statsJson(); assert.equal(s.pioneers, 20);
+  assert.deepEqual((await (await call('/api/pioneers')).json()).pioneers, []);
+});
+
+test('dashboard figures: distinct accounts, normalized distinct charities (undecided excluded), distinct countries', async () => {
+  const charityFor = (i) => {
+    if (i <= 3) return { charity: ['Feeding America', 'feeding america', 'Feeding  America!'][i - 1] };
+    if (i <= 5) return { charity: ['Doctors Without Borders', 'MSF'][i - 4] };
+    if (i <= 7) return { charity: ['The Red Cross', 'American Red Cross'][i - 6] };
+    if (i <= 11) return { charity_status: 'undecided', charity: undefined };
+    if (i <= 13) return { charity: ['Local Food Pantry', 'local food pantry.'][i - 12] };
+    if (i === 14) return { charity: 'Neighborhood Library Fund' };
+    return { charity: 'UNICEF' };
+  };
+  const country = (i) => ['US', 'CA', 'GB', 'US', 'KR'][i % 5];
+  await seed(20, (i) => ({ ...charityFor(i), country: country(i),
+    accounts: [{ platform: 'YouTube', handle: i <= 4 ? '@Shared' : '@seed' + i, public_display_permission: false }] }));
+  const s = await statsJson();
+  assert.equal(s.pioneers, 20);
+  assert.equal(s.charities, 6, 'Feeding America, Doctors Without Borders, American Red Cross, Local Food Pantry, Neighborhood Library Fund, UNICEF');
+  assert.equal(s.social_accounts, 17, '4 registrations share one YouTube handle (@Shared) → 16 other + 1 shared');
+  assert.equal(s.countries, 4);
+  assert.equal(q("SELECT COUNT(*) n FROM pioneers WHERE charity_status = 'undecided'")[0].n, 4);
+});
+
+test('public listing shows only verified + public Pioneers and only approved profiles (handle-only profiles have no link); no private fields', async () => {
+  const mk = async (name, over) => registerAndToken({ creator_name: name, ...over });
   const verified = await mk('Public Verified', { accounts: [
     { platform: 'YouTube', handle: '@shown', profile_url: 'https://youtube.com/@shown', public_display_permission: true },
+    { platform: 'TikTok', handle: '@nolink', public_display_permission: true },
     { platform: 'Instagram', handle: 'hidden', profile_url: 'https://instagram.com/hidden', public_display_permission: false } ] });
   await call('/api/verify?token=' + verified.token);
   await mk('Public Unverified', {});
   const anon = await mk('Anon Verified', { privacy_preference: 'anonymous' }); await call('/api/verify?token=' + anon.token);
+  await seed(17);
   const res = await call('/api/pioneers'); const text = await res.text(); const b = JSON.parse(text);
+  assert.equal(b.visible, true);
   assert.deepEqual(b.pioneers.map((p) => p.name), ['Public Verified']);
-  assert.deepEqual(b.pioneers[0].accounts, [{ platform: 'YouTube', handle: '@shown', url: 'https://youtube.com/@shown' }]);
-  for (const secret of ['@example.test', 'US', 'Feeding America', 'II-', 'hidden', 'Anon Verified', 'Unverified', 'token', 'collab']) assert.ok(!text.includes(secret), 'leaked: ' + secret);
+  assert.deepEqual(b.pioneers[0].accounts, [{ platform: 'YouTube', handle: '@shown', url: 'https://youtube.com/@shown' }, { platform: 'TikTok', handle: '@nolink', url: null }]);
+  for (const secret of ['@creatormail.dev', '"US"', 'Feeding America', 'II-', 'hidden', 'Anon Verified', 'Unverified', 'token', 'collab', 'tiktok.com']) assert.ok(!text.includes(secret), 'leaked: ' + secret);
 });
 
-test('aggregate stats count anonymous and unverified people once, count accounts separately, and suppress small breakdowns', async () => {
-  const five = Array.from({ length: 5 }, (_, i) => ({ platform: ['YouTube', 'Instagram', 'TikTok', 'Facebook', 'X'][i], handle: 'h' + i, profile_url: `https://example.test/${i}`, public_display_permission: false }));
-  await register(good({ privacy_preference: 'anonymous', accounts: five }));
-  let s = await (await call('/api/stats')).json();
-  assert.equal(s.unique_pioneers, 1); assert.equal(s.participating_accounts, 5);
-  assert.equal(s.countries, null); assert.deepEqual(s.platforms, []);
-  for (let i = 0; i < 4; i++) await register(good({ country: i % 2 ? 'CA' : 'US' }));
-  s = await (await call('/api/stats')).json();
-  assert.equal(s.unique_pioneers, 5); assert.equal(s.participating_accounts, 9);
-  assert.equal(s.countries, 2); assert.equal(s.platform_count, 5);
-  assert.deepEqual(s.platforms, [{ platform: 'YouTube', count: 5 }]); // only groups of ≥5
-  assert.ok(!JSON.stringify(s).includes('example'));
+test('profile URL is optional: blank/missing is accepted and stored as NULL, never guessed; a supplied URL must still be valid https', async () => {
+  const mkAcc = (extra) => [{ platform: 'TikTok', handle: '@nolink', public_display_permission: true, ...extra }];
+  for (const extra of [{}, { profile_url: '' }, { profile_url: '   ' }, { profile_url: null }]) {
+    const r = await register(good({ accounts: mkAcc(extra) }));
+    assert.equal(r.status, 201, JSON.stringify(extra));
+  }
+  assert.deepEqual(q('SELECT DISTINCT profile_url u FROM social_accounts').map((r) => r.u), [null]);
+  for (const bad of ['javascript:alert(1)', 'http://tiktok.com/@a', 'tiktok.com/@a', 'https://nodots']) {
+    const r = await register(good({ accounts: mkAcc({ profile_url: bad }) }));
+    assert.equal(r.status, 400, bad);
+  }
+  const ok = await register(good({ accounts: mkAcc({ profile_url: 'https://www.tiktok.com/@nolink' }) }));
+  assert.equal(ok.status, 201);
+  assert.equal((await register(good({ accounts: [{ platform: 'TikTok', handle: '   ' }] }))).status, 400, 'handle stays required');
+  assert.equal((await register(good({ accounts: [{ platform: '', handle: '@x' }] }))).status, 400, 'platform stays required');
 });
 
-test('withdrawn registrations are excluded from counts and listings and free the email', async () => {
-  const { body, token } = await registerAndToken(); await call('/api/verify?token=' + token);
-  env.DB.raw.exec(`UPDATE pioneers SET registration_status = 'Withdrawn'`);
-  assert.equal((await (await call('/api/stats')).json()).unique_pioneers, 0);
-  assert.deepEqual((await (await call('/api/pioneers')).json()).pioneers, []);
-  assert.equal((await register(good({ email: body.email }))).status, 201);
+test('duplicate platform/handle combinations collapse within a registration and are not double counted across registrations', async () => {
+  const r = await register(good({ accounts: [
+    { platform: 'YouTube', handle: '@Same', public_display_permission: false },
+    { platform: 'YouTube', handle: 'same', public_display_permission: false },
+    { platform: 'Instagram', handle: 'same', public_display_permission: false },
+    { platform: 'TikTok', handle: '@other', profile_url: 'https://tiktok.com/@other', public_display_permission: false },
+    { platform: 'Facebook', handle: 'another', profile_url: 'https://tiktok.com/@other', public_display_permission: false } ] }));
+  assert.equal(r.status, 201);
+  assert.equal(q('SELECT COUNT(*) n FROM social_accounts')[0].n, 3, 'YouTube same, Instagram same, TikTok other (repeated URL dropped)');
+  assert.deepEqual(q('SELECT handle_normalized h FROM social_accounts ORDER BY id').map((x) => x.h), ['same', 'same', 'other']);
+});
+
+test('"charity not chosen yet" registers normally, stores a stable status, and never appears as a charity name', async () => {
+  const body = good({ charity_status: 'undecided', charity: undefined });
+  const r = await register(body); const b = await r.json();
+  assert.equal(r.status, 201); assert.equal(b.charity, null); assert.equal(b.charity_status, 'undecided');
+  const row = q('SELECT selected_charity, charity_status, charity_key FROM pioneers')[0];
+  assert.equal(row.charity_status, 'undecided'); assert.equal(row.selected_charity, ''); assert.equal(row.charity_key, null);
+  const replay = await (await register(body)).json();
+  assert.equal(replay.charity, null); assert.equal(replay.charity_status, 'undecided');
+  // a stray name sent with "undecided" is ignored, not stored
+  await register(good({ charity_status: 'undecided', charity: 'Sneaky Name' }));
+  assert.equal(q("SELECT COUNT(*) n FROM pioneers WHERE selected_charity <> ''")[0].n, 0);
+});
+
+test('selecting a charity requires a sensible name; catalogue names and aliases normalize to one canonical charity', async () => {
+  for (const bad of [undefined, '', ' ', 'x', 'undecided', 'not sure', 'http://charity.org', 'a@b.org', '12345 678']) {
+    const r = await register(good({ charity: bad })); assert.equal(r.status, 400, String(bad));
+    assert.ok((await r.json()).fields.charity);
+  }
+  await register(good({ charity: 'feeding america' }));
+  await register(good({ charity: 'MSF' }));
+  await register(good({ charity: 'Local Food Pantry' }));
+  await register(good({ charity: 'local   food pantry' }));
+  const rows = q('SELECT selected_charity c, charity_key k FROM pioneers ORDER BY id');
+  assert.deepEqual(rows.map((r) => r.c), ['Feeding America', 'Doctors Without Borders USA', 'Local Food Pantry', 'local   food pantry'.replace(/\s+/g, ' ')]);
+  assert.equal(rows[2].k, rows[3].k, 'custom names that differ only by case/spacing share one key');
 });
 
 test('private tables are not reachable through any public route', async () => {

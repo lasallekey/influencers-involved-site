@@ -1,5 +1,6 @@
 // Server-side validation and normalization of a registration payload.
 import countries from '../../shared/countries.json' with { type: 'json' };
+import { resolveCharity } from './charity.js';
 
 export const CONSENT_VERSION = '2026-10-30';
 export const PLATFORMS = ['YouTube', 'Instagram', 'TikTok', 'Facebook', 'Twitch', 'LinkedIn', 'X', 'Other'];
@@ -38,6 +39,19 @@ export function normalizeEmail(v) {
   return e;
 }
 
+/** Lowercase, no leading @ or surrounding spaces. Used only to avoid counting one account twice. */
+export function normalizeHandle(h) {
+  return String(h || '').normalize('NFKC').toLowerCase().replace(/\s+/g, ' ').trim().replace(/^@+/, '');
+}
+
+/** Reserved/test mailbox domains never count toward public totals (RFC 2606 names plus smoke+ addresses). */
+export function isTestEmail(email, extraDomains = '') {
+  const [local, domain = ''] = String(email).toLowerCase().split('@');
+  if (local.startsWith('smoke+') || /\+(test|smoke)/.test(local)) return true; // e.g. you+test1@gmail.com still receives mail but is never counted
+  if (/(^|\.)(test|invalid|example|localhost)$/.test(domain) || /(^|\.)example\.(com|org|net)$/.test(domain)) return true;
+  return extraDomains.split(',').map((d) => d.trim().toLowerCase()).filter(Boolean).some((d) => domain === d || domain.endsWith('.' + d));
+}
+
 export function normalizeHttpsUrl(v) {
   if (typeof v !== 'string') return null;
   let u;
@@ -73,8 +87,13 @@ export function validateRegistration(b, now = new Date()) {
   const tomorrow = new Date(now.getTime() + 36 * 3600e3).toISOString().slice(0, 10); // tolerate time zones ahead of UTC
   if (!validDate(pledge_date) || pledge_date > tomorrow || pledge_date < '2020-01-01') f.pledge_date = 'Choose a pledge date that is today or earlier.';
 
-  const charity = cleanText(b.charity, 160);
-  if (charity.length < 2 || charity.length > 160) f.charity = 'Choose or enter the charity you will support.';
+  // Charity: either a chosen/typed name, or the explicit "not decided yet" status (no name required).
+  const charity_status = b.charity_status === 'undecided' ? 'undecided' : 'selected';
+  let charity = null;
+  if (charity_status === 'selected') {
+    const rc = resolveCharity(b.charity);
+    if (rc.error) f.charity = rc.error; else charity = rc;
+  }
 
   if (b.pledge_confirmed !== true) f.pledge_confirm = 'Please confirm your pledge.';
   if (b.certificate_ack !== true) f.cert_ack = 'Please confirm you understand what the certificate is.';
@@ -96,17 +115,22 @@ export function validateRegistration(b, now = new Date()) {
     for (const a of b.accounts) {
       const platform = a && PLATFORMS.includes(a.platform) ? a.platform : null;
       const handle = cleanText(a && a.handle, 120);
-      const url = normalizeHttpsUrl(a && a.profile_url);
-      if (!platform || !handle || handle.length > 120 || !url) { f.accounts = 'Each account needs a platform, a handle and an https:// profile address.'; break; }
-      if (seen.has(url.toLowerCase())) continue; // same profile listed twice counts once
-      seen.add(url.toLowerCase());
+      const rawUrl = a && typeof a.profile_url === 'string' ? a.profile_url.trim() : '';
+      const url = rawUrl ? normalizeHttpsUrl(rawUrl) : null; // the URL is optional; it is validated only when supplied
+      if (!platform || !handle || handle.length > 120) { f.accounts = 'Each account needs a platform and a handle or channel name.'; break; }
+      if (rawUrl && !url) { f.accounts = 'A profile address must be a full https:// link, or left blank.'; break; }
+      const handleNorm = normalizeHandle(handle);
+      if (!handleNorm) { f.accounts = 'Each account needs a platform and a handle or channel name.'; break; }
+      const dupKey = `${platform}|${handleNorm}`;
+      if (seen.has(dupKey) || (url && seen.has('u|' + url.toLowerCase()))) continue; // the same account listed twice counts once
+      seen.add(dupKey); if (url) seen.add('u|' + url.toLowerCase());
       // Anonymous overrides every per-account public flag.
-      accounts.push({ platform, handle, profile_url: url, public: privacy_preference === 'public' && a.public_display_permission === true });
+      accounts.push({ platform, handle, handle_norm: handleNorm, profile_url: url, public: privacy_preference === 'public' && a.public_display_permission === true });
     }
   }
 
   if (Object.keys(f).length) return { fields: f };
   return {
-    value: { idempotency_key: key, creator_name, email, country, pledge_date, charity, privacy_preference, general, interest, types, collabContact, accounts },
+    value: { idempotency_key: key, creator_name, email, country, pledge_date, charity, charity_status, privacy_preference, general, interest, types, collabContact, accounts },
   };
 }

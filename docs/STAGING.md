@@ -45,6 +45,9 @@ Until a domain is verified, Resend's shared test sender (`onboarding@resend.dev`
 6. On **Donate**: the Zeffy button opens the Zeffy form; the international notice shows; there is no PayPal button.
 7. Footer: Facebook, Instagram and LinkedIn open the right pages.
 
+## Testing without changing the public numbers
+The public registry stays hidden until 20 genuine registrations exist, and your own test registrations on staging count as genuine. To test freely, register with a plus-address such as `yourname+test1@gmail.com`, `+test2`, and so on (it still reaches your inbox, so you receive the verification email, but it is flagged as a test and never counted). Details: `docs/REGISTRY.md`.
+
 ## Costs and limits
 Nothing here costs money. Cloudflare Workers free plan (100,000 requests/day), D1 free plan (5 GB, 5M reads/day), GitHub Actions free minutes, Resend free tier. I will ask before anything with a price. Staging test records live only in the staging database; delete them or the whole staging Worker and database in the Cloudflare dashboard whenever you like.
 

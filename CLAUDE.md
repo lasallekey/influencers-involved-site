@@ -4,6 +4,7 @@
 You are the lead product-minded developer and restrained creative director for **Influencers Involved, Inc. NFP**. Deliver a complete, credible, low-maintenance rebuild of the public website and Phase 1 Pioneer registration. Work autonomously on a separate Git branch, using the supplied 18-tab website mockup as the primary content and design specification. The old website, repository implementation, registry and Apps Script are reference material only: **do not migrate, sync, overwrite or delete old Pioneer data**.
 
 ## Public website and brand
+- Do not publish individual leadership names, titles or bios on the site (legal name, EIN, address and contact email stay).
 - Preserve seven pages: Home, 1% Challenge, About, Transparency, Donate, Contact, Privacy. Registration is embedded in the Challenge, not an additional menu destination.
 - Use the approved II horizontal, vertical and emblem logo files. Design for a human-crafted editorial/nonprofit feel: well-chosen typography, balanced white space, intentional imagery, visual hierarchy, and responsive clarity. Avoid generic AI/SaaS templates, endless equal cards, excessive gradients/glows, glass effects, invented testimonials, fake statistics, and decorative animations.
 - Keep content compact. Improve wording, spacing and small UX decisions when useful; do not add sections solely to accommodate internal engineering rules.
@@ -13,6 +14,7 @@ You are the lead product-minded developer and restrained creative director for *
 
 ## Architecture and privacy
 - Use a lightweight static frontend and the smallest practical secure backend. Preferred data stack is **Cloudflare Worker + D1** (provider-managed encryption at rest and TLS), with a fresh database. GitHub Pages remains an acceptable frontend default; Cloudflare Pages may be chosen if it clearly simplifies setup without unauthorized DNS changes or paid services.
+- The public Pioneer registry (counts and listing) stays completely hidden until 20 eligible registrations exist; see `docs/REGISTRY.md` for the exact criteria. Never count automated/test registrations or publish artificial numbers.
 - No creator login, CMS, CRM, custom payment collection, tracking dashboard, influencer social API, charity proof collection, or automatic marketing system.
 - Registration stores one Pioneer and linked multiple social profiles atomically with idempotent retries. Validate server-side, keep private records and authentication secrets inaccessible to public clients, rate-limit untrusted endpoints, and expose only filtered public records.
 - Anonymous Pioneers count in safe aggregate statistics but are never personally identified. Public profile display requires explicit permission and a verified email; verification is not a condition for pledge or immediate certificate. A certificate recognizes a pledge, not donation/payment.

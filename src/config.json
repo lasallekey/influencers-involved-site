@@ -15,14 +15,14 @@
     "youtube": null,
     "tiktok": null
   },
-  "charities": [
-    "American Red Cross",
-    "St. Jude Children’s Research Hospital",
-    "Feeding America",
-    "Doctors Without Borders",
-    "UNICEF USA",
-    "World Central Kitchen",
-    "Habitat for Humanity"
-  ],
-  "platforms": ["YouTube", "Instagram", "TikTok", "Facebook", "Twitch", "LinkedIn", "X", "Other"]
+  "platforms": [
+    "YouTube",
+    "Instagram",
+    "TikTok",
+    "Facebook",
+    "Twitch",
+    "LinkedIn",
+    "X",
+    "Other"
+  ]
 }

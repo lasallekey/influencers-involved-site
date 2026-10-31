@@ -27,7 +27,7 @@ createServer(async (req, res) => {
     }
     if (url.pathname.startsWith('/api/')) {
       const chunks = []; for await (const c of req) chunks.push(c);
-      const r = await worker.fetch(new Request(url, { method: req.method, headers: { ...req.headers, 'CF-Connecting-IP': req.socket.remoteAddress }, body: ['GET', 'HEAD'].includes(req.method) ? undefined : Buffer.concat(chunks) }), env, ctx);
+      const r = await worker.fetch(new Request(url, { method: req.method, headers: { ...req.headers, 'CF-Connecting-IP': req.headers['x-dev-client-ip'] || req.socket.remoteAddress }, body: ['GET', 'HEAD'].includes(req.method) ? undefined : Buffer.concat(chunks) }), env, ctx);
       res.writeHead(r.status, Object.fromEntries(r.headers)); res.end(Buffer.from(await r.arrayBuffer())); return;
     }
     let p = normalize(decodeURIComponent(url.pathname)).replace(/^(\.\.[/\\])+/, '');

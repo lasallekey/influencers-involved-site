@@ -1,6 +1,6 @@
 // Influencers Involved — Pioneer Registry API (Cloudflare Worker + D1).
 // The Worker is the only reader/writer of the database. The browser never holds a database key.
-import { validateRegistration, normalizeEmail, CONSENT_VERSION } from './validate.js';
+import { validateRegistration, normalizeEmail, isTestEmail, CONSENT_VERSION } from './validate.js';
 import { sendEmail, verificationMessage, emailConfigured } from './email.js';
 import { json, redirect, nowIso, newToken, newPioneerId, sha256Hex, hmacHex, timingSafeEqual } from './util.js';
 
@@ -8,7 +8,10 @@ const MAX_BODY = 20_000;
 const TOKEN_TTL_MS = 24 * 3600e3;
 const RESEND_GAP_MS = 5 * 60e3;
 const RESEND_PER_DAY = 3;
-const K_ANON = 5; // breakdowns smaller than this are never published
+// The public registry (counts and listing) stays completely hidden until this many eligible registrations exist.
+// Eligible = registration_status 'Active' AND is_test = 0 (see docs/REGISTRY.md). Both endpoints use the same predicate.
+const REGISTRY_MIN = 20;
+const ELIGIBLE = "p.registration_status = 'Active' AND p.is_test = 0";
 const LIMITS = { register: [10, 3600], resend: [6, 3600], verify: [60, 3600], unsub: [30, 3600] }; // [max, window seconds] per client
 
 export default {
@@ -98,11 +101,13 @@ async function readJson(request) {
 /* ---------- registration ---------- */
 
 function certificateView(row) {
+  const undecided = row.charity_status === 'undecided';
   return {
     ok: true,
     pioneer_id: row.pioneer_id,
     display_name: row.privacy_preference === 'anonymous' ? 'Anonymous Pioneer' : row.creator_name,
-    charity: row.selected_charity,
+    charity: undecided ? null : row.selected_charity, // null = not chosen yet; never shown as a charity name
+    charity_status: undecided ? 'undecided' : 'selected',
     pledge_date: row.pledge_date,
   };
 }
@@ -114,7 +119,7 @@ async function register(request, env, ctx) {
 
   // Honeypot: real people never fill this hidden field. Bots get a plausible reply and nothing is stored.
   if (parsed.body && typeof parsed.body.website === 'string' && parsed.body.website.trim() !== '') {
-    return json({ ok: true, pioneer_id: newPioneerId(), display_name: 'Pioneer', charity: '', pledge_date: '', email_status: 'queued' }, 201);
+    return json({ ok: true, pioneer_id: newPioneerId(), display_name: 'Pioneer', charity: null, charity_status: 'undecided', pledge_date: '', email_status: 'queued' }, 201);
   }
 
   const v = validateRegistration(parsed.body);
@@ -122,7 +127,7 @@ async function register(request, env, ctx) {
   const d = v.value;
 
   // Idempotent retry: the same key returns the same stored result and never creates a second record.
-  const prior = await env.DB.prepare('SELECT pioneer_id, creator_name, selected_charity, pledge_date, privacy_preference FROM pioneers WHERE idempotency_key = ?1').bind(d.idempotency_key).first();
+  const prior = await env.DB.prepare('SELECT pioneer_id, creator_name, selected_charity, charity_status, pledge_date, privacy_preference FROM pioneers WHERE idempotency_key = ?1').bind(d.idempotency_key).first();
   if (prior) return json({ ...certificateView(prior), email_status: 'replayed' }, 200);
 
   const now = nowIso();
@@ -133,16 +138,16 @@ async function register(request, env, ctx) {
     const configured = emailConfigured(env);
     const stmts = [
       env.DB.prepare(
-        `INSERT INTO pioneers (pioneer_id, submitted_at, creator_name, private_email, country, selected_charity, pledge_date, privacy_preference,
+        `INSERT INTO pioneers (pioneer_id, submitted_at, creator_name, private_email, country, selected_charity, charity_status, charity_key, is_test, pledge_date, privacy_preference,
            general_email_opt_in, general_opt_in_at, collaboration_interest, collaboration_types, collab_contact_opt_in, collab_opt_in_at,
            consent_version, consented_at, idempotency_key)
-         VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17)`
-      ).bind(pioneerId, now, d.creator_name, d.email, d.country, d.charity, d.pledge_date, d.privacy_preference,
+         VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,?19,?20)`
+      ).bind(pioneerId, now, d.creator_name, d.email, d.country, d.charity ? d.charity.name : '', d.charity_status, d.charity ? d.charity.key : null, isTestEmail(d.email, env.TEST_EMAIL_DOMAINS || '') ? 1 : 0, d.pledge_date, d.privacy_preference,
         d.general ? 1 : 0, d.general ? now : null, d.interest, JSON.stringify(d.types), d.collabContact ? 1 : 0, d.collabContact ? now : null,
         CONSENT_VERSION, now, d.idempotency_key),
       ...d.accounts.map((a) =>
-        env.DB.prepare('INSERT INTO social_accounts (pioneer_id, platform, handle_or_channel, profile_url, public_display_permission) VALUES (?1,?2,?3,?4,?5)')
-          .bind(pioneerId, a.platform, a.handle, a.profile_url, a.public ? 1 : 0)),
+        env.DB.prepare('INSERT INTO social_accounts (pioneer_id, platform, handle_or_channel, handle_normalized, profile_url, public_display_permission) VALUES (?1,?2,?3,?4,?5,?6)')
+          .bind(pioneerId, a.platform, a.handle, a.handle_norm, a.profile_url, a.public ? 1 : 0)),
       env.DB.prepare('INSERT INTO email_verifications (pioneer_id, token_hash, created_at, expires_at, send_status) VALUES (?1,?2,?3,?4,?5)')
         .bind(pioneerId, tokenHash, now, new Date(Date.now() + TOKEN_TTL_MS).toISOString(), configured ? 'queued' : 'not_configured'),
     ];
@@ -151,7 +156,7 @@ async function register(request, env, ctx) {
     } catch (e) {
       const msg = String((e && e.message) || e);
       if (msg.includes('idempotency_key')) { // concurrent duplicate of the same attempt
-        const row = await env.DB.prepare('SELECT pioneer_id, creator_name, selected_charity, pledge_date, privacy_preference FROM pioneers WHERE idempotency_key = ?1').bind(d.idempotency_key).first();
+        const row = await env.DB.prepare('SELECT pioneer_id, creator_name, selected_charity, charity_status, pledge_date, privacy_preference FROM pioneers WHERE idempotency_key = ?1').bind(d.idempotency_key).first();
         if (row) return json({ ...certificateView(row), email_status: 'replayed' }, 200);
       }
       if (msg.includes('private_email')) return json({ ok: false, error: 'email_registered' }, 409);
@@ -166,7 +171,7 @@ async function register(request, env, ctx) {
       emailStatus = 'queued';
       ctx.waitUntil(deliverVerification(env, { pioneerId, to: d.email, name: d.creator_name, token, tokenHash, optional: d.general || d.collabContact }, request));
     }
-    return json({ ok: true, pioneer_id: pioneerId, display_name: d.privacy_preference === 'anonymous' ? 'Anonymous Pioneer' : d.creator_name, charity: d.charity, pledge_date: d.pledge_date, email_status: emailStatus }, 201);
+    return json({ ok: true, pioneer_id: pioneerId, display_name: d.privacy_preference === 'anonymous' ? 'Anonymous Pioneer' : d.creator_name, charity: d.charity ? d.charity.name : null, charity_status: d.charity_status, pledge_date: d.pledge_date, email_status: emailStatus }, 201);
   }
   return json({ ok: false, error: 'not_saved' }, 500);
 }
@@ -246,32 +251,33 @@ async function unsubscribe(request, env, url) {
 
 /* ---------- public, filtered reads ---------- */
 
-const PUBLIC_CACHE = { 'Cache-Control': 'public, max-age=300' };
+const PUBLIC_CACHE = { 'Cache-Control': 'public, max-age=60' };
 
+async function eligibleCount(env) {
+  const r = await env.DB.prepare(`SELECT COUNT(*) AS n FROM pioneers p WHERE ${ELIGIBLE}`).first();
+  return r.n;
+}
+
+// Before REGISTRY_MIN eligible registrations exist the response is exactly {visible:false}: no numbers, no empty-state data.
 async function stats(env) {
-  const base = await env.DB.prepare(`SELECT COUNT(*) AS pioneers FROM pioneers WHERE registration_status = 'Active'`).first();
-  const accounts = await env.DB.prepare(`SELECT COUNT(*) AS n FROM social_accounts s JOIN pioneers p ON p.pioneer_id = s.pioneer_id WHERE p.registration_status = 'Active'`).first();
-  const out = { unique_pioneers: base.pioneers, participating_accounts: accounts.n, countries: null, platform_count: null, platforms: [] };
-  // Breakdowns are published only once the whole registry is large enough that no single person stands out.
-  if (base.pioneers >= K_ANON) {
-    const c = await env.DB.prepare(`SELECT COUNT(DISTINCT country) AS n FROM pioneers WHERE registration_status = 'Active'`).first();
-    out.countries = c.n;
-    const pl = await env.DB.prepare(`SELECT s.platform AS platform, COUNT(*) AS n FROM social_accounts s JOIN pioneers p ON p.pioneer_id = s.pioneer_id WHERE p.registration_status = 'Active' GROUP BY s.platform ORDER BY n DESC`).all();
-    out.platform_count = pl.results.length;
-    out.platforms = pl.results.filter((r) => r.n >= K_ANON).map((r) => ({ platform: r.platform, count: r.n }));
-  }
-  return json(out, 200, PUBLIC_CACHE);
+  const n = await eligibleCount(env);
+  if (n < REGISTRY_MIN) return json({ visible: false }, 200, PUBLIC_CACHE);
+  const accounts = await env.DB.prepare(`SELECT COUNT(*) AS n FROM (SELECT DISTINCT s.platform, s.handle_normalized FROM social_accounts s JOIN pioneers p ON p.pioneer_id = s.pioneer_id WHERE ${ELIGIBLE})`).first();
+  const charities = await env.DB.prepare(`SELECT COUNT(DISTINCT p.charity_key) AS n FROM pioneers p WHERE ${ELIGIBLE} AND p.charity_status = 'selected' AND p.charity_key IS NOT NULL AND p.charity_key <> ''`).first();
+  const countries = await env.DB.prepare(`SELECT COUNT(DISTINCT p.country) AS n FROM pioneers p WHERE ${ELIGIBLE}`).first();
+  return json({ visible: true, pioneers: n, social_accounts: accounts.n, charities: charities.n, countries: countries.n }, 200, PUBLIC_CACHE);
 }
 
 async function publicPioneers(env) {
-  // Verified AND publicly opted in AND active. Only the profiles the person approved. No email, country, charity or interests.
-  const people = await env.DB.prepare(`SELECT pioneer_id, creator_name FROM pioneers WHERE registration_status = 'Active' AND email_verification_status = 'Verified' AND privacy_preference = 'public' ORDER BY creator_name COLLATE NOCASE LIMIT 200`).all();
+  if ((await eligibleCount(env)) < REGISTRY_MIN) return json({ visible: false, pioneers: [] }, 200, PUBLIC_CACHE);
+  // Verified AND publicly opted in AND eligible. Only the profiles the person approved. No email, country, charity or interests.
+  const people = await env.DB.prepare(`SELECT p.pioneer_id, p.creator_name FROM pioneers p WHERE ${ELIGIBLE} AND p.email_verification_status = 'Verified' AND p.privacy_preference = 'public' ORDER BY p.creator_name COLLATE NOCASE LIMIT 200`).all();
   const accts = await env.DB.prepare(`SELECT s.pioneer_id, s.platform, s.handle_or_channel, s.profile_url FROM social_accounts s JOIN pioneers p ON p.pioneer_id = s.pioneer_id
-    WHERE s.public_display_permission = 1 AND p.registration_status = 'Active' AND p.email_verification_status = 'Verified' AND p.privacy_preference = 'public'`).all();
+    WHERE s.public_display_permission = 1 AND ${ELIGIBLE} AND p.email_verification_status = 'Verified' AND p.privacy_preference = 'public'`).all();
   const by = new Map();
   for (const a of accts.results) {
     if (!by.has(a.pioneer_id)) by.set(a.pioneer_id, []);
-    by.get(a.pioneer_id).push({ platform: a.platform, handle: a.handle_or_channel, url: a.profile_url });
+    by.get(a.pioneer_id).push({ platform: a.platform, handle: a.handle_or_channel, url: a.profile_url || null });
   }
-  return json({ pioneers: people.results.map((p) => ({ name: p.creator_name, accounts: by.get(p.pioneer_id) || [] })) }, 200, PUBLIC_CACHE);
+  return json({ visible: true, pioneers: people.results.map((p) => ({ name: p.creator_name, accounts: by.get(p.pioneer_id) || [] })) }, 200, PUBLIC_CACHE);
 }

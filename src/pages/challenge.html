@@ -28,7 +28,7 @@ class: page-challenge
         <use href="#b-short" class="pb" x="112" y="112" width="210" height="630"/>
         <use href="#hp" class="pb" x="112" y="112" width="210" height="630"/>
         <path class="sv-sleeve pb" d="M282 346C326 356 352 310 360 262" fill="none" stroke-width="40" stroke-linecap="round"/>
-        <g class="prop" transform="rotate(-6 440 170)"><use href="#p-cert" x="334" y="82" width="212" height="152"/></g>
+        <g class="prop"><g transform="rotate(-6 440 170)"><use href="#p-cert" x="334" y="82" width="212" height="152"/></g></g>
         <circle class="sv-skin pb" cx="362" cy="250" r="19"/>
         <use href="#heart" class="hz h1" x="60" y="236" width="30" height="30"/>
         <use href="#heart" class="hz h2" x="236" y="86" width="24" height="24"/>
@@ -109,11 +109,19 @@ class: page-challenge
   </div>
 </section>
 
-<section class="m-sec m-sky" id="pioneers" aria-labelledby="reg" hidden>
+<section class="m-sec m-sky community" id="pioneers" aria-labelledby="reg" hidden>
   <div class="wrap">
-    <h2 id="reg">Pioneers so far</h2>
-    <ul class="stats" id="stats"></ul>
-    <p class="fine" id="stats-note">One person with five social accounts counts as one Pioneer and five accounts.</p>
+    <h2 id="reg">Our Pioneer Community</h2>
+    <div class="community-scroll" role="region" aria-label="Pioneer community statistics (scrolls sideways on small screens)" tabindex="0">
+      <ul class="community-stats">
+        <li><strong id="st-pioneers">0</strong><span>Pioneers Registered</span></li>
+        <li><strong id="st-accounts">0</strong><span>Social Accounts</span></li>
+        <li><strong id="st-charities">0</strong><span>Charities Selected</span></li>
+        <li><strong id="st-countries">0</strong><span>Countries Represented</span></li>
+      </ul>
+    </div>
+    <p class="fine swipe-hint" aria-hidden="true">Swipe sideways to see all four.</p>
+    <p class="fine" id="stats-note">These figures come from active registrations. One person with several accounts counts as one Pioneer. “Charities Selected” counts the different charities named in pledges; it is not a measure of donations.</p>
     <div id="profiles-wrap" hidden>
       <h3>Pioneers who chose to be listed</h3>
       <ul class="profiles" id="profiles"></ul>
@@ -141,11 +149,18 @@ class: page-challenge
           <div class="field"><label for="country">Country <span class="req">*</span></label><select id="country" name="country" autocomplete="country" required aria-describedby="country-e">{{countryOptions}}</select><p class="err" id="country-e"></p></div>
           <div class="field"><label for="pledge_date">Pledge date <span class="req">*</span></label><input type="date" id="pledge_date" name="pledge_date" required aria-describedby="pledge_date-e"><p class="err" id="pledge_date-e"></p></div>
         </div>
-        <div class="field"><label for="charity_select">Which charity will you support? <span class="req">*</span></label>
-          <select id="charity_select" name="charity_select" required aria-describedby="charity-h charity_select-e"><option value="">Choose a charity…</option>{{charityOptions}}</select>
-          <p class="hint" id="charity-h">Examples only; listing a charity does not imply vetting or endorsement.</p><p class="err" id="charity_select-e"></p></div>
+        <div class="field charity-field">
+          <label for="charity_select">Which charity will you support? <span class="req">*</span></label>
+          <label class="sr-only" for="charity_search">Search the charity list</label>
+          <input type="search" id="charity_search" class="charity-search" placeholder="Type to search the list (optional)" autocomplete="off" aria-controls="charity_select" aria-describedby="charity-count">
+          <select id="charity_select" name="charity_select" required aria-describedby="charity-h charity_select-e">{{charityOptions}}</select>
+          <p class="sr-only" id="charity-count" role="status" aria-live="polite"></p>
+          <p class="hint" id="charity-h">Not sure yet? Choose the second option; it’s completely fine to decide later. The list is a convenience, not an endorsement or a limit: choose “Another charity” to enter any charity you like.</p>
+          <p class="err" id="charity_select-e"></p>
+        </div>
+        <p class="notice" id="charity-undecided-note" role="note" hidden>That works. You’re still pledging 1% of your creator income to a charity of your choice. When you decide, email <a href="mailto:{{email}}">{{email}}</a> with your Pioneer ID and we’ll add it to your record.</p>
         <div class="field" id="charity-other-field" hidden><label for="charity_other">Charity name <span class="req">*</span></label><input type="text" id="charity_other" name="charity_other" maxlength="160" aria-describedby="charity_other-e"><p class="err" id="charity_other-e"></p></div>
-        <div class="check"><input type="checkbox" id="pledge_confirm" name="pledge_confirm" aria-describedby="pledge_confirm-e"><label for="pledge_confirm">I pledge 1% of my creator income to my chosen charity, to give directly on a schedule I choose. This is voluntary, not a payment to II. I confirm that the social profiles I provide are mine or I am authorized to represent them. <span class="req">*</span></label></div>
+        <div class="check"><input type="checkbox" id="pledge_confirm" name="pledge_confirm" aria-describedby="pledge_confirm-e"><label for="pledge_confirm">I pledge 1% of my creator income to a charity of my choice, to give directly on a schedule I choose. This is voluntary, not a payment to II. I confirm that the social profiles I provide are mine or I am authorized to represent them. <span class="req">*</span></label></div>
         <p class="err" id="pledge_confirm-e"></p>
       </fieldset>
 
@@ -198,6 +213,7 @@ class: page-challenge
     <p class="eyebrow">Pledge saved</p>
     <h2>You’re a Pioneer. Welcome!</h2>
     <p class="lede">Your pledge is saved. Pioneer ID: <span class="pid" id="pid"></span></p>
+    <p id="charity-later" class="notice" hidden>You haven’t chosen a charity yet, and that’s fine. Your pledge stands as 1% of your creator income to a charity of your choice. When you decide, email <a href="mailto:{{email}}">{{email}}</a> with your Pioneer ID and we’ll update your record.</p>
     <p id="verify-line">Check your inbox for an optional email-verification link so we can protect the registry and contact you if you opt in. Your optional Pioneer Certificate is ready now; email verification is separate and is not required to make a pledge or receive recognition.</p>
     <canvas id="cert" class="cert-canvas" width="1600" height="1130" role="img" aria-label="Your Pioneer pledge certificate"></canvas>
     <div class="cta-row">

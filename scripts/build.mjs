@@ -8,6 +8,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const src = join(root, 'src');
 const out = join(root, 'site');
 const config = JSON.parse(readFileSync(join(src, 'config.json'), 'utf8'));
+const charityCatalogue = JSON.parse(readFileSync(join(root, 'shared/charities.json'), 'utf8'));
 const peopleKit = readFileSync(join(src, 'partials', 'people.html'), 'utf8');
 const countries = JSON.parse(readFileSync(join(root, 'shared/countries.json'), 'utf8'));
 
@@ -39,7 +40,13 @@ const tokens = {
   intlNotice: config.internationalNotice,
   apiBase: config.apiBase,
   countryOptions: countries.map(([c, n]) => opt(c, n, c === 'US' ? ' selected' : '')).join(''),
-  charityOptions: [...config.charities.map((c) => opt(c)), opt('__other__', 'Other / My charity is not listed')].join(''),
+  // Placeholder, then the two always-visible special choices, then the categorized catalogue (native optgroups).
+  charityOptions: [
+    opt('', 'Choose a charity…'),
+    opt('__undecided__', "I haven't chosen a charity yet — I'll decide later."),
+    opt('__other__', 'Another charity — let me enter its name.'),
+    ...charityCatalogue.map((cat) => `<optgroup label="${esc(cat.category)}">${cat.charities.map((c) => opt(c.name)).join('')}</optgroup>`),
+  ].join(''),
   platformOptions: config.platforms.map((p) => opt(p)).join(''),
   people: peopleKit,
   socialLinks: socials.map(([k, label]) => `<a href="${esc(config.social[k])}" rel="me noopener" target="_blank">${label}<span class="sr-only"> (opens in a new tab)</span></a>`).join(''),
@@ -116,7 +123,7 @@ const staticDir = join(src, 'static');
   }
 })(staticDir, join(out, 'assets'));
 // Runtime config for the browser: only public values.
-writeFileSync(join(out, 'assets', 'site-config.js'), `window.II_CONFIG=${JSON.stringify({ apiBase: config.apiBase, email: config.email, platforms: config.platforms })};\n`);
+writeFileSync(join(out, 'assets', 'site-config.js'), `window.II_CONFIG=${JSON.stringify({ apiBase: config.apiBase, email: config.email, platforms: config.platforms, charities: charityCatalogue.map((c) => ({ c: c.category, i: c.charities.map((x) => [x.name, ...(x.aliases || [])]) })) })};\n`);
 // Security headers (honored by Cloudflare Workers assets/Pages). GitHub Pages ignores this file.
 const api = config.apiBase ? ' ' + new URL(config.apiBase).origin : '';
 writeFileSync(join(out, '_headers'), `/*

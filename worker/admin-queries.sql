@@ -32,6 +32,19 @@ SELECT (SELECT COUNT(*) FROM pioneers WHERE registration_status='Active') AS pio
 SELECT * FROM pioneers WHERE private_email = 'person@example.com';
 SELECT s.* FROM social_accounts s JOIN pioneers p ON p.pioneer_id = s.pioneer_id WHERE p.private_email = 'person@example.com';
 
+-- 5. Set or change a Pioneer's charity (someone who chose "not yet", or who asked to change). Check the Pioneer ID first.
+--   UPDATE pioneers SET selected_charity='Feeding America', charity_status='selected', charity_key='feeding america' WHERE pioneer_id='II-XXXX-XXXX';
+--   (charity_key = lowercase name, punctuation removed, "&" -> "and", no leading "the"; see docs/REGISTRY.md.) People who have not chosen yet:
+SELECT pioneer_id, creator_name, private_email, submitted_at FROM pioneers WHERE charity_status='undecided' AND registration_status='Active' AND is_test=0 ORDER BY submitted_at;
+
+-- 6. Registry visibility check: how many registrations are eligible (the public dashboard appears at 20).
+SELECT COUNT(*) AS eligible, (COUNT(*) >= 20) AS dashboard_visible FROM pioneers WHERE registration_status='Active' AND is_test=0;
+
+-- 7. Flag or unflag a test registration (flagged records never count). Own-mailbox tests: use name+test1@... addresses.
+--   UPDATE pioneers SET is_test=1 WHERE private_email='person@example.com';
+--   UPDATE pioneers SET is_test=0 WHERE private_email='person@example.com';
+SELECT pioneer_id, private_email, submitted_at FROM pioneers WHERE is_test=1 ORDER BY submitted_at DESC LIMIT 50;
+
 -- ── Privacy requests (run only after confirming the requester controls the address) ──
 -- Withdraw a registration: removes them from counts and public listing, stops optional email, frees the address.
 --   UPDATE pioneers SET registration_status='Withdrawn', general_email_opt_in=0, collab_contact_opt_in=0, optional_withdrawn_at=datetime('now') WHERE private_email='person@example.com';
