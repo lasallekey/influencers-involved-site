@@ -1,0 +1,33 @@
+{
+  "domain": "https://influencersinvolved.org",
+  "legalName": "Influencers Involved, Inc. NFP",
+  "ein": "39-2242545",
+  "street": "800 W Central Rd, Suite 120",
+  "city": "Mt. Prospect, IL 60056",
+  "email": "grants@influencersinvolved.org",
+  "zeffyUrl": "https://www.zeffy.com/en-US/donation-form/support-influencers-involved",
+  "apiBase": "",
+  "social": {
+    "facebook": "https://www.facebook.com/InfluencersInvolved",
+    "instagram": "https://www.instagram.com/influencersinvolved",
+    "linkedin": "https://www.linkedin.com/company/influencersinvolved",
+    "youtube": null,
+    "tiktok": null
+  },
+  "platforms": [
+    "YouTube",
+    "Instagram",
+    "TikTok",
+    "Facebook",
+    "Twitch",
+    "LinkedIn",
+    "X",
+    "Other"
+  ],
+  "donate": {
+    "internationalHeading": "U.S. & International Donations",
+    "internationalDescription": "Support Influencers Involved from the United States or abroad. Donate securely by card through Zeffy.",
+    "feeExplanation": "100% of your intended donation goes to Influencers Involved, with no platform or processing fees deducted by Zeffy. A separate optional contribution to Zeffy may be offered at checkout.",
+    "internationalNote": "Donations are processed in U.S. dollars (USD). Your bank may apply currency conversion or foreign transaction fees. Card availability may vary by country."
+  }
+}

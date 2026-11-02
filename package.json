@@ -1,0 +1,20 @@
+{
+  "name": "influencers-involved-site",
+  "private": true,
+  "type": "module",
+  "description": "Influencers Involved, Inc. NFP — static site and Pioneer registry Worker (rebuild)",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --disable-warning=ExperimentalWarning --test \"worker/test/*.test.js\" \"scripts/test/*.test.js\"",
+    "check": "node scripts/check-site.mjs",
+    "dev": "node --disable-warning=ExperimentalWarning scripts/dev-server.mjs",
+    "deploy:staging": "wrangler deploy --env staging --config worker/wrangler.toml"
+  },
+  "devDependencies": {
+    "playwright": "^1.63.0",
+    "wrangler": "^4.0.0"
+  }
+}

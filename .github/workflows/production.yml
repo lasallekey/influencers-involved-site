@@ -1,0 +1,113 @@
+name: Deploy production (manual, owner-approved)
+# NOT run automatically. It starts only when someone presses "Run workflow" on the main branch AND types the confirmation phrase,
+# and the job then waits for the required reviewer(s) of the GitHub Environment named "production" (Settings → Environments).
+# Stage 1 (dark launch) deploys to the Worker's own workers.dev address with a noindex build and never touches DNS or the live
+# website. The domain cutover is a separate, later, owner-approved step: docs/PRODUCTION.md.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type DEPLOY PRODUCTION to continue'
+        required: true
+      create_database:
+        description: 'Create the production D1 database (first run only; otherwise the run stops if it does not exist)'
+        type: boolean
+        default: false
+      cutover_complete:
+        description: 'Only after the approved domain cutover commit is on main: build the indexable site and test influencersinvolved.org'
+        type: boolean
+        default: false
+      run_smoke:
+        description: 'Run the synthetic smoke test afterwards and remove its test records'
+        type: boolean
+        default: true
+concurrency:
+  group: production
+  cancel-in-progress: false
+permissions:
+  contents: read
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main' && inputs.confirm == 'DEPLOY PRODUCTION'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: production   # required reviewers + production-only secrets live on this environment
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      EMAIL_API_KEY: ${{ secrets.PRODUCTION_EMAIL_API_KEY }}
+      WRANGLER_SEND_METRICS: "false"
+      CI: "1"
+    steps:
+      - name: Preflight (names of missing secrets only; values are never printed)
+        run: |
+          missing=""
+          [ -n "$CLOUDFLARE_API_TOKEN" ]  || missing="$missing CLOUDFLARE_API_TOKEN"
+          [ -n "$CLOUDFLARE_ACCOUNT_ID" ] || missing="$missing CLOUDFLARE_ACCOUNT_ID"
+          [ -n "$EMAIL_API_KEY" ]         || missing="$missing PRODUCTION_EMAIL_API_KEY"
+          if [ -n "$missing" ]; then echo "::error::Missing secrets on the 'production' environment:$missing (docs/PRODUCTION.md, step 3)."; exit 1; fi
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Tests and Worker configuration dry run
+        run: |
+          npm test
+          npx wrangler deploy --dry-run --env production --outdir "$RUNNER_TEMP/wr" --config worker/wrangler.toml
+      - name: Build the site
+        run: |
+          if [ "${{ inputs.cutover_complete }}" = "true" ]; then
+            grep -q '^SITE_URL = "https://influencersinvolved.org"' worker/wrangler.toml || { echo "::error::cutover_complete is ticked but worker/wrangler.toml does not yet contain the approved cutover settings (docs/PRODUCTION.md, Cutover)."; exit 1; }
+            npm run build
+          else
+            PRELAUNCH=1 npm run build
+          fi
+          npm run check
+          if grep -rq "Staging preview" site; then echo "::error::A staging build must never be deployed to production."; exit 1; fi
+      - name: Production database (created only when asked)
+        run: node scripts/d1-provision.mjs production ${{ inputs.create_database && '--create' || '' }}
+      - name: Record the database restore point before changing anything
+        run: |
+          {
+            echo "### Restore point (D1 Time Travel) before this deployment"
+            echo '```'
+            npx wrangler d1 time-travel info ii-pioneer-registry-production --config worker/wrangler.toml 2>&1 | sed 's/\x1b\[[0-9;]*m//g' | tail -5 || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Apply database migrations
+        run: npx wrangler d1 migrations apply ii-pioneer-registry-production --remote --env production --config worker/wrangler.toml
+      - name: Deploy Worker and site
+        id: deploy
+        run: |
+          npx wrangler deploy --env production --config worker/wrangler.toml 2>&1 | tee deploy.log
+          if [ "${{ inputs.cutover_complete }}" = "true" ]; then
+            URL="https://influencersinvolved.org"
+          else
+            URL=$(grep -oE 'https://[a-zA-Z0-9.-]+\.workers\.dev' deploy.log | head -1)
+          fi
+          if [ -z "$URL" ]; then echo "::error::Could not determine the deployed URL."; exit 1; fi
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+      - name: Set production secrets
+        run: |
+          NAMES=$(npx wrangler secret list --env production --config worker/wrangler.toml --format json || echo "[]")
+          if ! echo "$NAMES" | grep -q '"TOKEN_SECRET"'; then
+            openssl rand -hex 32 | npx wrangler secret put TOKEN_SECRET --env production --config worker/wrangler.toml
+          fi
+          printf '%s' "$EMAIL_API_KEY" | npx wrangler secret put EMAIL_API_KEY --env production --config worker/wrangler.toml
+      - name: Smoke test (synthetic, never counted)
+        if: inputs.run_smoke
+        run: node scripts/smoke-staging.mjs "${{ steps.deploy.outputs.url }}" --production
+      - name: Remove smoke-test records
+        if: always() && inputs.run_smoke && steps.deploy.outcome == 'success'
+        run: npx wrangler d1 execute ii-pioneer-registry-production --remote --env production --config worker/wrangler.toml --file worker/cleanup-smoke.sql
+      - name: Summary
+        run: |
+          {
+            echo "### Production deployed (${{ inputs.cutover_complete && 'after cutover' || 'dark launch: not indexed, domain untouched' }})"
+            echo ""
+            echo "${{ steps.deploy.outputs.url }}"
+            echo ""
+            echo "Next: docs/PRODUCTION.md (owner checklist)."
+          } >> "$GITHUB_STEP_SUMMARY"

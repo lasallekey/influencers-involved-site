@@ -1,0 +1,587 @@
+[
+ {
+  "category": "Global Health & Evidence-Based Giving",
+  "charities": [
+   {
+    "name": "Against Malaria Foundation",
+    "aliases": [
+     "AMF"
+    ]
+   },
+   {
+    "name": "Malaria Consortium"
+   },
+   {
+    "name": "Helen Keller International",
+    "aliases": [
+     "Helen Keller Intl"
+    ]
+   },
+   {
+    "name": "New Incentives"
+   },
+   {
+    "name": "GiveDirectly",
+    "aliases": [
+     "Give Directly"
+    ]
+   },
+   {
+    "name": "One Acre Fund"
+   },
+   {
+    "name": "Partners In Health",
+    "aliases": [
+     "PIH"
+    ]
+   },
+   {
+    "name": "Fistula Foundation"
+   }
+  ]
+ },
+ {
+  "category": "Disaster Relief & International Aid",
+  "charities": [
+   {
+    "name": "American Red Cross",
+    "aliases": [
+     "Red Cross"
+    ]
+   },
+   {
+    "name": "Direct Relief"
+   },
+   {
+    "name": "Doctors Without Borders USA",
+    "aliases": [
+     "Doctors Without Borders",
+     "Medecins Sans Frontieres",
+     "MSF",
+     "MSF USA"
+    ]
+   },
+   {
+    "name": "World Central Kitchen",
+    "aliases": [
+     "WCK"
+    ]
+   },
+   {
+    "name": "International Rescue Committee",
+    "aliases": [
+     "IRC"
+    ]
+   },
+   {
+    "name": "CARE",
+    "aliases": [
+     "CARE USA"
+    ]
+   },
+   {
+    "name": "Catholic Relief Services",
+    "aliases": [
+     "CRS"
+    ]
+   },
+   {
+    "name": "Save the Children",
+    "aliases": [
+     "Save the Children US"
+    ]
+   },
+   {
+    "name": "Project HOPE",
+    "aliases": [
+     "Project Hope"
+    ]
+   },
+   {
+    "name": "Team Rubicon"
+   },
+   {
+    "name": "All Hands and Hearts",
+    "aliases": [
+     "All Hands and Hearts Smart Response"
+    ]
+   },
+   {
+    "name": "International Medical Corps",
+    "aliases": [
+     "IMC"
+    ]
+   },
+   {
+    "name": "HIAS"
+   },
+   {
+    "name": "UNICEF USA (United States Fund for UNICEF)",
+    "aliases": [
+     "UNICEF USA",
+     "UNICEF",
+     "United States Fund for UNICEF",
+     "US Fund for UNICEF"
+    ]
+   },
+   {
+    "name": "World Vision",
+    "aliases": [
+     "World Vision US"
+    ]
+   },
+   {
+    "name": "charity: water",
+    "aliases": [
+     "charity water"
+    ]
+   },
+   {
+    "name": "Water.org",
+    "aliases": [
+     "Water org"
+    ]
+   }
+  ]
+ },
+ {
+  "category": "Hunger & Food Security",
+  "charities": [
+   {
+    "name": "Feeding America"
+   },
+   {
+    "name": "Action Against Hunger-USA",
+    "aliases": [
+     "Action Against Hunger",
+     "Action Against Hunger USA"
+    ]
+   },
+   {
+    "name": "Feed My Starving Children",
+    "aliases": [
+     "FMSC"
+    ]
+   },
+   {
+    "name": "City Harvest"
+   },
+   {
+    "name": "Food Bank For New York City",
+    "aliases": [
+     "Food Bank of New York City",
+     "Food Bank NYC"
+    ]
+   },
+   {
+    "name": "The Hunger Project",
+    "aliases": [
+     "Hunger Project"
+    ]
+   },
+   {
+    "name": "MAZON: A Jewish Response to Hunger",
+    "aliases": [
+     "MAZON"
+    ]
+   },
+   {
+    "name": "Farm Aid"
+   }
+  ]
+ },
+ {
+  "category": "Children, Youth & Education",
+  "charities": [
+   {
+    "name": "ChildFund International",
+    "aliases": [
+     "ChildFund"
+    ]
+   },
+   {
+    "name": "Children International"
+   },
+   {
+    "name": "Children's Health Fund",
+    "aliases": [
+     "Childrens Health Fund"
+    ]
+   },
+   {
+    "name": "Big Brothers Big Sisters of America",
+    "aliases": [
+     "Big Brothers Big Sisters",
+     "BBBS"
+    ]
+   },
+   {
+    "name": "Boys & Girls Clubs of America",
+    "aliases": [
+     "Boys and Girls Clubs of America",
+     "Boys and Girls Club",
+     "Boys & Girls Club",
+     "BGCA"
+    ]
+   },
+   {
+    "name": "Girl Scouts of the USA",
+    "aliases": [
+     "Girl Scouts"
+    ]
+   },
+   {
+    "name": "Girls Incorporated",
+    "aliases": [
+     "Girls Inc"
+    ]
+   },
+   {
+    "name": "Junior Achievement USA",
+    "aliases": [
+     "Junior Achievement"
+    ]
+   },
+   {
+    "name": "National 4-H Council",
+    "aliases": [
+     "4-H",
+     "4H"
+    ]
+   },
+   {
+    "name": "Scholarship America"
+   },
+   {
+    "name": "Sesame Workshop"
+   },
+   {
+    "name": "ProLiteracy Worldwide",
+    "aliases": [
+     "ProLiteracy"
+    ]
+   },
+   {
+    "name": "Ronald McDonald House Charities",
+    "aliases": [
+     "Ronald McDonald House"
+    ]
+   },
+   {
+    "name": "National Center for Missing & Exploited Children",
+    "aliases": [
+     "NCMEC"
+    ]
+   }
+  ]
+ },
+ {
+  "category": "Cancer, Medical Research & Health",
+  "charities": [
+   {
+    "name": "Breast Cancer Research Foundation",
+    "aliases": [
+     "BCRF"
+    ]
+   },
+   {
+    "name": "Cancer Research Institute",
+    "aliases": [
+     "CRI"
+    ]
+   },
+   {
+    "name": "CancerCare",
+    "aliases": [
+     "Cancer Care"
+    ]
+   },
+   {
+    "name": "Dana-Farber Cancer Institute",
+    "aliases": [
+     "Dana Farber",
+     "Dana Farber Cancer Institute"
+    ]
+   },
+   {
+    "name": "National Breast Cancer Foundation",
+    "aliases": [
+     "NBCF"
+    ]
+   },
+   {
+    "name": "American Kidney Fund",
+    "aliases": [
+     "AKF"
+    ]
+   },
+   {
+    "name": "American Diabetes Association"
+   },
+   {
+    "name": "American Lung Association"
+   },
+   {
+    "name": "American Liver Foundation"
+   },
+   {
+    "name": "Breakthrough T1D",
+    "aliases": [
+     "JDRF"
+    ]
+   },
+   {
+    "name": "CDC Foundation"
+   },
+   {
+    "name": "National Kidney Foundation",
+    "aliases": [
+     "NKF"
+    ]
+   },
+   {
+    "name": "Michael J. Fox Foundation for Parkinson's Research",
+    "aliases": [
+     "Michael J Fox Foundation",
+     "MJFF",
+     "Michael J. Fox Foundation"
+    ]
+   },
+   {
+    "name": "Parkinson's Foundation",
+    "aliases": [
+     "Parkinsons Foundation"
+    ]
+   },
+   {
+    "name": "Salk Institute for Biological Studies",
+    "aliases": [
+     "Salk Institute"
+    ]
+   }
+  ]
+ },
+ {
+  "category": "Mental Health & Community Wellbeing",
+  "charities": [
+   {
+    "name": "Alzheimer's Association",
+    "aliases": [
+     "Alzheimers Association"
+    ]
+   },
+   {
+    "name": "American Foundation for Suicide Prevention",
+    "aliases": [
+     "AFSP"
+    ]
+   },
+   {
+    "name": "Brain & Behavior Research Foundation",
+    "aliases": [
+     "Brain and Behavior Research Foundation"
+    ]
+   },
+   {
+    "name": "Mental Health America",
+    "aliases": [
+     "MHA"
+    ]
+   },
+   {
+    "name": "NAMI",
+    "aliases": [
+     "National Alliance on Mental Illness"
+    ]
+   },
+   {
+    "name": "The Trevor Project",
+    "aliases": [
+     "Trevor Project"
+    ]
+   },
+   {
+    "name": "The Arc of the United States",
+    "aliases": [
+     "The Arc",
+     "Arc of the US"
+    ]
+   },
+   {
+    "name": "The Y (National Office)",
+    "aliases": [
+     "YMCA",
+     "The Y"
+    ]
+   }
+  ]
+ },
+ {
+  "category": "Animals, Wildlife & Environment",
+  "charities": [
+   {
+    "name": "Best Friends Animal Society",
+    "aliases": [
+     "Best Friends"
+    ]
+   },
+   {
+    "name": "PetSmart Charities"
+   },
+   {
+    "name": "Wildlife Conservation Society",
+    "aliases": [
+     "WCS"
+    ]
+   },
+   {
+    "name": "Dian Fossey Gorilla Fund International",
+    "aliases": [
+     "Dian Fossey Gorilla Fund",
+     "Gorilla Fund"
+    ]
+   },
+   {
+    "name": "African Wildlife Foundation",
+    "aliases": [
+     "AWF"
+    ]
+   },
+   {
+    "name": "American Bird Conservancy"
+   },
+   {
+    "name": "American Forests"
+   },
+   {
+    "name": "National Audubon Society",
+    "aliases": [
+     "Audubon"
+    ]
+   },
+   {
+    "name": "National Wildlife Federation",
+    "aliases": [
+     "NWF"
+    ]
+   },
+   {
+    "name": "Oceana"
+   },
+   {
+    "name": "Rainforest Trust"
+   },
+   {
+    "name": "Sierra Club Foundation",
+    "aliases": [
+     "Sierra Club"
+    ]
+   },
+   {
+    "name": "Earthjustice"
+   },
+   {
+    "name": "World Wildlife Fund",
+    "aliases": [
+     "WWF",
+     "World Wildlife Fund US"
+    ]
+   },
+   {
+    "name": "Conservation International Foundation",
+    "aliases": [
+     "Conservation International"
+    ]
+   }
+  ]
+ },
+ {
+  "category": "Veterans & First Responders",
+  "charities": [
+   {
+    "name": "Fisher House Foundation",
+    "aliases": [
+     "Fisher House"
+    ]
+   },
+   {
+    "name": "Gary Sinise Foundation"
+   },
+   {
+    "name": "Homes For Our Troops",
+    "aliases": [
+     "Homes for Our Troops"
+    ]
+   },
+   {
+    "name": "Bob Woodruff Foundation"
+   },
+   {
+    "name": "Semper Fi & America's Fund",
+    "aliases": [
+     "Semper Fi and Americas Fund",
+     "Semper Fi Fund"
+    ]
+   },
+   {
+    "name": "Tunnel to Towers Foundation",
+    "aliases": [
+     "Tunnel to Towers",
+     "Tunnel 2 Towers"
+    ]
+   },
+   {
+    "name": "Veterans Community Project"
+   },
+   {
+    "name": "National Military Family Association",
+    "aliases": [
+     "NMFA"
+    ]
+   }
+  ]
+ },
+ {
+  "category": "Human Rights & Community Support",
+  "charities": [
+   {
+    "name": "American Civil Liberties Union Foundation",
+    "aliases": [
+     "ACLU",
+     "ACLU Foundation",
+     "American Civil Liberties Union"
+    ]
+   },
+   {
+    "name": "Electronic Frontier Foundation",
+    "aliases": [
+     "EFF"
+    ]
+   },
+   {
+    "name": "Center for Victims of Torture",
+    "aliases": [
+     "CVT"
+    ]
+   },
+   {
+    "name": "Human Rights First"
+   },
+   {
+    "name": "RAINN"
+   },
+   {
+    "name": "Hispanic Scholarship Fund",
+    "aliases": [
+     "HSF"
+    ]
+   },
+   {
+    "name": "American Indian College Fund"
+   },
+   {
+    "name": "Global Fund for Women"
+   }
+  ]
+ }
+]

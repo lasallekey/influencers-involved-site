@@ -1,0 +1,90 @@
+/* Homepage — human-centered refinement. Loaded only on the homepage; scoped to .page-home.
+   Palette: the logo's blue, navy and leaf green on white. Display face: Bricolage Grotesque (self-hosted, OFL). Text: Source Sans 3.
+   People are original flat illustrations (see docs/CREATIVE_DIRECTION.md). They are conceptual — never Pioneers, donors, partners or beneficiaries. */
+
+.page-home{--blue:#005eca;--navy:#012f70;--leaf:#7bdc0a;--sky:#eaf3ff;--ink:#0b1f45;--display:"Bricolage Grotesque","Source Sans 3",system-ui,sans-serif;background:#fff}
+.page-home h1,.page-home h2,.page-home h3{font-family:var(--display);font-weight:700;color:var(--navy);letter-spacing:-.035em;line-height:1;text-wrap:balance;margin:0}
+.page-home p{max-width:38em}
+.page-home section{padding-block:0}
+
+/* ───── Shared bits ───── */
+.h-btn{display:inline-flex;align-items:center;justify-content:center;min-height:3.5rem;padding:.8rem 2.1rem;border-radius:999px;background:var(--leaf);color:#0a2205;font:700 1.15rem/1 var(--sans);text-decoration:none;border:2px solid var(--leaf);transition:background .15s,transform .15s}
+.h-btn:hover{background:#a3ee4a;border-color:#a3ee4a;color:#0a2205;transform:translateY(-2px)}
+.h-link{color:#fff;font-weight:700;font-size:1.15rem;text-decoration:underline;text-decoration-thickness:.12em;text-underline-offset:.28em;text-decoration-color:var(--leaf)}
+.h-link:hover{color:#fff;text-decoration-color:#fff}
+.h-link.dark{color:var(--navy)}
+.h-link.dark:hover{color:var(--blue)}
+.h-sub{font-size:clamp(1.2rem,1.9vw,1.45rem);line-height:1.5;color:#1c3260;margin:0}
+.h-lede{font-size:clamp(1.25rem,2vw,1.5rem);line-height:1.5;color:#e1edff;max-width:27em;margin:0 0 2rem}
+.h-cta{display:flex;flex-wrap:wrap;align-items:center;gap:1rem 1.8rem}
+
+/* ───── Hero ───── */
+.h-hero{background:var(--blue);color:#fff;position:relative;overflow:hidden;isolation:isolate;padding-block:clamp(2.5rem,6vw,5rem) 0!important}
+.h-hero-grid{display:grid;gap:clamp(1.5rem,4vw,3rem);align-items:end}
+@media (min-width:62rem){.h-hero-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.h-copy{padding-bottom:clamp(2.5rem,6vw,5.5rem)}
+.h-hero h1{color:#fff;font-size:clamp(3.1rem,7.2vw,6.6rem);line-height:.93;letter-spacing:-.05em;font-weight:800;max-width:7.2em;margin-bottom:.38em}
+.h-note{margin:1.4rem 0 0;font-size:1.02rem;color:#e1edff}
+.scene{position:relative;width:100%;max-width:38rem;justify-self:center;aspect-ratio:1/1;margin-top:clamp(0rem,1vw,1rem)}
+.scene::before{content:"";position:absolute;left:34%;top:34%;width:150%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 5.6rem,rgba(255,255,255,.14) 5.6rem 5.68rem);animation:h-ripple 1.8s cubic-bezier(.16,.8,.24,1) both}
+.scene svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:hidden}
+.phone-tilt .ph1{font:800 21px/1 var(--display);fill:#0a2a06;letter-spacing:-.03em}
+.phone-tilt .ph2{font:800 54px/1 var(--display);fill:#0a2a06;letter-spacing:-.05em}
+.scene .prop{animation:h-rise .9s .3s cubic-bezier(.2,.8,.2,1) both}
+.scene .hz{transform-box:fill-box;transform-origin:center;animation:h-pop .6s cubic-bezier(.3,1.6,.5,1) both}
+.scene .h1{animation-delay:.9s}.scene .h2{animation-delay:1.05s}.scene .h3{animation-delay:1.2s}.scene .h4{animation-delay:1.35s}.scene .h5{animation-delay:1.5s}
+
+/* ───── How it works ───── */
+.h-how{padding-block:clamp(4rem,9vw,7.5rem)!important}
+.h-how h2,.h-places h2{font-size:clamp(2.4rem,5.6vw,4.8rem);max-width:11em;margin-bottom:.4em}
+.h-steps{list-style:none;margin:clamp(2rem,4vw,3.5rem) 0 0;padding:0;display:grid;gap:2.6rem}
+.h-steps svg{width:100%;height:auto;display:block;margin-bottom:1.1rem;border-radius:18px}
+.s-bg{fill:var(--sky)}
+.h-steps .mini{font:800 34px/1 var(--display);fill:#0a2a06;letter-spacing:-.05em}
+.h-steps h3{font-size:clamp(1.6rem,2.4vw,2rem);margin-bottom:.45rem}
+.h-steps p{margin:0}
+.h-more{margin:2.2rem 0 0}
+@media (min-width:54rem){.h-steps{grid-template-columns:repeat(3,1fr);gap:2rem}}
+
+/* ───── Find your place ───── */
+.h-places{background:var(--sky);padding-block:clamp(4rem,9vw,7.5rem)!important}
+.places{list-style:none;margin:clamp(2rem,4vw,3.2rem) 0 0;padding:0;border-top:2px solid var(--navy)}
+.places li{border-bottom:1px solid #b8cde8}
+.places a{display:grid;grid-template-columns:4.6rem 1fr;gap:.2rem 1.2rem;align-items:center;padding:1.3rem .4rem;text-decoration:none;color:var(--ink);transition:background .15s}
+.places a:hover{background:#fff}
+.p-ic{grid-row:span 3;width:4.6rem;height:4.6rem;border-radius:50%;background:#fff;overflow:hidden;display:block;box-shadow:inset 0 0 0 2px #cfe0f5}
+.p-ic svg{width:100%;height:100%;display:block}
+.p-who{font:700 clamp(1.6rem,3vw,2.3rem)/1.05 var(--display);letter-spacing:-.03em;color:var(--navy)}
+.p-what{font-size:1.1rem;line-height:1.45;max-width:36em;color:#27406f}
+.p-go{font-weight:700;color:var(--blue);margin-top:.2rem}
+.p-go::after{content:"  →" / ""}
+.places a:hover .p-go{color:var(--navy);text-decoration:underline}
+.places .primary a{background:#fff}
+.places .primary .p-go{display:inline-flex;margin-top:.5rem;background:var(--leaf);color:#0a2205;padding:.55rem 1.2rem;border-radius:999px}
+@media (min-width:56rem){
+  .places a{grid-template-columns:5.5rem minmax(0,15rem) minmax(0,1fr) auto;gap:0 1.8rem;padding:1.6rem .8rem}
+  .p-ic{grid-row:auto;width:5.5rem;height:5.5rem}
+  .p-go{margin:0;white-space:nowrap}
+  .places .primary .p-go{margin:0}
+}
+
+/* ───── Trust strip ───── */
+.h-trust{padding-block:clamp(2rem,4vw,3rem)!important;border-bottom:1px solid #d9e2f1}
+.h-trust p{margin:0;max-width:56em;font-size:1.08rem;color:#27406f}
+.h-trust a{font-weight:700}
+
+/* ───── Closing invitation ───── */
+.h-close{background:var(--blue);color:#fff;padding-block:clamp(4rem,9vw,7rem)!important;position:relative;overflow:hidden;isolation:isolate}
+.h-close::before{content:"";position:absolute;z-index:-1;right:-12rem;top:50%;width:46rem;height:46rem;transform:translateY(-50%);border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 4.2rem,rgba(255,255,255,.14) 4.2rem 4.28rem)}
+.h-close h2{color:#fff;font-size:clamp(2.6rem,6vw,5rem);font-weight:800;letter-spacing:-.045em;max-width:9em;margin-bottom:.4em}
+
+/* Phones: pull the illustration up so people appear in the first screen */
+@media (max-width:61.99rem){
+  .h-hero{padding-top:clamp(1.8rem,5vw,2.5rem)!important}
+  .h-copy{padding-bottom:0}
+  .h-hero h1{margin-bottom:.28em}
+  .h-lede{margin-bottom:1.3rem;font-size:1.2rem}
+  .h-note{margin-top:.9rem;font-size:.95rem}
+  .scene{margin-top:-.5rem;aspect-ratio:1/.86}
+  .scene svg{inset:auto 0 0 0;height:116%;top:auto}
+}

@@ -1,0 +1,103 @@
+name: Deploy staging
+# Deploys a fresh, separate staging Worker + D1 database on Cloudflare's free tier and runs a smoke test.
+# Runs on every push to the PR branch (staging only; never touches production) and on demand.
+# Until the two Cloudflare secrets exist the job skips itself with a notice. Setup: docs/STAGING.md.
+# (GitHub only shows the manual "Run workflow" button for workflows on the default branch, hence the push trigger.)
+on:
+  push:
+    branches: [claude/happy-brown-0ytqwr]
+  workflow_dispatch:
+concurrency:
+  group: staging
+  cancel-in-progress: false
+permissions:
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      EMAIL_API_KEY: ${{ secrets.STAGING_EMAIL_API_KEY }}
+      EMAIL_FROM_OVERRIDE: ${{ vars.STAGING_EMAIL_FROM }}
+      WRANGLER_SEND_METRICS: "false"
+      CI: "1"
+    steps:
+      - name: Check configuration
+        id: cfg
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::notice title=Staging not configured yet::Add repository secrets CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID (docs/STAGING.md, steps 1-3), then re-run this workflow."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.cfg.outputs.ready == 'true'
+      - uses: actions/setup-node@v4
+        if: steps.cfg.outputs.ready == 'true'
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+        if: steps.cfg.outputs.ready == 'true'
+      - name: Tests
+        if: steps.cfg.outputs.ready == 'true'
+        run: npm test
+      - name: Build staging site (banner + noindex)
+        if: steps.cfg.outputs.ready == 'true'
+        run: STAGING=1 npm run build
+      - name: Create the staging database if needed
+        if: steps.cfg.outputs.ready == 'true'
+        run: node scripts/d1-provision.mjs staging
+      - name: Apply database migrations
+        if: steps.cfg.outputs.ready == 'true'
+        run: npx wrangler d1 migrations apply ii-pioneer-registry-staging --remote --env staging --config worker/wrangler.toml
+      - name: Deploy Worker and site
+        if: steps.cfg.outputs.ready == 'true'
+        id: deploy
+        run: |
+          ARGS=()
+          if [ -n "$EMAIL_FROM_OVERRIDE" ]; then ARGS+=(--var "EMAIL_FROM:$EMAIL_FROM_OVERRIDE"); fi
+          npx wrangler deploy --env staging --config worker/wrangler.toml "${ARGS[@]}" 2>&1 | tee deploy.log
+          URL=$(grep -oE 'https://[a-zA-Z0-9.-]+\.workers\.dev' deploy.log | head -1)
+          if [ -z "$URL" ]; then echo "::error::Could not find the deployed URL. If the log mentions a workers.dev subdomain, open Cloudflare → Workers & Pages once to choose it (docs/STAGING.md)."; exit 1; fi
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+      - name: Set Worker secrets
+        if: steps.cfg.outputs.ready == 'true'
+        run: |
+          NAMES=$(npx wrangler secret list --env staging --config worker/wrangler.toml --format json || echo "[]")
+          if ! echo "$NAMES" | grep -q '"TOKEN_SECRET"'; then
+            openssl rand -hex 32 | npx wrangler secret put TOKEN_SECRET --env staging --config worker/wrangler.toml
+          fi
+          if [ -n "$EMAIL_API_KEY" ]; then
+            printf '%s' "$EMAIL_API_KEY" | npx wrangler secret put EMAIL_API_KEY --env staging --config worker/wrangler.toml
+          fi
+      - name: Smoke test
+        if: steps.cfg.outputs.ready == 'true'
+        run: node scripts/smoke-staging.mjs "${{ steps.deploy.outputs.url }}"
+      - name: Mail DNS status for the sending domain (read-only, informational)
+        if: always() && steps.cfg.outputs.ready == 'true'
+        continue-on-error: true
+        run: node scripts/check-email-dns.mjs influencersinvolved.org
+      - name: DNS comparison for the planned Cloudflare nameservers (read-only; runs only when the repository variable CLOUDFLARE_NAMESERVERS is set)
+        if: always() && steps.cfg.outputs.ready == 'true' && vars.CLOUDFLARE_NAMESERVERS != ''
+        continue-on-error: true
+        run: node scripts/dns-preflight.mjs influencersinvolved.org "${{ vars.CLOUDFLARE_NAMESERVERS }}"
+      - name: Rehearse privacy erasure on synthetic staging data
+        if: steps.cfg.outputs.ready == 'true' && steps.deploy.outcome == 'success'
+        run: node scripts/rehearse-erasure.mjs "${{ steps.deploy.outputs.url }}" staging
+      - name: Remove smoke-test records (keeps staging counts real)
+        if: always() && steps.cfg.outputs.ready == 'true' && steps.deploy.outcome == 'success'
+        run: npx wrangler d1 execute ii-pioneer-registry-staging --remote --env staging --config worker/wrangler.toml --file worker/cleanup-smoke.sql
+      - name: Summary
+        if: steps.cfg.outputs.ready == 'true'
+        run: |
+          {
+            echo "### Staging is live"
+            echo ""
+            echo "${{ steps.deploy.outputs.url }}"
+            echo ""
+            if [ -n "$EMAIL_API_KEY" ]; then echo "Email: configured (sending as \`${EMAIL_FROM_OVERRIDE:-onboarding@resend.dev}\`)."; else echo "Email: not configured yet. Pledges and certificates work; verification emails are skipped until STAGING_EMAIL_API_KEY is added and this workflow is run again."; fi
+          } >> "$GITHUB_STEP_SUMMARY"
