@@ -16,7 +16,7 @@ Scope, as instructed: security, registry/database, registration UX and accessibi
 
 ## Remediation update (2026-11-02, after owner review)
 
-The owner accepted the CONDITIONAL GO and asked for focused remediation without a redesign. The sections below are the original audit as written; **this table is the current status.** Evidence is the committed code and tests on this branch; "staging" results are from the GitHub Actions run named in `BUILD_STATUS.md`.
+The owner accepted the CONDITIONAL GO and asked for focused remediation without a redesign. The sections below are the original audit as written; **this table is the current status.** Evidence is the committed code and tests on this branch; "staging" results are from GitHub Actions runs recorded in `BUILD_STATUS.md` (CI and Deploy staging were green on the remediation commit).
 
 | ID | Status now | What changed / what remains |
 |---|---|---|
@@ -30,7 +30,7 @@ The owner accepted the CONDITIONAL GO and asked for focused remediation without 
 | P2-3 Scanner-safe verification | **Resolved** | Email link opens a confirm page (token in the URL fragment); the token is consumed only by an explicit POST. Old `GET /api/verify` links redirect without consuming. Single-use and 24 h expiry unchanged. |
 | P2-4 Honeypot | **Resolved** | Field renamed (not autofillable), a hit returns 400 and never a Pioneer ID or certificate; browser test confirms. |
 | P2-5 Duplicate-email signal | Deferred | Unchanged (owner decision). |
-| P2-6 Erasure | **Resolved** | `scripts/erase-pioneer.mjs`: dry run, explicit children-first deletes, recount, no personal data printed. Rehearsed locally (sqlite D1 shim, foreign keys off) and in the staging workflow against synthetic staging data (result recorded in `BUILD_STATUS.md`). |
+| P2-6 Erasure | **Resolved** | `scripts/erase-pioneer.mjs`: dry run, explicit children-first deletes, recount, no personal data printed. Rehearsed locally (sqlite D1 shim, foreign keys off) and in the staging workflow against the real staging D1 with synthetic people: it **passed** (dry run found 1 registration/2 accounts/1 verification record and deleted nothing; erase left 0/0/0; the other person untouched; the address could register again). Run 41518701921. |
 | P2-7 Observability | Partly | Workers Logs on, automatic invocation logs off, in both environments. Alerting deferred. |
 | P2-8 Asset caching | **Resolved** | `/assets/*` revalidated every 10 minutes. |
 | P2-9 HSTS | **Resolved** | 30-day HSTS on non-staging, non-dark-launch builds. |
