@@ -65,7 +65,7 @@ jobs:
             PRELAUNCH=1 npm run build
           fi
           npm run check
-          if grep -rq "Staging preview" site; then echo "::error::A staging build must never be deployed to production."; exit 1; fi
+          if grep -rq --include="*.html" 'class="stage-banner"' site; then echo "::error::A staging build must never be deployed to production."; exit 1; fi
       - name: Production database (created only when asked)
         run: node scripts/d1-provision.mjs production ${{ inputs.create_database && '--create' || '' }}
       - name: Record the database restore point before changing anything
