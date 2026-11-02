@@ -2,6 +2,8 @@
 
 Branch `claude/happy-brown-0ytqwr`; draft PR #2 is open. `main` is untouched, nothing is deployed, production DNS and the legacy site/registry are unchanged. All tests use synthetic data.
 
+**Pre-launch audit:** see `docs/LAUNCH_READINESS_AUDIT.md` (conditional go; findings not yet implemented).
+
 ## State: all seven pages in one design language; staging deployed from this branch; awaiting final owner visual review
 Only functional, responsive, accessibility or consistency fixes from here. Creative direction (incl. the per-page compositions) is in `docs/CREATIVE_DIRECTION.md`.
 
