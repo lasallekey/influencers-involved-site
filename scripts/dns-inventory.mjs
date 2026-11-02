@@ -32,7 +32,7 @@ export function summarizeRdap(r) {
 }
 
 const doh = async (name, type) => {
-  const r = await fetch(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(name)}&type=${type}`, { headers: { accept: 'application/dns-json' } });
+  const r = await fetch(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(name)}&type=${type}`, { headers: { accept: 'application/dns-json' }, signal: AbortSignal.timeout(15000) });
   return parseDoh(await r.json());
 };
 
@@ -66,10 +66,10 @@ if (process.argv[1] && import.meta.url === new URL(process.argv[1], 'file://').h
   } catch (e) { say(`- DNSSEC check failed: ${e.message}`); }
   try {
     const tld = domain.split('.').pop();
-    const boot = await (await fetch('https://data.iana.org/rdap/dns.json')).json();
+    const boot = await (await fetch('https://data.iana.org/rdap/dns.json', { signal: AbortSignal.timeout(15000) })).json();
     const base = ((boot.services.find((x) => x[0].includes(tld)) || [])[1] || [])[0];
     if (!base) throw new Error(`no RDAP service listed for .${tld}`);
-    const r = await fetch(`${base.replace(/\/$/, '')}/domain/${domain}`, { headers: { accept: 'application/rdap+json' } });
+    const r = await fetch(`${base.replace(/\/$/, '')}/domain/${domain}`, { headers: { accept: 'application/rdap+json' }, signal: AbortSignal.timeout(20000) });
     const s = summarizeRdap(await r.json());
     say(`- Registrar: ${s.registrar}; registered ${s.registered || '?'}; expires ${s.expires || '?'}`);
     say(`- Registry status: ${s.status.join(', ') || '?'}`);
