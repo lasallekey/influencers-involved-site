@@ -16,3 +16,13 @@ test('compare reports anything missing or extra, and nothing when sets match reg
   assert.deepEqual(d.find((x) => x.key === '@ MX').missing, ['5 b']);
   assert.deepEqual(d.find((x) => x.key === 'rsend CNAME').extra, ['y']);
 });
+
+import { parseDoh, summarizeRdap } from '../dns-inventory.mjs';
+
+test('inventory: DoH answers and RDAP records are summarized (DNSSEC, lock, registrar)', () => {
+  assert.deepEqual(parseDoh({ Status: 0, AD: true, Answer: [{ data: '12345 13 2 ABCD' }] }), { present: true, ad: true, data: ['12345 13 2 ABCD'] });
+  assert.equal(parseDoh({ Status: 0 }).present, false);
+  const s = summarizeRdap({ status: ['client transfer prohibited'], secureDNS: { delegationSigned: false }, nameservers: [{ ldhName: 'NS2.EXAMPLE.NET' }, { ldhName: 'ns1.example.net' }],
+    entities: [{ roles: ['registrar'], vcardArray: ['vcard', [['fn', {}, 'text', 'Example Registrar']]] }], events: [{ eventAction: 'expiration', eventDate: '2027-01-01T00:00:00Z' }] });
+  assert.deepEqual([s.registrar, s.dnssecSigned, s.transferLocked, s.nameservers.join(), s.expires], ['Example Registrar', false, true, 'ns1.example.net,ns2.example.net', '2027-01-01T00:00:00Z']);
+});

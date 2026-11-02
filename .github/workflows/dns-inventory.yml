@@ -1,0 +1,29 @@
+name: DNS inventory (read-only)
+# Reads public DNS, DNSSEC and registry (RDAP) facts for influencersinvolved.org and prints them in the run summary.
+# No secrets, no writes, no Cloudflare or Squarespace access. If the repository variable CLOUDFLARE_NAMESERVERS is set
+# (the two nameservers Cloudflare assigned, comma-separated), it also compares what Cloudflare would publish with what is live today.
+on:
+  workflow_dispatch:
+  push:
+    branches: [ops/domain-launch-prep]
+permissions:
+  contents: read
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Current DNS, DNSSEC and registrar facts
+        run: node scripts/dns-inventory.mjs influencersinvolved.org
+      - name: Compare with the new Cloudflare nameservers (only when CLOUDFLARE_NAMESERVERS is set)
+        if: vars.CLOUDFLARE_NAMESERVERS != ''
+        run: |
+          set +e
+          node scripts/dns-preflight.mjs influencersinvolved.org "${{ vars.CLOUDFLARE_NAMESERVERS }}" | tee preflight.txt
+          code=${PIPESTATUS[0]}
+          { echo ""; echo "### Cloudflare vs current DNS"; echo '```'; cat preflight.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          exit $code

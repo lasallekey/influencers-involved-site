@@ -14,6 +14,11 @@ export const WATCH = [
   ['resend._domainkey', 'TXT'], ['resend._domainkey', 'CNAME'],
   ['send', 'CNAME'], ['send', 'MX'], ['send', 'TXT'],
   ['rsend', 'CNAME'], ['rsend', 'MX'], ['rsend', 'TXT'],
+  // Look-for names only: reported when they exist, never created by guessing. Typical Google Workspace / GitHub Pages / provider leftovers.
+  ['www', 'AAAA'], ['www', 'TXT'],
+  ['mail', 'CNAME'], ['calendar', 'CNAME'], ['drive', 'CNAME'], ['docs', 'CNAME'], ['sites', 'CNAME'], ['groups', 'CNAME'],
+  ['autodiscover', 'CNAME'], ['_domainconnect', 'CNAME'],
+  ['_github-pages-challenge-lasallekey', 'TXT'],
 ];
 
 const norm = (v) => String(v).toLowerCase().replace(/\.$/, '').trim();
@@ -33,7 +38,7 @@ export function compare(current, proposed) {
   return diffs;
 }
 
-async function snapshot(resolver, domain) {
+export async function snapshot(resolver, domain) {
   const out = {};
   for (const [label, type] of WATCH) {
     const name = label ? `${label}.${domain}` : domain;
