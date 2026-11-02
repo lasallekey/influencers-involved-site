@@ -22,7 +22,7 @@ Until there are **20 eligible registrations**, the whole public registry is hidd
 - `GET /api/stats` returns exactly `{"visible":false}` (no counts, no zero state) and `GET /api/pioneers` returns `{"visible":false,"pioneers":[]}`.
 - The Challenge page shows no dashboard, counter, empty state or listing, and the homepage never shows a counter.
 - Registration and certificates work normally.
-At 20 or more, the "Our Pioneer Community" dashboard appears automatically. If withdrawals bring the number below 20 it hides again; the next eligible registration restores it. Responses are cached for 60 seconds, so changes can take up to a minute to show. There are no artificial numbers.
+At 20 or more, the "Our Pioneer Community" dashboard appears automatically. If withdrawals bring the number below 20 it hides again; the next eligible registration restores it. Responses carry `Cache-Control: public, max-age=60`, so a browser may show a figure up to a minute old (there is no shared edge cache rule). There are no artificial numbers.
 
 ## The four figures (in this order)
 | Label | Meaning |
@@ -37,9 +37,19 @@ Below the figures, "Pioneers who chose to be listed" shows only verified, public
 ## Charities
 - **Catalogue:** `shared/charities.json`: 101 names in 9 categories, with aliases (for example MSF, ACLU, "Red Cross"). It feeds the selector and the Worker's normalizer. It is a convenience list: no ratings, badges or claims of vetting, and no affiliation with the research sources used to assemble it (Charity Navigator, CharityWatch, GiveWell). Add a name by editing the JSON; `worker/test/catalogue.test.js` guards duplicates and alias collisions.
 - **Selector:** native `<select>` grouped by category (no separate search field; the browser's type-ahead and native pickers do the lookup). The first two options after the placeholder are always **"I haven't chosen a charity yet — I'll decide later."** and **"Another charity — let me enter its name."**
-- **Normalization:** lowercase, accents and punctuation removed, "&" = "and", a leading "the" ignored, then aliases mapped to the canonical name. "feeding america", "Feeding America!" and "The Red Cross"/"American Red Cross" each count once. Typed names must contain letters and may not be web/email addresses or placeholders such as "undecided".
+- **Normalization:** lowercase, accents and punctuation removed, "&" = "and", a leading "the" ignored, then aliases mapped to the canonical name. "feeding america", "Feeding America!" and "The Red Cross"/"American Red Cross" each count once. Typed names (any script: Greek, Cyrillic, Arabic, Devanagari, Chinese, Japanese, Korean and so on; only punctuation and symbols are folded away) must contain letters and may not be web/email addresses or placeholders such as "undecided".
 - **Not chosen yet:** stored as `charity_status = 'undecided'` with no name (`selected_charity = ''`, `charity_key = NULL`). It is never displayed as a charity and never counted. The certificate then reads "for pledging 1% of creator income to a charity they will choose".
 - **Choosing later (no portal):** the success page tells the person to email grants@influencersinvolved.org with their Pioneer ID. An administrator updates the record with recipe 5 in `worker/admin-queries.sql`, which sets the name and `charity_status = 'selected'`.
+
+## Known limitation: counts can be inflated (decision kept as approved; mitigation deferred)
+Eligibility deliberately does **not** require email verification, so one person with 20 throwaway addresses (each limited to 10 registrations per network address per hour) could cause the dashboard to appear and push the four figures up. The listing of named Pioneers is not exposed to this (it needs a verified address and public permission), and a hidden test address never counts. **No change has been made to what counts.**
+Lightest mitigations, in the order I recommend considering them later:
+1. **No code, immediately:** before the first public reveal, and weekly while the numbers are shown, run the "registry gate review" query in `worker/admin-queries.sql` (eligible vs verified, registrations per email domain, burst times). If the 20th registration looks organic, let it appear.
+2. **If abuse is ever seen:** require a verified address for the *count* only (`ELIGIBLE` plus `email_verification_status = 'Verified'` for the visibility gate and the four figures). One line, no new service or data, but a lower number at first and a slower reveal because verification is optional.
+3. **Only if bots keep winning:** an invisible challenge such as Cloudflare Turnstile on the form (free; adds a third-party script and CSP allowance, so it needs a privacy-page line). Not added.
+
+## Anti-spam field and registration success
+The form carries one hidden field (`ii_extra_note`, deliberately not a name browsers autofill). If it is ever non-empty the Worker stores nothing and answers `400 {"ok":false,"error":"rejected"}`: **no success, Pioneer ID or certificate is ever returned unless the registration was actually saved**, and the page tells the person the certificate was not issued.
 
 ## Social profile fields
 Platform and handle/channel are required. **Profile URL is optional**: validated (must be a full `https://` link, no credentials) only when supplied, stored as NULL otherwise, and never generated from a handle. Public-listing permission rules are unchanged (public choice + verified email + per-account approval).

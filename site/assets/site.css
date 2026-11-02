@@ -195,6 +195,7 @@ input[aria-invalid=true],select[aria-invalid=true]{border-color:var(--danger)}
 .banner{padding:1rem 0;border-bottom:1px solid var(--rule);background:var(--sky)}
 .banner.bad{background:#fff6e0}
 .banner p{margin:0;font-weight:600}
+.banner .btn{margin-top:.75rem}
 
 /* ───────── Footer ───────── */
 .site-footer{background:var(--deep);color:#c3d1ee;padding-top:clamp(3rem,6vw,5rem)}

@@ -1,37 +1,18 @@
-# Staging/production configuration for the Pioneer Registry Worker.
-# No secrets live here. Set secrets with `wrangler secret put` (see docs/OPERATIONS.md).
-name = "ii-pioneer-registry"
+# Cloudflare configuration for the Pioneer Registry Worker + static site.
+# No secrets live here. Secrets (TOKEN_SECRET, EMAIL_API_KEY) are set in Cloudflare by the deploy workflows
+# (see docs/STAGING.md and docs/PRODUCTION.md). Deploy ONLY with an explicit --env; there is no default environment.
+#
+# One Worker serves the static site and the /api/* routes, so the site and API share an origin
+# (no CORS, no cross-site cookies).
+name = "ii-pioneer-registry-do-not-deploy-without-env"   # deliberately NOT the production name: a deploy with no --env cannot overwrite production
 main = "src/index.js"
 compatibility_date = "2025-09-01"
 
-# One Worker serves the static site and the /api/* routes, so the site and API share an origin
-# (no CORS, no cross-site cookies). A workers.dev URL works for staging with no DNS changes.
-[assets]
-directory = "../site"
-binding = "ASSETS"
-run_worker_first = ["/api/*"]
-not_found_handling = "404-page"
-
-[[d1_databases]]
-binding = "DB"
-database_name = "ii-pioneer-registry"
-database_id = "REPLACE_WITH_ID_FROM_wrangler_d1_create"
-migrations_dir = "migrations"
-
-[vars]
-# Public base URL of the site (used for verification redirects). Staging: your workers.dev URL.
-SITE_URL = "https://influencersinvolved.org"
-# Extra browser origins allowed to call the API (comma-separated). Empty = same-origin only.
-ALLOWED_ORIGINS = ""
-EMAIL_FROM = "Influencers Involved <grants@influencersinvolved.org>"
-EMAIL_API_URL = "https://api.resend.com/emails"
-# Secrets (not in this file): TOKEN_SECRET, EMAIL_API_KEY
-
 # ─────────────────────────────────────────────────────────────────────────────
 # Staging: separate Worker + separate (fresh) D1 database, free-tier friendly.
-# The GitHub Actions workflow ".github/workflows/staging.yml" creates the database, writes its id in
-# place of the placeholder below, applies migrations, deploys, and sets secrets. SITE_URL is blank on
-# purpose: the Worker then builds verification/unsubscribe links from the URL it is served on.
+# ".github/workflows/staging.yml" creates the database, writes its id in place of the placeholder below,
+# applies migrations, deploys, and sets secrets. SITE_URL is blank on purpose: the Worker then builds
+# verification/unsubscribe links from the URL it is served on.
 # ─────────────────────────────────────────────────────────────────────────────
 [env.staging]
 name = "ii-pioneer-registry-staging"
@@ -52,6 +33,59 @@ migrations_dir = "migrations"
 [env.staging.vars]
 SITE_URL = ""
 ALLOWED_ORIGINS = ""
-# Resend's shared test sender works before any domain is verified, but only delivers to the account owner's own email.
+# Staging sends as the verified organizational sender via the STAGING_EMAIL_FROM GitHub variable; this default is Resend's shared test sender.
 EMAIL_FROM = "Influencers Involved <onboarding@resend.dev>"
 EMAIL_API_URL = "https://api.resend.com/emails"
+
+[env.staging.triggers]
+crons = ["17 3 * * *"]   # daily 03:17 UTC: delete expired temporary records (docs/RETENTION.md)
+
+[env.staging.observability]
+enabled = true
+[env.staging.observability.logs]
+enabled = true
+# Our own redacted console lines are kept; Cloudflare's automatic per-request invocation logs (which would record visitor request details) are off.
+invocation_logs = false
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Production: separate Worker + a FRESH production D1 database (never the staging database; no legacy data).
+# Deployed only by ".github/workflows/production.yml" after manual owner approval (docs/PRODUCTION.md).
+#
+# Stage 1 (dark launch, this file as committed): reachable on its own workers.dev address only, built with noindex,
+#   SITE_URL blank so emailed links point at the address the person actually used. influencersinvolved.org and
+#   its DNS are NOT referenced here, so deploying cannot change the live website or any DNS record.
+# Stage 2 (cutover, separate owner-approved commit): see "Cutover" in docs/PRODUCTION.md. It sets SITE_URL, turns
+#   workers_dev off and adds the two [[env.production.routes]] custom domains, which requires the domain's DNS zone to be
+#   active on Cloudflare.
+# ─────────────────────────────────────────────────────────────────────────────
+[env.production]
+name = "ii-pioneer-registry"
+workers_dev = true
+
+[env.production.assets]
+directory = "../site"
+binding = "ASSETS"
+run_worker_first = ["/api/*"]
+not_found_handling = "404-page"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "ii-pioneer-registry-production"
+database_id = "REPLACE_PRODUCTION_D1_ID"
+migrations_dir = "migrations"
+
+[env.production.vars]
+SITE_URL = ""
+ALLOWED_ORIGINS = ""
+EMAIL_FROM = "Influencers Involved <verification@influencersinvolved.org>"
+EMAIL_API_URL = "https://api.resend.com/emails"
+
+[env.production.triggers]
+crons = ["17 3 * * *"]
+
+[env.production.observability]
+enabled = true
+[env.production.observability.logs]
+enabled = true
+# Our own redacted console lines are kept; Cloudflare's automatic per-request invocation logs (which would record visitor request details) are off.
+invocation_logs = false

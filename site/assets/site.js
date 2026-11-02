@@ -17,22 +17,49 @@
     nav.addEventListener('click', function (e) { if (e.target.tagName === 'A') setMenu(false); });
   }
 
-  /* ---------- Verification result banner (?verify=ok|expired|invalid) ---------- */
+  /* ---------- Email verification and unsubscribe notices ----------
+     The email link opens /challenge/#verify=TOKEN. The token lives in the URL fragment (it is never sent to a server by
+     simply opening the page), is removed from the address bar at once, and is only used when the person presses
+     "Confirm my email". That keeps email-link scanners from consuming the single-use token. */
   (function () {
     var b = $('#verify-banner'); if (!b) return;
-    var m = /[?&]verify=(\w+)/.exec(location.search), u = /[?&]unsubscribe=(\w+)/.exec(location.search);
-    if (u) m = ['', u[1] === 'ok' ? 'unsub_ok' : 'unsub_bad'];
-    if (!m) return;
-    var text = {
-      unsub_ok: 'You are unsubscribed from optional II emails. Your pledge and certificate are unchanged.',
-      unsub_bad: 'That unsubscribe link is not valid. Email us and we will remove you.',
-      ok: 'Thank you — your email is verified. Your pledge was already complete; verification only helps protect the registry.',
-      expired: 'That verification link has expired. If you still need one, submit the resend request from your confirmation, or email us.',
-      invalid: 'That verification link is not valid or has already been used.'
-    }[m[1]];
-    if (!text) return;
-    $('#verify-msg').textContent = text; b.hidden = false; if (m[1] !== 'ok' && m[1] !== 'unsub_ok') b.classList.add('bad');
-    if (history.replaceState) history.replaceState(null, '', location.pathname + location.hash);
+    var msg = $('#verify-msg'), go = $('#verify-confirm');
+    var show = function (text, bad) { msg.textContent = text; b.hidden = false; b.classList.toggle('bad', !!bad); };
+    var u = /[?&]unsubscribe=(\w+)/.exec(location.search);
+    if (u) {
+      show(u[1] === 'ok' ? 'You are unsubscribed from optional II emails. Your pledge and certificate are unchanged.' : 'That unsubscribe link is not valid. Email us and we will remove you.', u[1] !== 'ok');
+      if (history.replaceState) history.replaceState(null, '', location.pathname + location.hash);
+      return;
+    }
+    var token = null;
+    var done = function (text, bad, retry) { show(text, bad); go.disabled = false; go.hidden = !retry; };
+    if (!go) return;
+    go.addEventListener('click', function () {
+      if (!token) return;
+      go.disabled = true;
+      fetch(API + '/api/verify', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ token: token }) })
+        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { status: r.status, body: j }; }); })
+        .then(function (res) {
+          var st = res.body && res.body.status;
+          if (res.status === 200 && st === 'ok') { token = null; return done('Thank you — your email is verified. Your pledge was already complete; verification only helps protect the registry.', false, false); }
+          if (st === 'used') { token = null; return done('This verification link has already been used. If you confirmed it, your email is verified and nothing more is needed.', false, false); }
+          if (st === 'expired') { token = null; return done('That verification link has expired. If you still need one, submit the resend request from your confirmation, or email us.', true, false); }
+          if (st === 'invalid') { token = null; return done('That verification link is not valid.', true, false); }
+          if (st === 'rate_limited') return done('Too many attempts from this connection. Please wait a few minutes and try again.', true, true);
+          return done('We could not complete verification just now. Please try again in a moment.', true, true);
+        })
+        .catch(function () { done('We could not reach the server. Please check your connection and try again.', true, true); });
+    });
+    var pick = function () {
+      var m = /^#verify=([A-Za-z0-9_-]{43})$/.exec(location.hash);
+      if (!m) return;
+      token = m[1];
+      if (history.replaceState) history.replaceState(null, '', location.pathname + location.search);
+      show('Confirm your email address to finish verification. Your pledge and certificate are already complete; this only helps protect the registry.', false);
+      go.disabled = false; go.hidden = false; b.scrollIntoView({ block: 'nearest' }); go.focus();
+    };
+    pick();
+    window.addEventListener('hashchange', pick); // the link opened in a page that is already loaded
   })();
 
   /* ---------- Public registry ----------
@@ -181,7 +208,7 @@
       general_email_opt_in: $('#general_email_opt_in').checked,
       collaboration_interest: interest, collaboration_types: types,
       collab_contact_opt_in: interest === 'Not now' ? false : $('#collab_contact_opt_in').checked,
-      website: (form.elements.website || {}).value || '',
+      ii_extra_note: (form.elements.ii_extra_note || {}).value || '', // hidden anti-spam field; real people leave it empty
       accounts: $$('.account', accountsEl).map(function (b) {
         return { platform: $('[data-f=platform]', b).value, handle: $('[data-f=handle]', b).value.trim(), profile_url: $('[data-f=url]', b).value.trim(), public_display_permission: anon ? false : $('[data-f=public]', b).checked };
       })
@@ -214,6 +241,7 @@
           Object.keys(res.body.fields).forEach(function (k) { var id = ({ charity: 'charity_select', accounts: 'accounts' })[k] || k; if (document.getElementById(id + '-e')) { setErr(id, res.body.fields[k]); shown = true; } });
           return showError(shown ? 'Please correct the highlighted fields and try again.' : FAIL);
         }
+        if (res.status === 400 && res.body && res.body.error === 'rejected') return showError('We could not accept this submission. Please reload the page and try again, or email us if it keeps happening. Your certificate has not been issued.');
         if (res.status === 429) return showError('Too many attempts from this connection. Please wait a few minutes and try again.');
         showError(FAIL);
       })

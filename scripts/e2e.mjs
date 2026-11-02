@@ -37,7 +37,7 @@ for (const [label, vp] of Object.entries(SIZES)) {
   });
   const page = await ctx.newPage();
   const errors = [];
-  page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
+  page.on('console', (m) => { if (m.type() === 'error' && !/status of (409|400)/.test(m.text())) errors.push(m.text()); }); // 409/400 = a replayed verification link and a rejected hidden-field submission, both on purpose
   page.on('pageerror', (e) => errors.push(String(e)));
 
   // 1. Every page: loads, no overflow, one h1, nav of 7, footer socials, no leadership names.
@@ -117,6 +117,12 @@ for (const [label, vp] of Object.entries(SIZES)) {
   ok(await page.locator('#collab-sub').isVisible(), `${label} form: collaboration options appear for Maybe`);
   ok(!(await page.locator('#general_email_opt_in').isChecked()) && !(await page.locator('#collab_contact_opt_in').isChecked()), `${label} form: both email opt-ins unchecked by default`);
   if (SHOTS && label === 'desktop') await page.screenshot({ path: `${OUT}${label}-form-filled.jpg`, type: 'jpeg', quality: 72, fullPage: true });
+  if (label === 'desktop') { // a filled hidden anti-spam field must never produce a Pioneer ID or certificate
+    await page.evaluate(() => { document.querySelector('input[name=ii_extra_note]').value = 'autofilled'; });
+    await page.click('#submit-btn'); await page.locator('#form-error:not([hidden])').waitFor();
+    ok(!(await page.locator('#success').isVisible()) && (await page.locator('#form-error-msg').innerText()).includes('certificate has not been issued'), 'desktop form: a rejected submission shows an error and never a Pioneer ID or certificate');
+    await page.evaluate(() => { document.querySelector('input[name=ii_extra_note]').value = ''; });
+  }
   await page.click('#submit-btn');
   await page.waitForSelector('#success:not([hidden])');
   const pid = (await page.locator('#pid').innerText()).trim();
@@ -139,10 +145,17 @@ for (const [label, vp] of Object.entries(SIZES)) {
   const mail = mails.filter((m) => m.to[0] === email).at(-1);
   ok(!!mail && /Verify your email: http/.test(mail.text) && !/optional emails you chose/.test(mail.text), `${label} email: verification message captured (no marketing link without opt-in)`);
   const link = /Verify your email: (\S+)/.exec(mail.text)[1];
-  await page.goto(link, { waitUntil: 'networkidle' });
-  ok(page.url().includes('/challenge/') && (await page.locator('#verify-msg').innerText()).includes('verified'), `${label} verify: link confirms and returns to the Challenge page`);
-  await page.goto(link, { waitUntil: 'networkidle' });
-  ok((await page.locator('#verify-msg').innerText()).includes('not valid'), `${label} verify: replayed link is rejected`);
+  ok(link.includes('/challenge/#verify='), `${label} verify: the email link opens the Challenge page with the token in the fragment`);
+  // An email-link scanner only fetches the URL (and the redirect from any old-style link); neither may use up the token.
+  await fetch(link); await fetch(BASE + '/api/verify?token=' + link.split('#verify=')[1], { redirect: 'manual' });
+  await page.goto(link, { waitUntil: 'networkidle' }); await page.waitForFunction(() => !location.hash);
+  ok(!page.url().includes('verify='), `${label} verify: the token is removed from the address bar`);
+  ok(await page.locator('#verify-confirm').isVisible(), `${label} verify: page asks for an explicit "Confirm my email" click`);
+  await page.click('#verify-confirm'); await page.locator('#verify-msg:has-text("verified")').waitFor();
+  ok((await page.locator('#verify-msg').innerText()).includes('your email is verified'), `${label} verify: confirming after a scanner visit still works (single click, token not burned)`);
+  await page.goto(link, { waitUntil: 'networkidle' }); await page.click('#verify-confirm');
+  await page.locator('#verify-msg:has-text("already been used")').waitFor();
+  ok(true, `${label} verify: replaying the link is rejected as already used`);
   errorsAll.push(...errors.map((e) => `${label}: ${e}`));
   await ctx.close();
 }
@@ -153,7 +166,7 @@ const seedBody = (i) => {
   const charity = i <= 6 ? ['Feeding America', 'feeding america', 'Feeding  America!', 'Feeding America', 'feeding america', 'Feeding America'][i - 1]
     : i <= 9 ? ['American Red Cross', 'Red Cross', 'The Red Cross'][i - 7]
     : i <= 12 ? null : i <= 14 ? ['Local Food Pantry', 'local food pantry.'][i - 13] : i === 15 ? 'UNICEF' : 'charity: water';
-  return { idempotency_key: 'seed-key-' + String(i).padStart(10, '0') + 'abcd', consent_version: '2026-10-30', creator_name: 'Seed ' + i, email: `seed${i}@creatormail.dev`, country: ['US', 'CA', 'GB', 'KR', 'DE'][i % 5], pledge_date: new Date().toISOString().slice(0, 10), charity_status: charity ? 'selected' : 'undecided', charity: charity || undefined, pledge_confirmed: true, certificate_ack: true, privacy_preference: i % 2 ? 'anonymous' : 'public', general_email_opt_in: false, collaboration_interest: 'Not now', collaboration_types: [], collab_contact_opt_in: false, website: '', accounts: [{ platform: 'TikTok', handle: '@seed' + i, public_display_permission: false }] };
+  return { idempotency_key: 'seed-key-' + String(i).padStart(10, '0') + 'abcd', consent_version: '2026-10-30', creator_name: 'Seed ' + i, email: `seed${i}@creatormail.dev`, country: ['US', 'CA', 'GB', 'KR', 'DE'][i % 5], pledge_date: new Date().toISOString().slice(0, 10), charity_status: charity ? 'selected' : 'undecided', charity: charity || undefined, pledge_confirmed: true, certificate_ack: true, privacy_preference: i % 2 ? 'anonymous' : 'public', general_email_opt_in: false, collaboration_interest: 'Not now', collaboration_types: [], collab_contact_opt_in: false, ii_extra_note: '', accounts: [{ platform: 'TikTok', handle: '@seed' + i, public_display_permission: false }] };
 };
 for (let i = 1; i <= 17; i++) { const r = await post(seedBody(i), `10.9.0.${i}`); if (r.status !== 201) { ok(false, `seed ${i} failed: ${r.status}`); break; } }
 const hiddenText = await (await fetch(BASE + '/api/stats')).text();

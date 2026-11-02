@@ -2,14 +2,19 @@
 // charity is counted once. The list is not an endorsement or an exclusive eligibility list.
 import catalogue from '../../shared/charities.json' with { type: 'json' };
 
-/** Lowercase, strip accents/punctuation, "&"→"and", drop a leading "the". Stable key for counting. */
+/**
+ * Lowercase, strip Latin accents/punctuation, "&"→"and", drop a leading "the". Stable key for counting.
+ * Unicode-aware: letters, digits and combining marks of every script are kept (so names written in Greek,
+ * Cyrillic, Arabic, Hebrew, Devanagari, Thai, Chinese, Japanese, Korean ... produce a real key);
+ * only punctuation, symbols and spaces collapse to a single space. ASCII names yield exactly the same keys as before.
+ */
 export function charityKey(text) {
   return String(text || '')
-    .normalize('NFKD').replace(/[̀-ͯ]/g, '')
+    .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .replace(/&/g, ' and ')
     .replace(/['’`]/g, '')
-    .replace(/[^a-z0-9]+/g, ' ')
+    .replace(/[^\p{L}\p{N}\p{M}]+/gu, ' ')
     .replace(/^the\s+/, '')
     .replace(/\s+/g, ' ')
     .trim();

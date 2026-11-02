@@ -151,37 +151,65 @@
   <div class="wrap m-privgrid">
     <nav class="m-privnav" aria-label="On this page">
       <ul class="m-toc">
+          <li><a href="#who">Who can join</a></li>
           <li><a href="#collect">Information we collect</a></li>
           <li><a href="#public">What may be public</a></li>
           <li><a href="#private">Private information and communications</a></li>
-          <li><a href="#handling">Corrections, withdrawal and data handling</a></li>
+          <li><a href="#providers">Service providers</a></li>
+          <li><a href="#keep">How long we keep information</a></li>
+          <li><a href="#rights">Your choices and international visitors</a></li>
           <li><a href="#q">Questions</a></li>
           </ul>
     </nav>
     <div class="m-privbody">
+      <section class="m-priv" id="who" aria-labelledby="who-h">
+        <h2 id="who-h">Who can join</h2>
+        <p>Phase 1 of the Pioneer Registry is open to adults aged 18 and older, and the registration form asks you to confirm that. We do not knowingly collect information from anyone under 18. If you believe a young person has registered, write to us and we will remove the record.</p>
+      </section>
       <section class="m-priv" id="collect" aria-labelledby="collect-h">
         <h2 id="collect-h">Information we collect</h2>
-        <p>To administer Pioneer registration, II collects your creator name, private email, country, selected charity (or a note that you haven’t chosen one yet) and pledge date, the social accounts you list (a profile link is optional), your public-display choice and per-account approvals, optional communication and collaboration choices, and email-verification status. We also record the date and version of the choices you agreed to. II does not request income amounts or proof of giving.</p>
-    <p>To limit abuse, the registration service briefly keeps a one-way (hashed) form of your network address to rate-limit requests. It is not used to identify you and is deleted automatically after a short period.</p>
+        <p>To administer Pioneer registration, II collects your creator name, private email, country, selected charity (or a note that you haven’t chosen one yet) and pledge date, the social accounts you list (a profile link is optional), your public-display choice and per-account approvals, optional communication and collaboration choices, and email-verification status. We also record the date and version of the choices you agreed to. II does not request income amounts, payment details or proof of giving.</p>
+        <p>To limit abuse, the registration service briefly keeps a one-way, keyed (hashed) form of your network address, with a request count, to rate-limit requests. It is not your address, is not used to identify you, and is deleted automatically.</p>
+        <p>This site sets no advertising or analytics cookies and runs no tracking or advertising scripts.</p>
       </section>
       <section class="m-priv" id="public" aria-labelledby="public-h">
         <h2 id="public-h">What may be public</h2>
         <p>You control public recognition. Only a verified, publicly opted-in Pioneer, and only the social profiles that Pioneer explicitly approved, may appear in public listings. Anonymous records contribute only to privacy-safe aggregate totals; public totals appear only once enough Pioneers have joined that no individual stands out. Your email address, country, collaboration responses and verification details are never displayed.</p>
-    <p>A downloaded certificate shows your creator name only if you chose public recognition; otherwise it reads “Anonymous Pioneer”.</p>
+        <p>A downloaded certificate shows your creator name only if you chose public recognition; otherwise it reads “Anonymous Pioneer”.</p>
       </section>
       <section class="m-priv" id="private" aria-labelledby="private-h">
         <h2 id="private-h">Private information and communications</h2>
         <p>We send the essential registration and email-verification messages needed to administer your pledge. Verification only confirms you control the inbox; it is not consent to marketing. Optional news emails and collaboration invitations each require their own unchecked opt-in, may be withdrawn at any time, and every optional message includes an unsubscribe link. Answering “Maybe” or “Yes” to collaboration does not by itself allow us to email you.</p>
+        <p>We do not sell or rent personal information.</p>
       </section>
-      <section class="m-priv" id="handling" aria-labelledby="handling-h">
-        <h2 id="handling-h">Corrections, withdrawal and data handling</h2>
-        <p>Request correction, removal, or consent withdrawal through <a href="mailto:grants@influencersinvolved.org">grants@influencersinvolved.org</a>. Registration records are held in a Cloudflare D1 database that is encrypted at rest by the provider and accessed over TLS; only the registration service and authorized II administrators can read private records. This is provider-managed encryption, not end-to-end encryption.</p>
-    <p>Verification emails are sent through a transactional email provider that II configures for its own domain. This site sets no advertising or analytics cookies. Donations are handled entirely by Zeffy on its own site under its own privacy policy.</p>
-    <p class="fine">Retention period and the final named email provider will be confirmed here before public launch.</p>
+      <section class="m-priv" id="providers" aria-labelledby="providers-h">
+        <h2 id="providers-h">Service providers</h2>
+        <p>We use a few providers to run the registry. Each handles information only for the purpose described here and under its own terms and privacy policy.</p>
+        <ul>
+          <li><b>Cloudflare</b> hosts this website, runs the registration service and stores registration records in its D1 database, which is encrypted at rest by the provider and accessed over TLS. This is provider-managed encryption, not end-to-end encryption. Only the registration service and authorized II administrators can read private records. As our hosting and network provider, Cloudflare also processes visitors’ network addresses to deliver and protect the site and may keep short-lived operational logs.</li>
+          <li><b>Resend</b> delivers our verification and optional emails. It receives your email address, your name and the message content, and keeps delivery records under its own policy.</li>
+          <li><b>Zeffy</b> processes donations on its own site under its own privacy policy. II never sees or stores your card details. Donating is separate from Pioneer registration and is not linked to it.</li>
+          <li><b>Google Workspace</b> handles the email you send to <a href="mailto:grants@influencersinvolved.org">grants@influencersinvolved.org</a>.</li>
+        </ul>
+        <p>The social links in our footer lead to other companies’ sites, which have their own privacy practices.</p>
+      </section>
+      <section class="m-priv" id="keep" aria-labelledby="keep-h">
+        <h2 id="keep-h">How long we keep information</h2>
+        <ul>
+          <li><b>Pioneer registration records</b> are kept while you take part in the registry, subject to applicable law, until you ask us to remove them.</li>
+          <li><b>Email-verification links</b> work once and expire after 24 hours. The stored (hashed) link record is deleted 7 days after it is used or expires; your record keeps only whether and when you verified.</li>
+          <li><b>Abuse-prevention counters</b> (the hashed network address and request count) are deleted automatically, at most about a day after they are created.</li>
+          <li><b>Deletion requests.</b> Verified requests to delete your registration are normally completed within 30 days. We may keep what the law requires or what is needed to resolve a dispute. Information we delete can remain in our database provider’s automatic recovery history for a limited period (currently up to 30 days) before it expires.</li>
+        </ul>
+      </section>
+      <section class="m-priv" id="rights" aria-labelledby="rights-h">
+        <h2 id="rights-h">Your choices and international visitors</h2>
+        <p>Wherever you live, you may ask us to show you the information we hold about you, correct it, withdraw you from the registry, delete it, or withdraw an optional consent. Write to <a href="mailto:grants@influencersinvolved.org">grants@influencersinvolved.org</a> from the email address you registered with (or tell us your Pioneer ID); we confirm it is really you before we act. You can unsubscribe from optional emails at any time with the link in each one. Depending on where you live, the law may give you additional rights, and you may also contact your local data-protection authority.</p>
+        <p>Influencers Involved is a nonprofit organization in the United States. Information you submit is sent to, stored and handled in the United States and in other countries where our providers operate, which may have different data-protection rules than your country. We use only the providers listed above.</p>
       </section>
       <section class="m-priv" id="q" aria-labelledby="q-h">
         <h2 id="q-h">Questions</h2>
-        <p>Contact: <a href="mailto:grants@influencersinvolved.org">grants@influencersinvolved.org</a></p>
+        <p>Contact: <a href="mailto:grants@influencersinvolved.org">grants@influencersinvolved.org</a><br>Influencers Involved, Inc. NFP, 800 W Central Rd, Suite 120, Mt. Prospect, IL 60056<br><span class="fine">Last updated: November 2026.</span></p>
       </section>
       </div>
   </div>

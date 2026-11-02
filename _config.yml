@@ -1,0 +1,20 @@
+# GitHub Pages guard. The legacy GitHub Pages site is built from the repository root, which now also holds the
+# rebuild's source, documentation, tests and the new static output. None of that may be published by GitHub Pages:
+# the new site is served only by the Cloudflare Worker (docs/PRODUCTION.md). Do NOT add a `.nojekyll` file and do not
+# remove entries below; scripts/test/pages-guard.test.js fails if the legacy-only allowlist is not what Pages would publish.
+exclude:
+  - .claude
+  - .github
+  - docs
+  - node_modules
+  - scripts
+  - shared
+  - site
+  - src
+  - worker
+  - package.json
+  - package-lock.json
+  - BUILD_STATUS.md
+  - CLAUDE.md
+  - README.md
+  - _config.yml

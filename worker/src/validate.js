@@ -52,6 +52,12 @@ export function isTestEmail(email, extraDomains = '') {
   return extraDomains.split(',').map((d) => d.trim().toLowerCase()).filter(Boolean).some((d) => domain === d || domain.endsWith('.' + d));
 }
 
+/** Reserved names that can never receive mail (RFC 2606/6761). No email is attempted for them, so test runs cannot create bounces. */
+export function isUndeliverableEmail(email) {
+  const domain = String(email).toLowerCase().split('@')[1] || '';
+  return /(^|\.)(test|invalid|example|localhost)$/.test(domain) || /(^|\.)example\.(com|org|net)$/.test(domain);
+}
+
 export function normalizeHttpsUrl(v) {
   if (typeof v !== 'string') return null;
   let u;

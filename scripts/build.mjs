@@ -4,6 +4,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const STAGING = process.env.STAGING === '1'; // staging preview: visible banner + noindex everywhere
+const PRELAUNCH = process.env.PRELAUNCH === '1'; // production dark launch (before the domain cutover): no banner, but noindex everywhere
+const NOINDEX = STAGING || PRELAUNCH;
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const src = join(root, 'src');
 const out = join(root, 'site');
@@ -96,7 +98,7 @@ for (const f of readdirSync(join(src, 'pages')).filter((n) => n.endsWith('.html'
     footNav,
     schemaTag: path === '/' ? `<script type="application/ld+json">${JSON.stringify(JSON.parse(render(readFileSync(join(src, 'schema.json'), 'utf8'))))}</script>` : '',
     main: render(body),
-    robots: STAGING ? 'noindex,nofollow' : meta.robots || 'index,follow',
+    robots: NOINDEX ? 'noindex,nofollow' : meta.robots || 'index,follow',
     banner: STAGING ? STAGING_BANNER : '',
   });
   const dir = path === '/' ? out : join(out, path);
@@ -114,7 +116,7 @@ for (const f of readdirSync(join(src, 'pages')).filter((n) => n.endsWith('.html'
 }
 
 writeFileSync(join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemap.map((p) => `  <url><loc>${config.domain}${p}</loc></url>`).join('\n')}\n</urlset>\n`);
-writeFileSync(join(out, 'robots.txt'), STAGING ? 'User-agent: *\nDisallow: /\n' : `User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${config.domain}/sitemap.xml\n`);
+writeFileSync(join(out, 'robots.txt'), NOINDEX ? 'User-agent: *\nDisallow: /\n' : `User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${config.domain}/sitemap.xml\n`);
 
 // Static files (css/js/fonts) copied recursively into site/assets.
 const staticDir = join(src, 'static');
@@ -132,10 +134,12 @@ const api = config.apiBase ? ' ' + new URL(config.apiBase).origin : '';
 writeFileSync(join(out, '_headers'), `/*
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
-${STAGING ? '  X-Robots-Tag: noindex, nofollow\n' : ''}  Referrer-Policy: strict-origin-when-cross-origin
+${NOINDEX ? '  X-Robots-Tag: noindex, nofollow\n' : '  Strict-Transport-Security: max-age=2592000\n'}  Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'${api}; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none'
 /assets/*
-  Cache-Control: public, max-age=86400
+  Cache-Control: public, max-age=600, must-revalidate
 `);
-console.log(`Built ${sitemap.length} pages + 404 → site/ (${socials.length} social links published${STAGING ? ', STAGING build' : ''})`);
+// Asset file names are not fingerprinted, so they are revalidated every 10 minutes (cheap 304s): a deploy reaches every
+// visitor within minutes instead of up to a day later, and new HTML never lives long beside old CSS/JS.
+console.log(`Built ${sitemap.length} pages + 404 → site/ (${socials.length} social links published${STAGING ? ', STAGING build' : PRELAUNCH ? ', PRELAUNCH (noindex) build' : ''})`);

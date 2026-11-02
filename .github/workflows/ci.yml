@@ -24,8 +24,10 @@ jobs:
           npm run build
           npm run check
           git diff --exit-code -- site || { echo "::error::site/ is out of date. Run 'npm run build' and commit."; exit 1; }
-      - name: Validate staging Worker configuration (no credentials needed)
-        run: npx wrangler deploy --dry-run --env staging --outdir "$RUNNER_TEMP/wr" --config worker/wrangler.toml
+      - name: "Validate staging and production Worker configuration (dry run, no credentials, nothing deployed)"
+        run: |
+          npx wrangler deploy --dry-run --env staging --outdir "$RUNNER_TEMP/wr-staging" --config worker/wrangler.toml
+          npx wrangler deploy --dry-run --env production --outdir "$RUNNER_TEMP/wr-production" --config worker/wrangler.toml
         env:
           WRANGLER_SEND_METRICS: "false"
       - name: Browser end-to-end (starts its own preview server; synthetic data)

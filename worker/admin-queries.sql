@@ -45,10 +45,24 @@ SELECT COUNT(*) AS eligible, (COUNT(*) >= 20) AS dashboard_visible FROM pioneers
 --   UPDATE pioneers SET is_test=0 WHERE private_email='person@example.com';
 SELECT pioneer_id, private_email, submitted_at FROM pioneers WHERE is_test=1 ORDER BY submitted_at DESC LIMIT 50;
 
+-- 8. Registry gate review (run before the public dashboard first appears at 20, and weekly while it is public).
+--    Looks for inflated counts: many registrations from one email domain, bursts in a few minutes, or almost nobody verified.
+SELECT COUNT(*) AS eligible, SUM(email_verification_status='Verified') AS verified, SUM(privacy_preference='anonymous') AS anonymous,
+       MIN(submitted_at) AS first_at, MAX(submitted_at) AS last_at FROM pioneers WHERE registration_status='Active' AND is_test=0;
+SELECT substr(private_email, instr(private_email,'@')+1) AS email_domain, COUNT(*) AS n FROM pioneers
+WHERE registration_status='Active' AND is_test=0 GROUP BY email_domain ORDER BY n DESC LIMIT 15;
+SELECT substr(submitted_at,1,13) AS hour_utc, COUNT(*) AS n FROM pioneers WHERE registration_status='Active' AND is_test=0 GROUP BY hour_utc ORDER BY n DESC LIMIT 10;
+
 -- ── Privacy requests (run only after confirming the requester controls the address) ──
--- Withdraw a registration: removes them from counts and public listing, stops optional email, frees the address.
+-- ERASE completely: use the tool, not hand-written SQL. It deletes verification records, social accounts, then the registration,
+-- re-counts, and prints no personal data. Dry run first, then --confirm:
+--   node scripts/erase-pioneer.mjs <registered email | Pioneer ID> --env production
+--   node scripts/erase-pioneer.mjs <registered email | Pioneer ID> --env production --confirm
+-- (If you must use the console, delete explicitly and in this order; do not rely on cascading deletes:)
+--   DELETE FROM email_verifications WHERE pioneer_id IN (SELECT pioneer_id FROM pioneers WHERE private_email = 'person@example.com');
+--   DELETE FROM social_accounts     WHERE pioneer_id IN (SELECT pioneer_id FROM pioneers WHERE private_email = 'person@example.com');
+--   DELETE FROM pioneers WHERE private_email = 'person@example.com';
+-- WITHDRAW (keep the record, stop counting/listing/optional email, free the address):
 --   UPDATE pioneers SET registration_status='Withdrawn', general_email_opt_in=0, collab_contact_opt_in=0, optional_withdrawn_at=datetime('now') WHERE private_email='person@example.com';
--- Erase completely (cascades to accounts and verification rows):
---   DELETE FROM pioneers WHERE private_email='person@example.com';
--- Correct a charity or name:
+-- CORRECT a charity or name:
 --   UPDATE pioneers SET selected_charity='New Charity' WHERE pioneer_id='II-XXXX-XXXX';

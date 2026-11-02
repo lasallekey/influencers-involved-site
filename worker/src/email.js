@@ -14,6 +14,7 @@ export function verificationMessage({ name, link, unsubscribe }) {
     'Your 1% pledge is saved and your Pioneer certificate is ready. This optional step confirms you control this inbox, which helps protect the registry and is required before any public listing you chose.',
     '',
     `Verify your email: ${link}`,
+    '(Open the link and press “Confirm my email”.)',
     '',
     'The link works once and expires in 24 hours. Verifying is not a donation, not proof of giving, and not consent to marketing email.',
     unsubscribe ? `\nManage the optional emails you chose: ${unsubscribe}` : '',
@@ -21,7 +22,7 @@ export function verificationMessage({ name, link, unsubscribe }) {
     'Influencers Involved, Inc. NFP · 800 W Central Rd, Suite 120, Mt. Prospect, IL 60056',
     'If you did not make this pledge, ignore this message or write to grants@influencersinvolved.org.',
   ].join('\n');
-  const html = `<p>Hello ${esc(name)},</p><p>Your 1% pledge is saved and your Pioneer certificate is ready. This optional step confirms you control this inbox, which helps protect the registry and is required before any public listing you chose.</p><p><a href="${esc(link)}">Verify your email</a></p><p>The link works once and expires in 24 hours. Verifying is not a donation, not proof of giving, and not consent to marketing email.</p>${unsubscribe ? `<p><a href="${esc(unsubscribe)}">Manage the optional emails you chose</a></p>` : ''}<p style="color:#555;font-size:13px">Influencers Involved, Inc. NFP · 800 W Central Rd, Suite 120, Mt. Prospect, IL 60056<br>If you did not make this pledge, ignore this message or write to grants@influencersinvolved.org.</p>`;
+  const html = `<p>Hello ${esc(name)},</p><p>Your 1% pledge is saved and your Pioneer certificate is ready. This optional step confirms you control this inbox, which helps protect the registry and is required before any public listing you chose.</p><p><a href="${esc(link)}">Verify your email</a><br><span style="color:#555;font-size:13px">Open the link and press “Confirm my email”.</span></p><p>The link works once and expires in 24 hours. Verifying is not a donation, not proof of giving, and not consent to marketing email.</p>${unsubscribe ? `<p><a href="${esc(unsubscribe)}">Manage the optional emails you chose</a></p>` : ''}<p style="color:#555;font-size:13px">Influencers Involved, Inc. NFP · 800 W Central Rd, Suite 120, Mt. Prospect, IL 60056<br>If you did not make this pledge, ignore this message or write to grants@influencersinvolved.org.</p>`;
   return { subject: 'Confirm your email — Influencers Involved Pioneer Registry', text, html };
 }
 

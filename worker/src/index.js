@@ -1,10 +1,11 @@
 // Influencers Involved — Pioneer Registry API (Cloudflare Worker + D1).
 // The Worker is the only reader/writer of the database. The browser never holds a database key.
-import { validateRegistration, normalizeEmail, isTestEmail, CONSENT_VERSION } from './validate.js';
+import { validateRegistration, normalizeEmail, isTestEmail, isUndeliverableEmail, CONSENT_VERSION } from './validate.js';
 import { sendEmail, verificationMessage, emailConfigured } from './email.js';
 import { json, redirect, nowIso, newToken, newPioneerId, sha256Hex, hmacHex, timingSafeEqual } from './util.js';
 
 const MAX_BODY = 20_000;
+export const HONEYPOT_FIELD = 'ii_extra_note'; // deliberately not a name browsers or password managers recognize
 const TOKEN_TTL_MS = 24 * 3600e3;
 const RESEND_GAP_MS = 5 * 60e3;
 const RESEND_PER_DAY = 3;
@@ -14,7 +15,20 @@ const REGISTRY_MIN = 20;
 const ELIGIBLE = "p.registration_status = 'Active' AND p.is_test = 0";
 const LIMITS = { register: [10, 3600], resend: [6, 3600], verify: [60, 3600], unsub: [30, 3600] }; // [max, window seconds] per client
 
+// Retention of temporary records (documented on the Privacy page and in docs/RETENTION.md). Registrations are never touched here.
+const RATE_LIMIT_KEEP_WINDOWS = 1;               // rate-limit counters older than the previous hour-long window are deleted
+const VERIFICATION_KEEP_MS = 7 * 24 * 3600e3;    // spent or expired verification-link records are deleted 7 days after use/expiry
+
+/** Security-critical secrets must exist; there is deliberately no built-in fallback value. */
+export function secretsConfigured(env) {
+  return typeof env.TOKEN_SECRET === 'string' && env.TOKEN_SECRET.length >= 32;
+}
+
 export default {
+  // Daily cron (wrangler.toml [triggers]): deletes expired temporary records. See runCleanup.
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(runCleanup(env));
+  },
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     if (!url.pathname.startsWith('/api/')) {
@@ -32,6 +46,12 @@ export default {
 async function route(request, env, ctx, url) {
   const { pathname } = url;
   const method = request.method;
+  // Fail closed: without TOKEN_SECRET nothing that hashes IPs or signs links may run. Health reports why.
+  if (pathname === '/api/health' && method === 'GET') {
+    const ready = secretsConfigured(env);
+    return json({ ok: ready, secrets_configured: ready, email_configured: emailConfigured(env) }, ready ? 200 : 503);
+  }
+  if (!secretsConfigured(env)) return json({ ok: false, error: 'not_configured' }, 503);
   const cors = corsHeaders(request, env);
 
   if (method === 'OPTIONS') {
@@ -48,11 +68,11 @@ async function route(request, env, ctx, url) {
 
   if (pathname === '/api/register' && method === 'POST') return withHeaders(await register(request, env, ctx), h);
   if (pathname === '/api/resend-verification' && method === 'POST') return withHeaders(await resend(request, env, ctx), h);
-  if (pathname === '/api/verify' && method === 'GET') return verify(request, env, url);
+  if (pathname === '/api/verify' && method === 'POST') return withHeaders(await verifyConfirm(request, env), h);
+  if (pathname === '/api/verify' && method === 'GET') return verifyRedirect(request, env, url);
   if (pathname === '/api/unsubscribe' && method === 'GET') return unsubscribe(request, env, url);
   if (pathname === '/api/stats' && method === 'GET') return withHeaders(await stats(env), h);
   if (pathname === '/api/pioneers' && method === 'GET') return withHeaders(await publicPioneers(env), h);
-  if (pathname === '/api/health' && method === 'GET') return json({ ok: true, email_configured: emailConfigured(env) });
   return json({ error: 'not_found' }, 404);
 }
 
@@ -74,7 +94,7 @@ function corsHeaders(request, env) {
 
 async function clientBucket(request, env, kind) {
   const ip = request.headers.get('CF-Connecting-IP') || request.headers.get('X-Forwarded-For') || 'unknown';
-  return `${kind}:${(await hmacHex(env.TOKEN_SECRET || 'dev-only', 'ip:' + ip)).slice(0, 32)}`;
+  return `${kind}:${(await hmacHex(env.TOKEN_SECRET, 'ip:' + ip)).slice(0, 32)}`;
 }
 
 /** Counts this request and returns true when the client is over the limit. */
@@ -85,8 +105,8 @@ async function overLimit(env, request, kind) {
   const row = await env.DB.prepare(
     'INSERT INTO rate_limits (bucket, window_start, count) VALUES (?1, ?2, 1) ON CONFLICT(bucket, window_start) DO UPDATE SET count = count + 1 RETURNING count'
   ).bind(bucket, win).first();
-  // Opportunistic purge of expired windows keeps the table tiny and the data short-lived.
-  if (Math.random() < 0.05) await env.DB.prepare('DELETE FROM rate_limits WHERE window_start < ?1').bind(win - 2).run();
+  // Opportunistic purge on top of the daily scheduled cleanup (runCleanup) keeps the table tiny.
+  if (Math.random() < 0.05) await env.DB.prepare('DELETE FROM rate_limits WHERE window_start < ?1').bind(win - RATE_LIMIT_KEEP_WINDOWS).run();
   return (row && row.count) > max;
 }
 
@@ -117,9 +137,10 @@ async function register(request, env, ctx) {
   const parsed = await readJson(request);
   if (parsed.error) return parsed.error;
 
-  // Honeypot: real people never fill this hidden field. Bots get a plausible reply and nothing is stored.
-  if (parsed.body && typeof parsed.body.website === 'string' && parsed.body.website.trim() !== '') {
-    return json({ ok: true, pioneer_id: newPioneerId(), display_name: 'Pioneer', charity: null, charity_status: 'undecided', pledge_date: '', email_status: 'queued' }, 201);
+  // Honeypot: real people never fill this hidden field. Nothing is stored AND no success, Pioneer ID or certificate is
+  // ever returned for it: a false success would tell a real person (e.g. via browser autofill) they were registered.
+  if (parsed.body && typeof parsed.body[HONEYPOT_FIELD] === 'string' && parsed.body[HONEYPOT_FIELD].trim() !== '') {
+    return json({ ok: false, error: 'rejected' }, 400);
   }
 
   const v = validateRegistration(parsed.body);
@@ -135,7 +156,7 @@ async function register(request, env, ctx) {
     const pioneerId = newPioneerId();
     const token = newToken();
     const tokenHash = await sha256Hex(token);
-    const configured = emailConfigured(env);
+    const configured = emailConfigured(env) && !isUndeliverableEmail(d.email); // reserved test domains never get (bouncing) mail
     const stmts = [
       env.DB.prepare(
         `INSERT INTO pioneers (pioneer_id, submitted_at, creator_name, private_email, country, selected_charity, charity_status, charity_key, is_test, pledge_date, privacy_preference,
@@ -181,12 +202,16 @@ function apiBase(env, request) {
 }
 
 async function unsubToken(env, pioneerId) {
-  return (await hmacHex(env.TOKEN_SECRET || 'dev-only', 'unsub:' + pioneerId)).slice(0, 40);
+  return (await hmacHex(env.TOKEN_SECRET, 'unsub:' + pioneerId)).slice(0, 40);
 }
 
 async function deliverVerification(env, { pioneerId, to, name, token, tokenHash, optional }, request) {
+  // The email link opens the site's own page with the token in the URL fragment (never sent to any server by a
+  // plain fetch). Nothing is consumed until the person presses the confirm button, so email-link scanners that
+  // merely open links cannot use up the single-use token.
+  const site = (env.SITE_URL || new URL(request.url).origin).replace(/\/$/, '');
+  const link = `${site}/challenge/#verify=${encodeURIComponent(token)}`;
   const base = apiBase(env, request);
-  const link = `${base}/api/verify?token=${encodeURIComponent(token)}`;
   const unsubscribe = optional ? `${base}/api/unsubscribe?p=${encodeURIComponent(pioneerId)}&t=${await unsubToken(env, pioneerId)}` : null;
   const status = await sendEmail(env, { to, ...verificationMessage({ name, link, unsubscribe }) });
   await env.DB.prepare('UPDATE email_verifications SET send_status = ?1, sent_at = ?2 WHERE token_hash = ?3')
@@ -195,16 +220,28 @@ async function deliverVerification(env, { pioneerId, to, name, token, tokenHash,
 
 /* ---------- verification ---------- */
 
-async function verify(request, env, url) {
+const TOKEN_SHAPE = /^[A-Za-z0-9_-]{43}$/;
+
+// Links from emails sent before the confirm-button flow (and anything that still opens /api/verify in a browser) are
+// forwarded to the confirmation page. This GET changes nothing, so scanners that open it cannot consume a token.
+async function verifyRedirect(request, env, url) {
   const site = (env.SITE_URL || url.origin).replace(/\/$/, '');
-  const back = (r) => redirect(`${site}/challenge/?verify=${r}`);
-  if (await overLimit(env, request, 'verify')) return back('invalid');
   const token = url.searchParams.get('token') || '';
-  if (!/^[A-Za-z0-9_-]{43}$/.test(token)) return back('invalid');
+  return redirect(TOKEN_SHAPE.test(token) ? `${site}/challenge/#verify=${token}` : `${site}/challenge/`);
+}
+
+// The only place a verification token is consumed: an explicit POST from the confirmation page (same-origin only).
+async function verifyConfirm(request, env) {
+  if (await overLimit(env, request, 'verify')) return json({ ok: false, status: 'rate_limited' }, 429);
+  const parsed = await readJson(request);
+  if (parsed.error) return parsed.error;
+  const token = parsed.body && typeof parsed.body.token === 'string' ? parsed.body.token : '';
+  if (!TOKEN_SHAPE.test(token)) return json({ ok: false, status: 'invalid' }, 400);
   const hash = await sha256Hex(token);
   const row = await env.DB.prepare('SELECT pioneer_id, expires_at, consumed_at FROM email_verifications WHERE token_hash = ?1').bind(hash).first();
-  if (!row || row.consumed_at) return back('invalid');
-  if (row.expires_at <= nowIso()) return back('expired');
+  if (!row) return json({ ok: false, status: 'invalid' }, 400);
+  if (row.consumed_at) return json({ ok: false, status: 'used' }, 409);
+  if (row.expires_at <= nowIso()) return json({ ok: false, status: 'expired' }, 410);
   const now = nowIso();
   // Single-use: the conditional UPDATE succeeds for exactly one request, even under a race.
   const [claim] = await env.DB.batch([
@@ -213,7 +250,7 @@ async function verify(request, env, url) {
                     WHERE pioneer_id = ?3 AND registration_status = 'Active'
                       AND EXISTS (SELECT 1 FROM email_verifications WHERE token_hash = ?2 AND consumed_at = ?1)`).bind(now, hash, row.pioneer_id),
   ]);
-  return back(claim.meta.changes === 1 ? 'ok' : 'invalid');
+  return claim.meta.changes === 1 ? json({ ok: true, status: 'ok' }) : json({ ok: false, status: 'used' }, 409);
 }
 
 async function resend(request, env, ctx) {
@@ -222,7 +259,7 @@ async function resend(request, env, ctx) {
   if (parsed.error) return parsed.error;
   const generic = json({ ok: true }, 202); // identical answer whether or not the address is registered
   const email = normalizeEmail(parsed.body && parsed.body.email);
-  if (!email || !emailConfigured(env)) return generic;
+  if (!email || !emailConfigured(env) || isUndeliverableEmail(email)) return generic;
   const p = await env.DB.prepare(`SELECT pioneer_id, creator_name, general_email_opt_in, collab_contact_opt_in FROM pioneers WHERE private_email = ?1 AND registration_status = 'Active' AND email_verification_status = 'Pending'`).bind(email).first();
   if (!p) return generic;
   const day = new Date(Date.now() - 24 * 3600e3).toISOString();
@@ -280,4 +317,23 @@ async function publicPioneers(env) {
     by.get(a.pioneer_id).push({ platform: a.platform, handle: a.handle_or_channel, url: a.profile_url || null });
   }
   return json({ visible: true, pioneers: people.results.map((p) => ({ name: p.creator_name, accounts: by.get(p.pioneer_id) || [] })) }, 200, PUBLIC_CACHE);
+}
+
+/* ---------- retention: expired temporary records ---------- */
+
+/**
+ * Deletes only temporary security records. It never touches pioneers or social_accounts.
+ *  - rate_limits: hourly counters keyed by a keyed hash of the visitor address; only needed for the current hour.
+ *  - email_verifications: hashed one-time links; valid 24 h, kept 7 days after use or expiry, then deleted.
+ */
+export async function runCleanup(env, now = Date.now()) {
+  const win = Math.floor(now / 1000 / 3600);
+  const cutoff = new Date(now - VERIFICATION_KEEP_MS).toISOString();
+  const [limits, verifs] = await env.DB.batch([
+    env.DB.prepare('DELETE FROM rate_limits WHERE window_start < ?1').bind(win - RATE_LIMIT_KEEP_WINDOWS),
+    env.DB.prepare('DELETE FROM email_verifications WHERE COALESCE(consumed_at, expires_at) < ?1').bind(cutoff),
+  ]);
+  const result = { rate_limits: limits.meta.changes, email_verifications: verifs.meta.changes };
+  console.log('cleanup', JSON.stringify(result));
+  return result;
 }

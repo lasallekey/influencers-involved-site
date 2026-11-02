@@ -50,7 +50,7 @@ jobs:
         run: STAGING=1 npm run build
       - name: Create the staging database if needed
         if: steps.cfg.outputs.ready == 'true'
-        run: node scripts/staging-provision.mjs
+        run: node scripts/d1-provision.mjs staging
       - name: Apply database migrations
         if: steps.cfg.outputs.ready == 'true'
         run: npx wrangler d1 migrations apply ii-pioneer-registry-staging --remote --env staging --config worker/wrangler.toml
@@ -81,6 +81,13 @@ jobs:
         if: always() && steps.cfg.outputs.ready == 'true'
         continue-on-error: true
         run: node scripts/check-email-dns.mjs influencersinvolved.org
+      - name: DNS comparison for the planned Cloudflare nameservers (read-only; runs only when the repository variable CLOUDFLARE_NAMESERVERS is set)
+        if: always() && steps.cfg.outputs.ready == 'true' && vars.CLOUDFLARE_NAMESERVERS != ''
+        continue-on-error: true
+        run: node scripts/dns-preflight.mjs influencersinvolved.org "${{ vars.CLOUDFLARE_NAMESERVERS }}"
+      - name: Rehearse privacy erasure on synthetic staging data
+        if: steps.cfg.outputs.ready == 'true' && steps.deploy.outcome == 'success'
+        run: node scripts/rehearse-erasure.mjs "${{ steps.deploy.outputs.url }}" staging
       - name: Remove smoke-test records (keeps staging counts real)
         if: always() && steps.cfg.outputs.ready == 'true' && steps.deploy.outcome == 'success'
         run: npx wrangler d1 execute ii-pioneer-registry-staging --remote --env staging --config worker/wrangler.toml --file worker/cleanup-smoke.sql

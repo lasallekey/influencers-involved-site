@@ -39,7 +39,7 @@ Until a domain is verified, Resend's shared test sender (`onboarding@resend.dev`
 ## What to test (you, on your phone and laptop)
 1. Home, then each menu page: copy reads well, no horizontal scrolling on the phone, Menu button works.
 2. **Become a Pioneer** → submit with two social accounts → you see a Pioneer ID → **download the certificate**.
-3. Check your inbox (needs step 5) → click the verification link → you return to the Challenge page with a confirmation. Click it again: it must say the link is not valid.
+3. Check your inbox (needs step 5) → open the verification link → the Challenge page shows a **Confirm my email** button (opening the link alone never uses it up) → press it for the confirmation. Open the link again and press the button: it must say the link was already used.
 4. Register again with the same email: you should be told it already joined.
 5. Register once as **public** and once **anonymous**, verify the public one, wait up to 5 minutes, and confirm only the public, approved profile appears under "Pioneers so far" (anonymous people only add to the totals).
 6. On **Donate**: the Zeffy button opens the Zeffy form; the "U.S. & International Donations" section explains card giving, USD processing and the fee statement; there is no PayPal button and no other donation provider.

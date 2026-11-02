@@ -1,6 +1,6 @@
 import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import worker from '../src/index.js';
+import worker, { runCleanup, secretsConfigured } from '../src/index.js';
 import { createMigratedD1 } from '../dev/d1-sqlite.js';
 import { sha256Hex } from '../src/util.js';
 
@@ -10,7 +10,7 @@ const ctx = { pending: [], waitUntil(p) { this.pending.push(p); } };
 const settle = async () => { await Promise.all(ctx.pending.splice(0)); };
 
 function mkEnv(over = {}) {
-  return { DB: createMigratedD1(), SITE_URL: SITE, ALLOWED_ORIGINS: '', TOKEN_SECRET: 'test-secret', EMAIL_API_KEY: 'k_test', EMAIL_FROM: 'II <grants@influencersinvolved.org>', EMAIL_API_URL: 'https://mail.example.test/send', ...over };
+  return { DB: createMigratedD1(), SITE_URL: SITE, ALLOWED_ORIGINS: '', TOKEN_SECRET: 'test-secret-0123456789abcdef0123456789abcdef', EMAIL_API_KEY: 'k_test', EMAIL_FROM: 'II <grants@influencersinvolved.org>', EMAIL_API_URL: 'https://mail.example.test/send', ...over };
 }
 beforeEach(() => {
   env = mkEnv(); sent = [];
@@ -28,13 +28,15 @@ const key = () => 'key-' + String(++n).padStart(12, '0') + 'abcdef';
 const good = (o = {}) => ({
   idempotency_key: key(), consent_version: '2026-10-30', creator_name: 'Test Creator', email: `person${n}@creatormail.dev`, country: 'US', pledge_date: new Date().toISOString().slice(0, 10),
   charity_status: 'selected', charity: 'Feeding America', pledge_confirmed: true, certificate_ack: true, privacy_preference: 'public', general_email_opt_in: false,
-  collaboration_interest: 'Not now', collaboration_types: [], collab_contact_opt_in: false, website: '',
+  collaboration_interest: 'Not now', collaboration_types: [], collab_contact_opt_in: false, ii_extra_note: '',
   accounts: [{ platform: 'YouTube', handle: '@testcreator', profile_url: 'https://youtube.com/@testcreator', public_display_permission: true }], ...o,
 });
 const call = (path, { method = 'GET', body, headers = {}, ip } = {}) =>
   worker.fetch(new Request(SITE + path, { method, headers: { 'CF-Connecting-IP': ip || nextIp(), ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}), ...headers }, body: body !== undefined ? JSON.stringify(body) : undefined }), env, ctx);
 const register = (b, o) => call('/api/register', { method: 'POST', body: b, ...o });
 const q = (sql, ...p) => env.DB.raw.prepare(sql).all(...p);
+const confirm = (token, o = {}) => call('/api/verify', { method: 'POST', body: { token }, ...o });
+const statusOf = async (res) => (await res.json()).status;
 
 test('registers one Pioneer with all accounts atomically and returns a certificate view', async () => {
   const res = await register(good({ accounts: [
@@ -143,10 +145,17 @@ test('HTML in names is stored as inert text and control characters are stripped'
   assert.ok(!/[‮\n]/.test(r)); assert.equal(r, '<img src=x onerror=1> Bob');
 });
 
-test('honeypot submissions get a decoy reply and store nothing', async () => {
-  const res = await register(good({ website: 'http://spam.test' }));
-  assert.equal(res.status, 201);
+test('honeypot: nothing is stored and NO success, Pioneer ID or certificate data is ever returned', async () => {
+  const res = await register(good({ ii_extra_note: 'http://spam.test' }));
+  assert.equal(res.status, 400);
+  const b = await res.json();
+  assert.deepEqual(b, { ok: false, error: 'rejected' });
   assert.equal(q('SELECT COUNT(*) n FROM pioneers')[0].n, 0);
+  assert.equal(q('SELECT COUNT(*) n FROM social_accounts')[0].n, 0);
+  assert.equal(q('SELECT COUNT(*) n FROM email_verifications')[0].n, 0);
+  await settle(); assert.equal(sent.length, 0, 'no email for a rejected submission');
+  // The old field name is ordinary data now (autofill of a "website" input can no longer drop a real registration).
+  assert.equal((await register(good({ website: 'https://my-site.example' }))).status, 201);
 });
 
 test('register is rate limited per client and does not store the raw address', async () => {
@@ -173,35 +182,60 @@ async function registerAndToken(over = {}) {
   const body = good(over);
   const b = await (await register(body)).json(); await settle();
   const link = /Verify your email: (\S+)/.exec(sent.at(-1).text)[1];
-  return { body, b, link, token: new URL(link).searchParams.get('token') };
+  return { body, b, link, token: decodeURIComponent(link.split('#verify=')[1]) };
 }
 
 test('verification email goes out after commit; only a hash of the token is stored', async () => {
   const { link, token, b } = await registerAndToken();
-  assert.ok(link.startsWith(SITE + '/api/verify?token='));
+  assert.ok(link.startsWith(SITE + '/challenge/#verify='), 'the link opens the site page; the token is in the fragment');
   const row = q('SELECT * FROM email_verifications')[0];
   assert.equal(row.pioneer_id, b.pioneer_id); assert.equal(row.token_hash, await sha256Hex(token)); assert.notEqual(row.token_hash, token);
   assert.equal(row.send_status, 'sent');
   assert.ok(!JSON.stringify(q('SELECT * FROM email_verifications')).includes(token));
 });
 
-test('valid token verifies once; replay, unknown and malformed tokens do not', async () => {
+test('valid token verifies once (explicit POST); replay, unknown and malformed tokens do not', async () => {
   const { token } = await registerAndToken();
-  const ok = await call('/api/verify?token=' + token);
-  assert.equal(ok.status, 302); assert.equal(ok.headers.get('Location'), SITE + '/challenge/?verify=ok');
+  const ok = await confirm(token);
+  assert.equal(ok.status, 200); assert.deepEqual(await ok.json(), { ok: true, status: 'ok' });
   const p = q('SELECT email_verification_status s, email_verified_at t FROM pioneers')[0];
   assert.equal(p.s, 'Verified'); assert.ok(p.t);
-  const replay = await call('/api/verify?token=' + token);
-  assert.ok(replay.headers.get('Location').endsWith('verify=invalid'));
-  assert.ok((await call('/api/verify?token=' + 'A'.repeat(43))).headers.get('Location').endsWith('verify=invalid'));
-  assert.ok((await call('/api/verify?token=short')).headers.get('Location').endsWith('verify=invalid'));
+  const replay = await confirm(token);
+  assert.equal(replay.status, 409); assert.equal(await statusOf(replay), 'used');
+  assert.equal(await statusOf(await confirm('A'.repeat(43))), 'invalid');
+  assert.equal(await statusOf(await confirm('short')), 'invalid');
+  assert.equal((await confirm(undefined)).status, 400);
+});
+
+test('scanner-safe: opening the emailed page or the old GET link never consumes the token', async () => {
+  const { token, link } = await registerAndToken();
+  // A scanner fetching the link sends nothing to the API at all (the token is in the fragment) ...
+  assert.ok(!new URL(link).search);
+  // ... and even the legacy GET /api/verify only redirects to the confirmation page.
+  for (let i = 0; i < 3; i++) {
+    const r = await call('/api/verify?token=' + token);
+    assert.equal(r.status, 302); assert.equal(r.headers.get('Location'), SITE + '/challenge/#verify=' + token);
+  }
+  assert.equal((await call('/api/verify?token=nonsense')).headers.get('Location'), SITE + '/challenge/');
+  const row = q('SELECT consumed_at c FROM email_verifications')[0]; assert.equal(row.c, null);
+  assert.equal(q('SELECT email_verification_status s FROM pioneers')[0].s, 'Pending');
+  assert.equal(await statusOf(await confirm(token)), 'ok'); // the real click still works afterwards
+});
+
+test('verification confirm is same-origin only and concurrent clicks verify exactly once', async () => {
+  const { token } = await registerAndToken();
+  const cross = await confirm(token, { headers: { Origin: 'https://evil.example' } });
+  assert.equal(cross.status, 403);
+  assert.equal(q('SELECT consumed_at c FROM email_verifications')[0].c, null);
+  const results = await Promise.all([confirm(token), confirm(token), confirm(token)]);
+  assert.equal((await Promise.all(results.map(statusOf))).filter((x) => x === 'ok').length, 1);
 });
 
 test('expired token does not verify and the pledge stays valid', async () => {
   const { token } = await registerAndToken();
   env.DB.raw.exec(`UPDATE email_verifications SET expires_at = '2020-01-01T00:00:00.000Z'`);
-  const r = await call('/api/verify?token=' + token);
-  assert.ok(r.headers.get('Location').endsWith('verify=expired'));
+  const r = await confirm(token);
+  assert.equal(r.status, 410); assert.equal(await statusOf(r), 'expired');
   const p = q('SELECT email_verification_status s, registration_status r FROM pioneers')[0];
   assert.equal(p.s, 'Pending'); assert.equal(p.r, 'Active');
 });
@@ -241,10 +275,9 @@ test('resend is throttled, generic, and invalidates older links', async () => {
   env.DB.raw.exec(`UPDATE email_verifications SET created_at = '2020-01-01T00:00:00.000Z'`);
   await call('/api/resend-verification', { method: 'POST', body: { email: body.email } }); await settle();
   assert.equal(sent.length, 2);
-  const oldTry = await call('/api/verify?token=' + token);
-  assert.ok(oldTry.headers.get('Location').endsWith('verify=expired') || oldTry.headers.get('Location').endsWith('verify=invalid'));
-  const newToken = new URL(/Verify your email: (\S+)/.exec(sent[1].text)[1]).searchParams.get('token');
-  assert.ok((await call('/api/verify?token=' + newToken)).headers.get('Location').endsWith('verify=ok'));
+  assert.equal(await statusOf(await confirm(token)), 'expired');
+  const newToken = decodeURIComponent(/Verify your email: (\S+)/.exec(sent[1].text)[1].split('#verify=')[1]);
+  assert.equal(await statusOf(await confirm(newToken)), 'ok');
 });
 
 /* ---- optional email withdrawal ---- */
@@ -337,9 +370,9 @@ test('public listing shows only verified + public Pioneers and only approved pro
     { platform: 'YouTube', handle: '@shown', profile_url: 'https://youtube.com/@shown', public_display_permission: true },
     { platform: 'TikTok', handle: '@nolink', public_display_permission: true },
     { platform: 'Instagram', handle: 'hidden', profile_url: 'https://instagram.com/hidden', public_display_permission: false } ] });
-  await call('/api/verify?token=' + verified.token);
+  await confirm(verified.token);
   await mk('Public Unverified', {});
-  const anon = await mk('Anon Verified', { privacy_preference: 'anonymous' }); await call('/api/verify?token=' + anon.token);
+  const anon = await mk('Anon Verified', { privacy_preference: 'anonymous' }); await confirm(anon.token);
   await seed(17);
   const res = await call('/api/pioneers'); const text = await res.text(); const b = JSON.parse(text);
   assert.equal(b.visible, true);
@@ -413,4 +446,88 @@ test('private tables are not reachable through any public route', async () => {
 
 test('migration contains no legacy data and starts empty', () => {
   for (const t of ['pioneers', 'social_accounts', 'email_verifications']) assert.equal(q(`SELECT COUNT(*) n FROM ${t}`)[0].n, 0);
+});
+
+/* ---- fail-closed secrets ---- */
+
+test('without TOKEN_SECRET (or with a weak one) the API refuses to run; health says why; no built-in fallback exists', async () => {
+  for (const bad of [undefined, '', 'short', 'dev-only']) {
+    env = mkEnv({ TOKEN_SECRET: bad });
+    assert.equal(secretsConfigured(env), false);
+    const reg = await register(good()); assert.equal(reg.status, 503); assert.deepEqual(await reg.json(), { ok: false, error: 'not_configured' });
+    assert.equal((await call('/api/stats')).status, 503);
+    assert.equal((await call('/api/verify', { method: 'POST', body: { token: 'A'.repeat(43) } })).status, 503);
+    const unsub = await call('/api/unsubscribe?p=II-AAAA-BBBB&t=' + '0'.repeat(40)); assert.equal(unsub.status, 503);
+    const h = await call('/api/health'); assert.equal(h.status, 503);
+    assert.deepEqual(await h.json(), { ok: false, secrets_configured: false, email_configured: true });
+    assert.equal(q('SELECT COUNT(*) n FROM pioneers')[0].n, 0); assert.equal(q('SELECT COUNT(*) n FROM rate_limits')[0].n, 0);
+  }
+  env = mkEnv();
+  const h = await call('/api/health'); assert.equal(h.status, 200); assert.deepEqual(await h.json(), { ok: true, secrets_configured: true, email_configured: true });
+});
+
+test('forged unsubscribe links are rejected (the old public fallback key no longer works)', async () => {
+  const { b } = await registerAndToken({ general_email_opt_in: true });
+  const { hmacHex } = await import('../src/util.js');
+  const forgedT = (await hmacHex('dev-only', 'unsub:' + b.pioneer_id)).slice(0, 40);
+  const r = await call(`/api/unsubscribe?p=${b.pioneer_id}&t=${forgedT}`);
+  assert.ok(r.headers.get('Location').endsWith('unsubscribe=invalid'));
+  assert.equal(q('SELECT general_email_opt_in g FROM pioneers')[0].g, 1);
+});
+
+/* ---- retention: scheduled cleanup ---- */
+
+test('scheduled cleanup removes expired temporary records and never touches Pioneers or their accounts', async () => {
+  const keep = await registerAndToken({ accounts: [{ platform: 'YouTube', handle: '@keep1', public_display_permission: true }, { platform: 'Instagram', handle: 'keep2', public_display_permission: false }] });
+  const spent = await registerAndToken(); await confirm(spent.token);
+  const old = await registerAndToken();
+  const now = Date.now(), iso = (ms) => new Date(now + ms).toISOString(), day = 24 * 3600e3;
+  // keep: link expired only 1 day ago (inside the 7-day window); spent: consumed 8 days ago; old: expired 8 days ago.
+  env.DB.raw.prepare('UPDATE email_verifications SET created_at=?, expires_at=? WHERE pioneer_id=?').run(iso(-2 * day), iso(-1 * day), keep.b.pioneer_id);
+  env.DB.raw.prepare('UPDATE email_verifications SET created_at=?, expires_at=?, consumed_at=? WHERE pioneer_id=?').run(iso(-9 * day), iso(-8 * day), iso(-8 * day), spent.b.pioneer_id);
+  env.DB.raw.prepare('UPDATE email_verifications SET created_at=?, expires_at=? WHERE pioneer_id=?').run(iso(-9 * day), iso(-8 * day), old.b.pioneer_id);
+  const win = Math.floor(now / 1000 / 3600);
+  env.DB.raw.exec(`DELETE FROM rate_limits`);
+  for (const [bucket, w] of [['register:old', win - 30], ['register:prev-hour', win - 1], ['register:now', win]]) env.DB.raw.prepare('INSERT INTO rate_limits (bucket, window_start, count) VALUES (?,?,1)').run(bucket, w);
+  const before = { p: q('SELECT COUNT(*) n FROM pioneers')[0].n, s: q('SELECT COUNT(*) n FROM social_accounts')[0].n };
+
+  const res = await runCleanup(env, now);
+  assert.deepEqual(res, { rate_limits: 1, email_verifications: 2 });
+  assert.deepEqual(q('SELECT bucket FROM rate_limits ORDER BY bucket').map((r) => r.bucket), ['register:now', 'register:prev-hour']);
+  assert.deepEqual(q('SELECT pioneer_id FROM email_verifications').map((r) => r.pioneer_id), [keep.b.pioneer_id]);
+  assert.deepEqual({ p: q('SELECT COUNT(*) n FROM pioneers')[0].n, s: q('SELECT COUNT(*) n FROM social_accounts')[0].n }, before, 'Pioneers and accounts untouched');
+  assert.equal(q("SELECT COUNT(*) n FROM pioneers WHERE email_verification_status='Verified'")[0].n, 1, 'verification status survives deletion of its link record');
+  assert.deepEqual(await runCleanup(env, now), { rate_limits: 0, email_verifications: 0 }, 'idempotent');
+});
+
+test('the worker exposes a scheduled handler that runs the cleanup', async () => {
+  env.DB.raw.prepare('INSERT INTO rate_limits (bucket, window_start, count) VALUES (?,?,1)').run('x', 1);
+  await worker.scheduled({ cron: '17 3 * * *' }, env, ctx); await settle();
+  assert.equal(q('SELECT COUNT(*) n FROM rate_limits')[0].n, 0);
+});
+
+/* ---- erasure rehearsal against real registrations (same code path the staging rehearsal uses) ---- */
+
+test('erasing one person via the erase tool removes their real registration and nothing of anyone else; the address can re-register', async () => {
+  const { runErasure } = await import('../../scripts/erase-pioneer.mjs');
+  const exec = async (sql) => sql.split(';').map((s) => s.trim()).filter(Boolean).map((s) => (/^SELECT/i.test(s) ? env.DB.raw.prepare(s).all().map((r) => ({ ...r })) : (env.DB.raw.prepare(s).run(), [])));
+  const a = await registerAndToken({ email: 'erase-me@creatormail.dev', accounts: [{ platform: 'YouTube', handle: '@e1' }, { platform: 'TikTok', handle: '@e2' }] });
+  const c = await registerAndToken({ email: 'keep-me@creatormail.dev', accounts: [{ platform: 'YouTube', handle: '@k1' }] });
+  await confirm(a.token);
+  const r = await runErasure({ exec, identifier: a.b.pioneer_id, confirm: true });
+  assert.deepEqual(r.before, { pioneers: 1, social_accounts: 2, email_verifications: 1 }); assert.deepEqual(r.after, { pioneers: 0, social_accounts: 0, email_verifications: 0 });
+  assert.deepEqual(q('SELECT pioneer_id FROM pioneers').map((x) => x.pioneer_id), [c.b.pioneer_id]);
+  assert.equal(q('SELECT COUNT(*) n FROM social_accounts')[0].n, 1);
+  assert.equal(await statusOf(await confirm(a.token)), 'invalid', 'an old verification link for the erased person no longer works');
+  assert.equal((await register(good({ email: 'erase-me@creatormail.dev' }))).status, 201);
+});
+
+test('no email is attempted for reserved, undeliverable test domains (protects the sender reputation); real domains still get one', async () => {
+  for (const email of ['smoke+x@example.invalid', 'a@example.test', 'b@example.com', 'c@mail.localhost']) {
+    const r = await register(good({ email })); const b = await r.json();
+    assert.equal(r.status, 201, email); assert.equal(b.email_status, 'not_configured', email);
+  }
+  await settle(); assert.equal(sent.length, 0);
+  await call('/api/resend-verification', { method: 'POST', body: { email: 'a@example.test' } }); await settle(); assert.equal(sent.length, 0);
+  assert.equal((await (await register(good({ email: 'real.person@creatormail.dev' }))).json()).email_status, 'queued'); await settle(); assert.equal(sent.length, 1);
 });

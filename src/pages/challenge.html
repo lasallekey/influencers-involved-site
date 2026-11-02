@@ -4,7 +4,7 @@ path: /challenge/
 class: page-challenge
 ---
 {{people}}
-<div id="verify-banner" class="banner" hidden><div class="wrap"><p id="verify-msg" role="status"></p></div></div>
+<div id="verify-banner" class="banner" hidden><div class="wrap"><p id="verify-msg" role="status"></p><button type="button" class="btn" id="verify-confirm" hidden>Confirm my email</button></div></div>
 
 <div id="challenge-intro">
 <section class="m-hero">
@@ -157,7 +157,7 @@ class: page-challenge
         </div>
         <p class="notice" id="charity-undecided-note" role="note" hidden>That works. You’re still pledging 1% of your creator income to a charity of your choice. When you decide, email <a href="mailto:{{email}}">{{email}}</a> with your Pioneer ID and we’ll add it to your record.</p>
         <div class="field" id="charity-other-field" hidden><label for="charity_other">Charity name <span class="req">*</span></label><input type="text" id="charity_other" name="charity_other" maxlength="160" aria-describedby="charity_other-e"><p class="err" id="charity_other-e"></p></div>
-        <div class="check"><input type="checkbox" id="pledge_confirm" name="pledge_confirm" aria-describedby="pledge_confirm-e"><label for="pledge_confirm">I pledge 1% of my creator income to a charity of my choice, to give directly on a schedule I choose. This is voluntary, not a payment to II. I confirm that the social profiles I provide are mine or I am authorized to represent them. <span class="req">*</span></label></div>
+        <div class="check"><input type="checkbox" id="pledge_confirm" name="pledge_confirm" aria-describedby="pledge_confirm-e"><label for="pledge_confirm">I pledge 1% of my creator income to a charity of my choice, to give directly on a schedule I choose. This is voluntary, not a payment to II. I confirm that I am 18 or older and that the social profiles I provide are mine or I am authorized to represent them. <span class="req">*</span></label></div>
         <p class="err" id="pledge_confirm-e"></p>
       </fieldset>
 
@@ -199,7 +199,7 @@ class: page-challenge
         <legend><small>Step 4</small>Submit</legend>
         <div class="check"><input type="checkbox" id="cert_ack" name="cert_ack" aria-describedby="cert_ack-e"><label for="cert_ack">I understand that this certificate recognizes a pledge, not a completed donation or donation receipt. <span class="req">*</span></label></div>
         <p class="err" id="cert_ack-e"></p>
-        <div class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+        <div class="hp" aria-hidden="true"><label>Leave this field empty <input type="text" name="ii_extra_note" tabindex="-1" autocomplete="off"></label></div>
         <div class="cta-row"><button class="btn" type="submit" id="submit-btn">Submit pledge &amp; join</button></div>
         <p class="mt-s fine">By submitting you agree that II stores this information as described in the <a href="/privacy/">privacy notice</a>.</p>
       </fieldset>

@@ -12,7 +12,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..', 'site');
 const PORT = Number(process.env.PORT || 8787);
 const base = `http://127.0.0.1:${PORT}`;
 const mails = [];
-const env = { DB: createMigratedD1(), SITE_URL: base, ALLOWED_ORIGINS: '', TOKEN_SECRET: 'dev-only-secret', EMAIL_API_KEY: 'dev', EMAIL_FROM: 'II Dev <grants@influencersinvolved.org>', EMAIL_API_URL: `${base}/__dev/mail` };
+const env = { DB: createMigratedD1(), SITE_URL: base, ALLOWED_ORIGINS: '', TOKEN_SECRET: 'dev-only-local-preview-secret-not-for-production', EMAIL_API_KEY: 'dev', EMAIL_FROM: 'II Dev <grants@influencersinvolved.org>', EMAIL_API_URL: `${base}/__dev/mail` };
 const pending = [];
 const ctx = { waitUntil: (p) => pending.push(p) };
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.png': 'image/png', '.webp': 'image/webp', '.xml': 'application/xml', '.txt': 'text/plain' };
