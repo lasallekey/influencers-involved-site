@@ -2,9 +2,16 @@
 
 Branch `claude/happy-brown-0ytqwr`; draft PR #2 is open. `main` is untouched, nothing is deployed, production DNS and the legacy site/registry are unchanged. All tests use synthetic data.
 
-**Pre-launch audit:** see `docs/LAUNCH_READINESS_AUDIT.md` (conditional go; findings not yet implemented).
+**Pre-launch audit:** `docs/LAUNCH_READINESS_AUDIT.md` (CONDITIONAL GO; see its "Remediation update" table for what is now resolved).
 
-## State: all seven pages in one design language; staging deployed from this branch; awaiting final owner visual review
+## Latest: launch-blocker remediation (owner-approved scope; production NOT launched)
+- **Resolved in code, with tests:** Unicode charity names (P1-2); fail-closed `TOKEN_SECRET`, no fallback (P1-3); scanner-safe email verification, token consumed only by an explicit "Confirm my email" POST (P2-3); hidden anti-spam hit returns 400 and never a Pioneer ID or certificate (P2-4); erasure tool `scripts/erase-pioneer.mjs` with staging rehearsal (P2-6); daily cron deletes expired rate-limit rows and verification records, never Pioneers (P2-2, `docs/RETENTION.md`); no email attempted for reserved test domains; 10-minute asset revalidation and 30-day HSTS on non-staging builds.
+- **Prepared, not executed:** `[env.production]`, manual approval workflow `.github/workflows/production.yml`, dark-launch (noindex) build, GitHub Pages guard `_config.yml` (verified with a real Jekyll build: only the legacy files publish), `scripts/dns-preflight.mjs`, `docs/PRODUCTION.md`. Nothing live was created; no DNS, merge or deploy.
+- **Awaiting the owner:** approval of the Privacy page and policy choices (`docs/PRIVACY_POLICY_PROPOSAL.md`), human check of the Zeffy and social links, production setup/approvals (`docs/PRODUCTION.md` section 10).
+- Tests: `npm test` 61 passing; browser suite 121 checks passing; both Worker environments pass `wrangler deploy --dry-run`.
+- Staging run on the code commit (ac9fbcf): in progress when this was written; the result is recorded in the next BUILD_STATUS update.
+
+## State: all seven pages in one design language; staging deployed from this branch
 Only functional, responsive, accessibility or consistency fixes from here. Creative direction (incl. the per-page compositions) is in `docs/CREATIVE_DIRECTION.md`.
 
 ## Latest: email sender domain (Resend domain verified; staging sends as verification@influencersinvolved.org)

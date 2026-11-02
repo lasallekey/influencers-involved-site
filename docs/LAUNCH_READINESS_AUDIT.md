@@ -14,6 +14,37 @@ Scope, as instructed: security, registry/database, registration UX and accessibi
 
 ---
 
+## Remediation update (2026-11-02, after owner review)
+
+The owner accepted the CONDITIONAL GO and asked for focused remediation without a redesign. The sections below are the original audit as written; **this table is the current status.** Evidence is the committed code and tests on this branch; "staging" results are from the GitHub Actions run named in `BUILD_STATUS.md`.
+
+| ID | Status now | What changed / what remains |
+|---|---|---|
+| P1-1 Privacy page | **Drafted, awaiting owner approval** | Placeholder removed; names Cloudflare, Resend, Zeffy, Google Workspace; states retention, 18+, deletion within 30 days, international handling. Policy and legal choices are listed in `docs/PRIVACY_POLICY_PROPOSAL.md`. No legal sign-off is claimed. |
+| P1-2 Non-Latin charity names | **Resolved** | Unicode-aware `charityKey`; tests for ten scripts, de-duplication, and unchanged keys for all 101 catalogue names and aliases. |
+| P1-3 Secret fallback | **Resolved** | No fallback. Without a 32+ character `TOKEN_SECRET` every `/api/*` route answers 503 and `/api/health` reports `secrets_configured:false`. Forged-link regression test added. |
+| P1-4 Zeffy/social links | **Open, owner action** | Unchanged: needs a human check in a browser. |
+| P1-5 Production path | **Prepared, not executed** | `[env.production]` (fresh database name, verified sender, cron, logs), manual approval workflow `production.yml`, dark-launch build, GitHub Pages guard (`_config.yml`, verified with a real Jekyll build), `scripts/dns-preflight.mjs`, full plan in `docs/PRODUCTION.md`. No production resource, DNS change, merge or deployment has happened. |
+| P2-1 Inflated counts | **Documented, counting unchanged** | Limitation and lightest mitigations in `docs/REGISTRY.md`; "registry gate review" query added. No Turnstile. |
+| P2-2 Retention enforcement | **Resolved** | Daily cron deletes expired rate-limit rows and verification records 7 days after use/expiry; never touches Pioneers. `docs/RETENTION.md`. |
+| P2-3 Scanner-safe verification | **Resolved** | Email link opens a confirm page (token in the URL fragment); the token is consumed only by an explicit POST. Old `GET /api/verify` links redirect without consuming. Single-use and 24 h expiry unchanged. |
+| P2-4 Honeypot | **Resolved** | Field renamed (not autofillable), a hit returns 400 and never a Pioneer ID or certificate; browser test confirms. |
+| P2-5 Duplicate-email signal | Deferred | Unchanged (owner decision). |
+| P2-6 Erasure | **Resolved** | `scripts/erase-pioneer.mjs`: dry run, explicit children-first deletes, recount, no personal data printed. Rehearsed locally (sqlite D1 shim, foreign keys off) and in the staging workflow against synthetic staging data (result recorded in `BUILD_STATUS.md`). |
+| P2-7 Observability | Partly | Workers Logs on, automatic invocation logs off, in both environments. Alerting deferred. |
+| P2-8 Asset caching | **Resolved** | `/assets/*` revalidated every 10 minutes. |
+| P2-9 HSTS | **Resolved** | 30-day HSTS on non-staging, non-dark-launch builds. |
+| P2-10 Resend limits | Owner to confirm | Documented in `docs/PRODUCTION.md`. |
+| P2-11 DMARC | Deferred | Post-launch. |
+| P2-12 Branch protection / token scope | Owner action | Steps in `docs/PRODUCTION.md` section 2. |
+| P2-13 Backup and restore | Documented | Restore rehearsal needs the production database; scheduled before cutover. |
+| New: bounces from test addresses | **Resolved** | No email is attempted for reserved test domains (`.invalid`, `.test`, `example.*`), so smoke tests cannot hurt the sender reputation. |
+| New: honest age rule | **Resolved** | Pledge checkbox now includes the 18+ confirmation; no extra data stored. |
+
+Still open before launch: P1-1 approval, P1-4 human link check, the owner approvals and one-time setup listed in `docs/PRODUCTION.md` (GitHub environment and secrets, merge, Stage 1-3), and the restore rehearsal. Verdict: **CONDITIONAL GO stands**, with the remaining conditions now owner-side only.
+
+---
+
 ## 1. Executive summary
 
 The build is in good shape for a small nonprofit. The architecture is deliberately small (static site, one Worker, one D1 database, one email provider). The privacy-sensitive logic is correct where I checked it: tokens are stored only as SHA-256 hashes, are single-use and expire; registration writes are atomic and idempotent; the public registry stays `{visible:false}` below 20 eligible records; test and anonymous records are handled as designed; the CSP forbids inline script and style.
