@@ -219,6 +219,17 @@ test('email provider failure or missing configuration never fails the pledge', a
   assert.equal(r3.status, 201); assert.equal(b3.email_status, 'not_configured');
 });
 
+test('a provider rejection is logged with its reason, redacted, and the pledge still succeeds', async () => {
+  globalThis.fetch = async () => new Response(JSON.stringify({ statusCode: 403, name: 'validation_error', message: 'You can only send testing emails to your own email address (owner@somewhere.org). Verify a domain at resend.com/domains to send to others.' }), { status: 403 });
+  const logs = []; const orig = console.warn; console.warn = (...a) => logs.push(a.join(' '));
+  let res; try { res = await register(good()); await settle(); } finally { console.warn = orig; }
+  assert.equal(res.status, 201);
+  const line = logs.find((l) => l.includes('email provider rejected')) || '';
+  assert.ok(line.includes('403') && line.includes('validation_error') && line.includes('Verify a domain'), line);
+  assert.ok(!line.includes('owner@somewhere.org') && line.includes('[email]'), 'addresses must be redacted: ' + line);
+  assert.equal(q('SELECT send_status s FROM email_verifications')[0].s, 'failed');
+});
+
 test('resend is throttled, generic, and invalidates older links', async () => {
   const { body, token } = await registerAndToken();
   const a = await call('/api/resend-verification', { method: 'POST', body: { email: body.email } });

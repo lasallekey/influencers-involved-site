@@ -34,7 +34,7 @@ Without email, everything works except the verification message: pledges save an
 3. GitHub → add repository secret `STAGING_EMAIL_API_KEY` = that key, then **re-run "Deploy staging"**.
 Until a domain is verified, Resend's shared test sender (`onboarding@resend.dev`) delivers only to the address you signed up with, which is exactly what you need for testing: register on staging using that same address and you will receive the verification email.
 
-**Before launch (not now, needs your approval):** verify `influencersinvolved.org` in Resend by adding its SPF/DKIM DNS records plus a DMARC record, confirm that `grants@influencersinvolved.org` receives mail, then set the GitHub *variable* `STAGING_EMAIL_FROM` (and later the production setting) to `Influencers Involved <grants@influencersinvolved.org>`. That is a DNS change, so I will ask first.
+**To send from your own domain** (`verification@influencersinvolved.org`): follow [`EMAIL_DOMAIN_SETUP.md`](EMAIL_DOMAIN_SETUP.md). It lists the exact DNS records, which existing Google Workspace records must stay untouched, and an approval checkpoint before anything is added. Then set the GitHub *variable* `STAGING_EMAIL_FROM`.
 
 ## What to test (you, on your phone and laptop)
 1. Home, then each menu page: copy reads well, no horizontal scrolling on the phone, Menu button works.

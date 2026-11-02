@@ -77,6 +77,10 @@ jobs:
       - name: Smoke test
         if: steps.cfg.outputs.ready == 'true'
         run: node scripts/smoke-staging.mjs "${{ steps.deploy.outputs.url }}"
+      - name: Mail DNS status for the sending domain (read-only, informational)
+        if: always() && steps.cfg.outputs.ready == 'true'
+        continue-on-error: true
+        run: node scripts/check-email-dns.mjs influencersinvolved.org
       - name: Remove smoke-test records (keeps staging counts real)
         if: always() && steps.cfg.outputs.ready == 'true' && steps.deploy.outcome == 'success'
         run: npx wrangler d1 execute ii-pioneer-registry-staging --remote --env staging --config worker/wrangler.toml --file worker/cleanup-smoke.sql

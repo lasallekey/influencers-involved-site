@@ -25,6 +25,15 @@ export function verificationMessage({ name, link, unsubscribe }) {
   return { subject: 'Confirm your email — Influencers Involved Pioneer Registry', text, html };
 }
 
+/** Short, redacted reason from the provider's error body (never includes addresses or token-like strings). */
+async function providerReason(r) {
+  try {
+    const j = await r.json();
+    const clean = (t) => String(t || '').replace(/[^\s@<>(),;]+@[^\s@<>(),;]+/g, '[email]').replace(/[A-Za-z0-9_-]{32,}/g, '[redacted]').slice(0, 220);
+    return `${clean(j.name)}: ${clean(j.message)}`;
+  } catch { return '(no readable error body)'; }
+}
+
 /** @returns {Promise<'sent'|'failed'|'not_configured'>} */
 export async function sendEmail(env, { to, subject, text, html }) {
   if (!emailConfigured(env)) return 'not_configured';
@@ -37,7 +46,7 @@ export async function sendEmail(env, { to, subject, text, html }) {
       body: JSON.stringify({ from: env.EMAIL_FROM, to: [to], subject, text, html }),
       signal: ctl.signal,
     });
-    if (!r.ok) { console.warn('email provider rejected message', r.status); return 'failed'; }
+    if (!r.ok) { console.warn('email provider rejected message', r.status, await providerReason(r)); return 'failed'; }
     return 'sent';
   } catch (e) {
     console.warn('email send error', e && e.name);

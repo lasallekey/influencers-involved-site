@@ -5,7 +5,12 @@ Branch `claude/happy-brown-0ytqwr`; draft PR #2 is open. `main` is untouched, no
 ## State: all seven pages in one design language; staging deployed from this branch; awaiting final owner visual review
 Only functional, responsive, accessibility or consistency fixes from here. Creative direction (incl. the per-page compositions) is in `docs/CREATIVE_DIRECTION.md`.
 
-## Latest: two final corrections
+## Latest: email sender domain (in progress; no DNS changed)
+- Staging email works end to end but Resend's shared test sender only delivers to the account owner (HTTP 403 for other recipients). Next: authenticate influencersinvolved.org in Resend and send as verification@influencersinvolved.org.
+- `docs/EMAIL_DOMAIN_SETUP.md`: exact records (resend._domainkey TXT, `send` MX + SPF TXT, optional `_dmarc`), why they cannot affect Google Workspace mail, what never to touch, an approval checkpoint, and the sender switch (GitHub *variable* `STAGING_EMAIL_FROM`). **Awaiting owner approval of the record list; nothing has been added to DNS.**
+- New read-only `scripts/check-email-dns.mjs` (run by the staging workflow, informational) reports Google/Resend mail-DNS state; Worker now logs the provider's redacted rejection reason. Tests: 41 passing.
+
+## Previous: two final corrections
 - **Charity search box removed** from the registration form (markup, filtering script, styles, status element, and the unused catalogue copy in the browser config). The native categorized dropdown, all 101 charities, "I haven't chosen a charity yet" and "Another charity" remain; backend validation and the catalogue are unchanged.
 - **International donation wording corrected:** Zeffy accepts international card donations (our U.S. account processes in USD). The Donate page now has "U.S. & International Donations" with the approved description, fee statement and USD/bank-fee note; the old "not yet established" notice is gone from the site, config, tests and docs. Zeffy remains the single active provider; PayPal stays excluded.
 - **Future enhancement only:** Donorbox with Stripe as a second independent channel for more currencies and regional options. Not on the site in any form; the static checks and e2e fail if Donorbox/Stripe/PayPal wording or links appear.
