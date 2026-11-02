@@ -5,7 +5,9 @@ Branch `claude/happy-brown-0ytqwr`; draft PR #2 is open. `main` is untouched, no
 ## State: all seven pages in one design language; staging deployed from this branch; awaiting final owner visual review
 Only functional, responsive, accessibility or consistency fixes from here. Creative direction (incl. the per-page compositions) is in `docs/CREATIVE_DIRECTION.md`.
 
-## Latest: email sender domain (in progress; no DNS changed)
+## Latest: email sender domain (Resend domain verified; staging sends as verification@influencersinvolved.org)
+- Checker corrected: recognizes Resend's current CNAME form (DKIM TXT + `send` CNAME + `rsend` CNAME) as well as the classic MX + SPF form; no more false "missing MX/SPF under send". DNS, site and production untouched.
+- Earlier notes:
 - Staging email works end to end but Resend's shared test sender only delivers to the account owner (HTTP 403 for other recipients). Next: authenticate influencersinvolved.org in Resend and send as verification@influencersinvolved.org.
 - `docs/EMAIL_DOMAIN_SETUP.md`: exact records (resend._domainkey TXT, `send` MX + SPF TXT, optional `_dmarc`), why they cannot affect Google Workspace mail, what never to touch, an approval checkpoint, and the sender switch (GitHub *variable* `STAGING_EMAIL_FROM`). **Awaiting owner approval of the record list; nothing has been added to DNS.**
 - New read-only `scripts/check-email-dns.mjs` (run by the staging workflow, informational) reports Google/Resend mail-DNS state; Worker now logs the provider's redacted rejection reason. Tests: 41 passing.

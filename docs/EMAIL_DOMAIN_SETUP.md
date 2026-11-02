@@ -13,7 +13,18 @@ Resend → **Domains → Add Domain** → enter `influencersinvolved.org` → pi
 Resend now shows a table of DNS records **unique to your account**. Leave that tab open.
 
 ## 2. The records you should expect
-Resend currently asks for these (the dashboard is authoritative; if it differs, tell me what it lists before adding anything):
+Resend has two forms of the same setup, and the dashboard is authoritative. Your account uses the **CNAME form** (confirmed in Resend: a DKIM TXT, an `rsend` CNAME and a `send` CNAME, all Verified). Older accounts get the **classic MX + TXT form**. A CNAME at `send` means there is deliberately **no MX or TXT at that same name**; the read-only checker understands both.
+
+**CNAME form (your domain):**
+
+| Type | Host | Value |
+|------|------|-------|
+| TXT | `resend._domainkey` | `p=MIGf…` (long public key, copy exactly) |
+| CNAME | `rsend` | the target Resend shows |
+| CNAME | `send` | the target Resend shows |
+| TXT *(optional)* | `_dmarc` | `v=DMARC1; p=none;` only if no DMARC record exists |
+
+**Classic form (for reference):**
 
 | # | Type | Host / Name | Value | Notes |
 |---|------|-------------|-------|-------|
@@ -47,7 +58,7 @@ and reply **"safe to add"** with exact entries for your DNS provider. You then a
 
 ## 4. After you add the records
 1. In Resend, open the domain → **Verify DNS Records**. It can take a few minutes to a few hours; Resend shows each record turning green and the domain **Verified**.
-2. Re-run the staging workflow (Actions → Deploy staging → Re-run all jobs). Its summary prints **"Mail DNS status"**: the three Resend records should read OK and Google's must still read OK.
+2. Re-run the staging workflow (Actions → Deploy staging → Re-run all jobs). Its summary prints **"Mail DNS status"**: the Resend DKIM and return-path (and `rsend`) lines should read OK and Google's must still read OK. The checker accepts either the CNAME form or the classic MX + SPF form.
 
 ## 5. Switch the sender
 GitHub → repo **Settings → Secrets and variables → Actions → Variables** (not Secrets) → **New repository variable**
