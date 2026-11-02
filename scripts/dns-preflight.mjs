@@ -52,7 +52,13 @@ if (process.argv[1] && import.meta.url === new URL(process.argv[1], 'file://').h
   if (!domain || !nsList) { console.error('Usage: node scripts/dns-preflight.mjs <domain> <cloudflare-ns1,cloudflare-ns2>'); process.exit(2); }
   const ips = (await Promise.all(nsList.split(',').map((h) => dns.resolve4(h.trim()).catch(() => [])))).flat();
   if (!ips.length) { console.error('Could not resolve the Cloudflare nameserver names. Check the spelling shown in Cloudflare.'); process.exit(2); }
-  const now = new dns.Resolver(); const next = new dns.Resolver(); next.setServers(ips);
+  // Both sides are asked at their AUTHORITATIVE nameservers (never through a recursive resolver, which would follow CNAMEs and
+  // show the target's A/MX/TXT under names like www, send and rsend). This is exactly what Cloudflare would serve vs what serves today.
+  const curNs = await new dns.Resolver().resolveNs(domain).catch(() => []);
+  const curIps = (await Promise.all(curNs.map((h) => dns.resolve4(h).catch(() => [])))).flat();
+  if (!curIps.length) { console.error('Could not find the domain\'s current authoritative nameservers.'); process.exit(2); }
+  const now = new dns.Resolver(); now.setServers(curIps); const next = new dns.Resolver(); next.setServers(ips);
+  console.log(`Current authoritative nameservers: ${curNs.join(', ')}\nCloudflare nameservers asked: ${nsList}`);
   const diffs = compare(await snapshot(now, domain), await snapshot(next, domain));
   if (!diffs.length) console.log(`OK: the new nameservers publish exactly the same ${WATCH.length} watched record sets as today. Safe to change nameservers.`);
   for (const d of diffs) console.log(`DIFFERENT  ${d.key}\n    missing at Cloudflare: ${d.missing.join(' | ') || '—'}\n    extra at Cloudflare:   ${d.extra.join(' | ') || '—'}`);
