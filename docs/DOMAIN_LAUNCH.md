@@ -5,6 +5,21 @@ Final architecture: domain registration/renewal stays at **Squarespace**; DNS mo
 ## What can and cannot be done from the build session
 The build session has **no Cloudflare credentials and no outbound DNS/Cloudflare access**; the only Cloudflare token lives in GitHub and is scoped to Workers + D1 (no zone or DNS permission). So adding the zone and copying records are dashboard steps (◆ below), and the verification runs on GitHub's runners (`dns-inventory.yml`). Nothing has been added to Cloudflare, Squarespace, Google or Resend by me.
 
+## What is live today (read 2026-11-02 from Squarespace's own nameservers `nsc1-4.squarespacedns.com`, by `dns-inventory.yml`, run 41538468846)
+| Name | Type | Value |
+|---|---|---|
+| `@` | MX | `1 smtp.google.com` (the only MX) |
+| `@` | TXT | `v=spf1 include:_spf.google.com ~all` (the only SPF) |
+| `@` | A | `185.199.108.153`, `.109.153`, `.110.153`, `.111.153` (GitHub Pages); no AAAA at the apex |
+| `www` | CNAME | `lasallekey.github.io` |
+| `google._domainkey` | TXT | `v=DKIM1; k=rsa; p=MIIBIjANBg…` (2048-bit; copy the full value from the panel/Cloudflare scan) |
+| `_dmarc` | TXT | `v=DMARC1; p=none;` |
+| `resend._domainkey` | TXT | `p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDUYH7…` |
+| `send` | CNAME | `send.forge.rmta.net` |
+| `rsend` | CNAME | `rsend.forge.rmta.net` |
+| `_domainconnect` | CNAME | `_domainconnect.domains.squarespace.com` (Squarespace's own auto-setup helper; **not needed in Cloudflare**, safe to leave out) |
+No CAA, no AAAA, no `mail`/`calendar`/`autodiscover` or other look-for names exist. **DNSSEC is ON** (a DS record is published at the registry), see step 5. Records that exist at names I did not ask about cannot be seen from outside: the Squarespace panel is the final word.
+
 ## Records that must exist in Cloudflare before nameservers move
 Copy each value **exactly** from the Squarespace DNS panel (screenshot it first: that screenshot is also the rollback record). Do not retype from memory and do not accept a template.
 
@@ -31,7 +46,7 @@ Cloudflare's automatic import is a convenience, not proof: it can miss records. 
 2. ◆ **GitHub → Settings → Secrets and variables → Actions → Variables:** create `CLOUDFLARE_NAMESERVERS` with those two names, comma-separated.
 3. ◆ **Run the checker:** Actions → *DNS inventory (read-only)* → Run workflow (or it runs when its branch is pushed). Its run summary has (a) the live inventory read from Squarespace's current authoritative nameservers, (b) DNSSEC and registrar facts, (c) the comparison with Cloudflare. It must say the new nameservers publish **exactly the same** watched records. Send me the summary (it contains only public DNS data). Anything marked DIFFERENT is fixed in Cloudflare before going on.
 4. **I review** the summary and report records copied, missing or conflicting, and whether Google and Resend are protected.
-5. ◆ **DNSSEC (only if the summary says it is ON):** at Squarespace turn DNSSEC off / remove the DS record first and wait for it to disappear (the inventory shows it) before step 6. If it is not on, nothing to do.
+5. ◆ **DNSSEC is ON, so do this first, and it is the slowest step:** at Squarespace turn DNSSEC **off** (remove the DS record). Resolvers cache the old DS record for up to about a day (the `.org` DS TTL is commonly 24 h), so **wait at least 24-48 hours** and re-run the inventory until it says DS record: none *before* step 6. Changing nameservers while the old DS record is still cached makes validating resolvers (for example Google's 8.8.8.8) refuse to resolve the domain: website and email would look down for those users. You can do steps 1-4 during the wait. Optional afterwards: enable DNSSEC in Cloudflare and add the DS record it shows at Squarespace.
 6. ◆ **Switch nameservers at Squarespace (after you authorize it):** Squarespace → Domains → `influencersinvolved.org` → DNS settings → **Nameservers** → use custom nameservers → enter the two Cloudflare names. [Assumption: Squarespace's exact menu labels; if you do not see "Nameservers" or "custom", send me a screenshot and I will adjust the instructions.] Leave the registration, renewal, WHOIS privacy and any transfer lock as they are.
 7. ◆ Wait for Cloudflare to show the zone **Active**. Then re-run the DNS inventory: it should now show Cloudflare as the authoritative nameservers and identical records. Send a test email to and from `grants@` and open the legacy website to confirm both still work.
 8. **Cutover** (separate approval): the draft PR "Domain cutover configuration" sets the Worker's custom domains. See below.

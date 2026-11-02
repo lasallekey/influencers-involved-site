@@ -53,7 +53,10 @@ if (process.argv[1] && import.meta.url === new URL(process.argv[1], 'file://').h
   const none = Object.entries(fromAuth).filter(([, v]) => !v.length).map(([k]) => k);
   say(`\nWatched names with no record: ${none.join(', ') || 'none'}`);
   for (const t of ['NS', 'SOA']) { try { const a = await auth.resolve(domain, t); say(`\n${t} at the zone: ${JSON.stringify(a)}`); } catch { /* ignore */ } }
-  const diffs = compare(fromAuth, fromPub);
+  // A recursive resolver follows CNAMEs, so it shows the target's A/AAAA/MX/TXT under names that are CNAMEs (www, send, rsend).
+  // That is not a real difference; skip those keys.
+  const cnameNames = new Set(Object.entries(fromAuth).filter(([k, v]) => k.endsWith(' CNAME') && v.length).map(([k]) => k.split(' ')[0]));
+  const diffs = compare(fromAuth, fromPub).filter((d) => !cnameNames.has(d.key.split(' ')[0]) || d.key.endsWith(' CNAME'));
   say(diffs.length ? `\n**Authoritative vs public resolvers differ** (recent change or caching):\n${diffs.map((d) => `- ${d.key}: authoritative-only ${d.missing.join(' | ') || '—'}; resolver-only ${d.extra.join(' | ') || '—'}`).join('\n')}` : '\nPublic resolvers agree with the authoritative nameservers on every watched record.');
 
   say('\n### DNSSEC and registrar');
@@ -62,7 +65,11 @@ if (process.argv[1] && import.meta.url === new URL(process.argv[1], 'file://').h
     say(`- DS record at the registry: ${ds.present ? 'PRESENT (' + ds.data.length + ')' : 'none'}; DNSKEY published by the zone: ${key.present ? 'yes' : 'no'}. ` + (ds.present || key.present ? '**DNSSEC is ON: it must be turned off at the registrar (and the DS record removed) BEFORE nameservers change, or the domain will stop resolving for validating resolvers.**' : 'DNSSEC is not enabled; nothing to disable.'));
   } catch (e) { say(`- DNSSEC check failed: ${e.message}`); }
   try {
-    const r = await fetch(`https://rdap.org/domain/${domain}`, { redirect: 'follow', headers: { accept: 'application/rdap+json' } });
+    const tld = domain.split('.').pop();
+    const boot = await (await fetch('https://data.iana.org/rdap/dns.json')).json();
+    const base = ((boot.services.find((x) => x[0].includes(tld)) || [])[1] || [])[0];
+    if (!base) throw new Error(`no RDAP service listed for .${tld}`);
+    const r = await fetch(`${base.replace(/\/$/, '')}/domain/${domain}`, { headers: { accept: 'application/rdap+json' } });
     const s = summarizeRdap(await r.json());
     say(`- Registrar: ${s.registrar}; registered ${s.registered || '?'}; expires ${s.expires || '?'}`);
     say(`- Registry status: ${s.status.join(', ') || '?'}`);
