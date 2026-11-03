@@ -227,3 +227,20 @@ input[aria-invalid=true],select[aria-invalid=true]{border-color:var(--danger)}
 .page-head .fine{color:#d3e3ff}
 .pillar.a h2{color:#fff;font-size:clamp(1.9rem,3.4vw,2.6rem)}.pillar.b h2{font-size:clamp(1.9rem,3.4vw,2.6rem)}
 .pillar.a p{color:#dbe6fb;max-width:none}
+
+/* Cookie consent: both choices share one style so neither is favoured. */
+.consent{position:fixed;left:0;right:0;bottom:0;z-index:60;background:#fff;color:var(--navy);border-top:3px solid var(--blue);box-shadow:0 -6px 24px rgba(1,47,112,.16);padding:1rem 0}
+.consent[hidden]{display:none}
+.consent-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem 2rem}
+.consent h2{font:700 1.1rem var(--serif);margin:0 0 .2rem;color:var(--navy)}
+.consent h2:focus{outline:none}
+.consent p{margin:0;max-width:64ch;font-size:1rem;line-height:1.5;color:var(--ink)}
+.consent .consent-state{font-size:.92rem;color:var(--muted);margin-top:.25rem}
+.consent .consent-state:empty{display:none}
+.consent-actions{display:flex;flex-wrap:wrap;gap:.75rem}
+.consent-btn{min-height:3rem;padding:.6rem 1.5rem;border-radius:999px;border:2px solid var(--navy);background:#fff;color:var(--navy);font:700 1rem var(--sans);cursor:pointer}
+.consent-btn:hover{background:var(--navy);color:#fff}
+.consent-btn:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+@media (max-width:640px){.consent{padding:.85rem 0}.consent-actions{width:100%}.consent-btn{flex:1 1 0}}
+.foot-btn{background:none;border:0;padding:.4rem 0;margin:0;color:#fff;font:inherit;text-decoration:underline;cursor:pointer}
+.foot-btn:hover{color:var(--leaf)}

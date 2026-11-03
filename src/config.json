@@ -29,5 +29,8 @@
     "internationalDescription": "Support Influencers Involved from the United States or abroad. Donate securely by card through Zeffy.",
     "feeExplanation": "100% of your intended donation goes to Influencers Involved, with no platform or processing fees deducted by Zeffy. A separate optional contribution to Zeffy may be offered at checkout.",
     "internationalNote": "Donations are processed in U.S. dollars (USD). Your bank may apply currency conversion or foreign transaction fees. Card availability may vary by country."
+  },
+  "analytics": {
+    "measurementId": "G-K34TWL28XS"
   }
 }

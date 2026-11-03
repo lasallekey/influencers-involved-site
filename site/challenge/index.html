@@ -24,9 +24,24 @@
 
 <script src="/assets/site-config.js"></script>
 <script src="/assets/site.js" defer></script>
+<script src="/assets/analytics.js" defer></script>
 </head>
 <body class="page-challenge">
 <a class="skip" href="#main">Skip to content</a>
+<section id="consent" class="consent" role="region" aria-labelledby="consent-title" hidden>
+  <div class="wrap consent-in">
+    <div class="consent-copy">
+      <h2 id="consent-title" tabindex="-1">Analytics cookies</h2>
+      <p>We would like to use Google Analytics cookies to learn which pages are useful. They stay off unless you accept, and we never send your name, email or registration details. <a href="/privacy/#analytics">How this works</a></p>
+      <p class="consent-state" id="consent-state"></p>
+    </div>
+    <div class="consent-actions">
+      <button type="button" class="consent-btn" data-consent="reject">Reject analytics</button>
+      <button type="button" class="consent-btn" data-consent="accept">Accept analytics</button>
+    </div>
+  </div>
+</section>
+<p class="sr-only" id="consent-live" role="status"></p>
 
 <header class="site-header">
   <div class="wrap bar">
@@ -361,7 +376,7 @@
       <div class="foot-social" aria-label="Follow Influencers Involved"><a href="https://www.facebook.com/InfluencersInvolved" rel="me noopener" target="_blank">Facebook<span class="sr-only"> (opens in a new tab)</span></a><a href="https://www.instagram.com/influencersinvolved" rel="me noopener" target="_blank">Instagram<span class="sr-only"> (opens in a new tab)</span></a><a href="https://www.linkedin.com/company/influencersinvolved" rel="me noopener" target="_blank">LinkedIn<span class="sr-only"> (opens in a new tab)</span></a></div>
     </nav>
   </div>
-  <div class="wrap foot-base"><p>influencersinvolved.org · For inquiries: <a href="mailto:grants@influencersinvolved.org">grants@influencersinvolved.org</a></p></div>
+  <div class="wrap foot-base"><p>influencersinvolved.org · For inquiries: <a href="mailto:grants@influencersinvolved.org">grants@influencersinvolved.org</a> · <button type="button" class="foot-btn" data-consent-open>Cookie preferences</button></p></div>
 </footer>
 </body>
 </html>
