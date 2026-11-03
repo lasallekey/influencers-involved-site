@@ -29,7 +29,7 @@ const browser = await chromium.launch();
 const errorsAll = [];
 
 for (const [label, vp] of Object.entries(SIZES)) {
-  const ctx = await browser.newContext({ viewport: vp, deviceScaleFactor: 1, acceptDownloads: true });
+  const ctx = await browser.newContext({ viewport: vp, deviceScaleFactor: 1, acceptDownloads: true }); await ctx.addInitScript(() => { try { localStorage.setItem('ii_consent', 'denied'); } catch {} }); // existing flows run with analytics rejected (the banner is tested separately below)
   await ctx.addInitScript(() => { // record every certificate text drawn on the canvas
     window.__ct = [];
     const f = CanvasRenderingContext2D.prototype.fillText;
@@ -172,7 +172,7 @@ for (let i = 1; i <= 17; i++) { const r = await post(seedBody(i), `10.9.0.${i}`)
 const hiddenText = await (await fetch(BASE + '/api/stats')).text();
 ok(hiddenText === '{"visible":false}', 'registry at 19 genuine registrations: /api/stats reveals nothing (exactly {"visible":false})');
 {
-  const ctx = await browser.newContext({ viewport: SIZES.desktop }); const pg = await ctx.newPage();
+  const ctx = await browser.newContext({ viewport: SIZES.desktop }); await ctx.addInitScript(() => { try { localStorage.setItem('ii_consent', 'denied'); } catch {} }); const pg = await ctx.newPage();
   await pg.goto(BASE + '/challenge/', { waitUntil: 'networkidle' });
   ok(await pg.locator('#pioneers').isHidden() && !(await pg.locator('body').innerText()).includes('Our Pioneer Community') && !(await pg.locator('body').innerText()).includes('Pioneers Registered'), 'registry at 19: no dashboard, counter or empty state on the Challenge page');
   const home = await (await fetch(BASE + '/')).text();
@@ -184,7 +184,7 @@ const shown = await (await fetch(BASE + '/api/stats')).json();
 ok(shown.visible === true && shown.pioneers === 20 && shown.social_accounts === 22 && shown.charities === 6 && shown.countries === 5, `registry at exactly 20: API reports ${JSON.stringify(shown)}`);
 
 for (const [label, vp] of Object.entries(SIZES)) {
-  const ctx = await browser.newContext({ viewport: vp }); const pg = await ctx.newPage();
+  const ctx = await browser.newContext({ viewport: vp }); await ctx.addInitScript(() => { try { localStorage.setItem('ii_consent', 'denied'); } catch {} }); const pg = await ctx.newPage();
   const errors = []; pg.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); }); pg.on('pageerror', (e) => errors.push(String(e)));
   await pg.goto(BASE + '/challenge/', { waitUntil: 'networkidle' });
   await pg.waitForSelector('#pioneers:not([hidden])');
@@ -209,6 +209,84 @@ for (const [label, vp] of Object.entries(SIZES)) {
   if (SHOTS) { await pg.locator('#pioneers').scrollIntoViewIfNeeded(); await pg.locator('#pioneers').screenshot({ path: `${OUT}${label}-dashboard.jpg`, type: 'jpeg', quality: 80 }); }
   errorsAll.push(...errors.map((e) => `${label} dashboard: ${e}`));
   await ctx.close();
+}
+
+// 9. Analytics consent (Google endpoints are intercepted and stubbed: nothing leaves this machine).
+{
+  const TOKEN_RE = /[A-Za-z0-9_-]{43}/;
+  const watch = async (ctx) => {
+    const hits = [];
+    await ctx.route(/googletagmanager\.com|google-analytics\.com|analytics\.google\.com/, (route) => { hits.push(route.request().url()); route.fulfill({ status: 200, contentType: 'text/javascript', body: '/* stub */' }); });
+    return hits;
+  };
+  const errors = [];
+  // a. Fresh visitor: banner with two equally available choices; nothing contacts Google, no analytics cookie.
+  let ctx = await browser.newContext({ viewport: SIZES.desktop }); let hits = await watch(ctx);
+  let pg = await ctx.newPage(); pg.on('pageerror', (e) => errors.push(String(e)));
+  await pg.goto(BASE + '/', { waitUntil: 'networkidle' });
+  ok(await pg.locator('#consent').isVisible(), 'analytics: banner appears for a new visitor');
+  const [rej, acc] = [pg.locator('[data-consent=reject]'), pg.locator('[data-consent=accept]')];
+  const sty = (l) => l.evaluate((e) => { const c = getComputedStyle(e), r = e.getBoundingClientRect(); return [c.backgroundColor, c.color, c.borderTopColor, c.fontSize, c.fontWeight, Math.round(r.height)].join('|'); });
+  ok((await rej.isVisible()) && (await acc.isVisible()) && (await sty(rej)) === (await sty(acc)), 'analytics: Reject and Accept are both visible and identically styled');
+  ok(hits.length === 0 && !(await pg.evaluate(() => 'dataLayer' in window || typeof window.gtag === 'function')) && !(await ctx.cookies()).some((c) => c.name.startsWith('_ga')), 'analytics: before a choice nothing contacts Google, no gtag, no _ga cookie');
+  ok((await pg.locator('script[src*="googletagmanager"]').count()) === 0, 'analytics: no Google script tag exists before consent');
+  if (SHOTS) await pg.screenshot({ path: `${OUT}desktop-consent-banner.jpg`, type: 'jpeg', quality: 72 });
+  // b. Reject: stays off across pages and reloads; footer control exists on all seven pages.
+  await rej.click(); await pg.reload({ waitUntil: 'networkidle' });
+  ok(!(await pg.locator('#consent').isVisible()) && hits.length === 0, 'analytics: Reject is remembered; still nothing sent after reload');
+  for (const path of PAGES) { await pg.goto(BASE + path, { waitUntil: 'networkidle' }); ok((await pg.locator('[data-consent-open]').count()) === 1 && hits.length === 0, `analytics: "Cookie preferences" on ${path}; nothing sent`); }
+  // c. Change of mind through the footer control, then Accept.
+  await pg.locator('[data-consent-open]').click(); ok(await pg.locator('#consent').isVisible() && (await pg.locator('#consent-state').innerText()).includes('rejected'), 'analytics: footer control reopens the choice and shows the current state');
+  await pg.locator('[data-consent=accept]').click(); await pg.waitForFunction(() => window.dataLayer && window.dataLayer.length > 2);
+  ok(hits.some((u) => u.includes('gtag/js?id=G-K34TWL28XS')), 'analytics: Accept loads Google tag G-K34TWL28XS');
+  let dl = await pg.evaluate(() => JSON.stringify(window.dataLayer.map((a) => Array.from(a))));
+  ok(dl.includes('"page_view"') && dl.includes(BASE + '/privacy/') && !dl.includes('?') && !dl.includes('#'), 'analytics: page_view carries the clean page address only');
+  // d. Withdraw: Reject removes GA cookies and stops sending.
+  await ctx.addCookies([{ name: '_ga', value: 'GA1.1.1', url: BASE }, { name: '_ga_K34TWL28XS', value: 'GS1', url: BASE }, { name: 'keep', value: '1', url: BASE }]);
+  await pg.locator('[data-consent-open]').click(); await pg.locator('[data-consent=reject]').click();
+  const names = (await ctx.cookies()).map((c) => c.name);
+  ok(!names.includes('_ga') && !names.includes('_ga_K34TWL28XS') && names.includes('keep') && (await pg.evaluate(() => window['ga-disable-G-K34TWL28XS'] === true)), 'analytics: withdrawing consent deletes the Google Analytics cookies, disables sending, leaves other cookies');
+  await pg.locator('[data-consent-open]').click(); await pg.locator('[data-consent=accept]').click();
+  ok(await pg.evaluate(() => window['ga-disable-G-K34TWL28XS'] === false && window.dataLayer.map((a) => Array.from(a)).filter((a) => a[0] === 'consent' && a[1] === 'update').map((a) => a[2].analytics_storage).join() === 'denied,granted'), 'analytics: Accept, Reject, Accept again on the same page restores GA4 consent and resumes sending');
+  await ctx.close();
+
+  // e. Registration + verification with analytics accepted: only allow-listed events; no personal data or token anywhere.
+  ctx = await browser.newContext({ viewport: SIZES.desktop, extraHTTPHeaders: { 'x-dev-client-ip': '10.77.0.1' } });
+  await ctx.addInitScript(() => { try { localStorage.setItem('ii_consent', 'granted'); } catch {} }); hits = await watch(ctx);
+  pg = await ctx.newPage(); pg.on('pageerror', (e) => errors.push(String(e)));
+  const email = `analytics.person.${Date.now()}@creatormail.dev`, NAME = 'Analytics Person';
+  await pg.goto(BASE + '/challenge/#join', { waitUntil: 'networkidle' });
+  await pg.waitForFunction(() => window.dataLayer && window.dataLayer.length > 2);
+  const evNames = () => pg.evaluate(() => window.dataLayer.map((a) => Array.from(a)).filter((a) => a[0] === 'event').map((a) => a[1]));
+  ok(!(await evNames()).some((n) => n.startsWith('pioneer')), 'analytics: opening the registration page is NOT a conversion');
+  await pg.fill('#creator_name', NAME); await pg.fill('#email', email);
+  ok((await evNames()).includes('pioneer_form_start') && !(await evNames()).includes('pioneer_registered'), 'analytics: first interaction records form start (not a conversion)');
+  await pg.selectOption('#charity_select', '__undecided__'); await pg.selectOption('[data-f=platform]', 'YouTube'); await pg.fill('[data-f=handle]', '@analytics-person');
+  await pg.check('#pledge_confirm'); await pg.check('#cert_ack'); await pg.check('input[name=privacy_preference][value=public]');
+  await pg.click('#submit-btn'); await pg.waitForSelector('#success:not([hidden])');
+  const pid = (await pg.locator('#pid').innerText()).trim();
+  await pg.waitForFunction(() => document.querySelector('#cert-download').href.startsWith('blob:'));
+  await Promise.all([pg.waitForEvent('download'), pg.click('#cert-download')]);
+  const reg = await pg.evaluate(() => window.dataLayer.map((a) => Array.from(a)).filter((a) => a[1] === 'pioneer_registered'));
+  ok(reg.length === 1 && reg[0][2].account_count === 1 && reg[0][2].charity_status === 'undecided', 'analytics: a saved registration records exactly one pioneer_registered with counts only');
+  ok((await evNames()).includes('certificate_download'), 'analytics: certificate download recorded');
+  // verification: open the emailed link in the same consented browser
+  const mails = await (await fetch(BASE + '/__dev/mail')).json();
+  const link = /Verify your email: (\S+)/.exec(mails.filter((m) => m.to[0] === email).at(-1).text)[1]; const tok = decodeURIComponent(link.split('#verify=')[1]);
+  await pg.goto(link, { waitUntil: 'networkidle' }); await pg.waitForFunction(() => !location.hash);
+  await pg.waitForSelector('#verify-confirm:not([hidden])'); await pg.click('#verify-confirm'); await pg.locator('#verify-msg:has-text("verified")').waitFor();
+  ok((await evNames()).includes('pioneer_email_verified'), 'analytics: confirmed email recorded as pioneer_email_verified');
+  dl = await pg.evaluate(() => JSON.stringify(window.dataLayer.map((a) => Array.from(a))));
+  const leaks = [email, email.split('@')[0], NAME, 'Analytics', pid, tok, '#verify', 'verify=', 'II-'].filter((x) => dl.includes(x) || hits.some((u) => u.includes(x)));
+  ok(leaks.length === 0 && !hits.some((u) => TOKEN_RE.test(decodeURIComponent(u).replace(/G-K34TWL28XS|gtag\/js/g, ''))), `analytics: no email, name, Pioneer ID or verification token reaches Google${leaks.length ? ' → LEAK ' + leaks : ''}`);
+  ok(dl.includes('pioneer_registered') && dl.includes('pioneer_email_verified') && !/page_location":"[^"]*[?#]/.test(dl), 'analytics: every page_location is a clean address (no ? or #)');
+  // verification page itself: even the very first page_view for the token URL is clean
+  const ctx2 = await browser.newContext({ viewport: SIZES.desktop }); await ctx2.addInitScript(() => { try { localStorage.setItem('ii_consent', 'granted'); } catch {} }); const hits2 = await watch(ctx2);
+  const p2 = await ctx2.newPage(); await p2.goto(BASE + '/challenge/#verify=' + 'Z'.repeat(43), { waitUntil: 'networkidle' }); await p2.waitForFunction(() => window.dataLayer && window.dataLayer.length > 2);
+  const dl2 = await p2.evaluate(() => JSON.stringify(window.dataLayer.map((a) => Array.from(a))));
+  ok(!dl2.includes('ZZZZ') && !hits2.some((u) => u.includes('ZZZZ')) && dl2.includes(BASE + '/challenge/'), 'analytics: a verification-token URL is never sent, in any form');
+  await ctx2.close(); await ctx.close();
+  errorsAll.push(...errors.map((e) => `analytics: ${e}`));
 }
 
 await browser.close(); stop();

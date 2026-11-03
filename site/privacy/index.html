@@ -24,9 +24,24 @@
 
 <script src="/assets/site-config.js"></script>
 <script src="/assets/site.js" defer></script>
+<script src="/assets/analytics.js" defer></script>
 </head>
 <body class="page-privacy">
 <a class="skip" href="#main">Skip to content</a>
+<section id="consent" class="consent" role="region" aria-labelledby="consent-title" hidden>
+  <div class="wrap consent-in">
+    <div class="consent-copy">
+      <h2 id="consent-title" tabindex="-1">Analytics cookies</h2>
+      <p>We would like to use Google Analytics cookies to learn which pages are useful. They stay off unless you accept, and we never send your name, email or registration details. <a href="/privacy/#analytics">How this works</a></p>
+      <p class="consent-state" id="consent-state"></p>
+    </div>
+    <div class="consent-actions">
+      <button type="button" class="consent-btn" data-consent="reject">Reject analytics</button>
+      <button type="button" class="consent-btn" data-consent="accept">Accept analytics</button>
+    </div>
+  </div>
+</section>
+<p class="sr-only" id="consent-live" role="status"></p>
 
 <header class="site-header">
   <div class="wrap bar">
@@ -155,6 +170,7 @@
           <li><a href="#collect">Information we collect</a></li>
           <li><a href="#public">What may be public</a></li>
           <li><a href="#private">Private information and communications</a></li>
+          <li><a href="#analytics">Analytics and cookies</a></li>
           <li><a href="#providers">Service providers</a></li>
           <li><a href="#keep">How long we keep information</a></li>
           <li><a href="#rights">Your choices and international visitors</a></li>
@@ -170,7 +186,7 @@
         <h2 id="collect-h">Information we collect</h2>
         <p>To administer Pioneer registration, II collects your creator name, private email, country, selected charity (or a note that you haven’t chosen one yet) and pledge date, the social accounts you list (a profile link is optional), your public-display choice and per-account approvals, optional communication and collaboration choices, and email-verification status. We also record the date and version of the choices you agreed to. II does not request income amounts, payment details or proof of giving.</p>
         <p>To limit abuse, the registration service briefly keeps a one-way, keyed (hashed) form of your network address, with a request count, to rate-limit requests. It is not your address, is not used to identify you, and is deleted automatically.</p>
-        <p>This site sets no advertising or analytics cookies and runs no tracking or advertising scripts.</p>
+        <p>This site sets no advertising cookies. It sets analytics cookies only if you accept them (see <a href="#analytics">Analytics and cookies</a>), and it stores one small preference entry in your browser to remember your cookie choice.</p>
       </section>
       <section class="m-priv" id="public" aria-labelledby="public-h">
         <h2 id="public-h">What may be public</h2>
@@ -182,12 +198,21 @@
         <p>We send the essential registration and email-verification messages needed to administer your pledge. Verification only confirms you control the inbox; it is not consent to marketing. Optional news emails and collaboration invitations each require their own unchecked opt-in, may be withdrawn at any time, and every optional message includes an unsubscribe link. Answering “Maybe” or “Yes” to collaboration does not by itself allow us to email you.</p>
         <p>We do not sell or rent personal information.</p>
       </section>
+      <section class="m-priv" id="analytics" aria-labelledby="analytics-h">
+        <h2 id="analytics-h">Analytics and cookies</h2>
+        <p>With your permission, we use Google Analytics 4, a service of Google LLC, to count visits and see which pages and steps are useful so we can improve the site. It is <b>off until you choose “Accept analytics”</b> in the banner shown on your first visit. “Reject analytics” is just as available, and rejecting never limits anything you can do on this site.</p>
+        <p><b>What is collected, only if you accept.</b> Two first-party cookies (<code>_ga</code> and <code>_ga_K34TWL28XS</code>, which last up to two years) hold a random identifier so repeat visits can be recognized. Google Analytics then receives the address of the pages you view (without any query string or <code>#</code> fragment), the page title, the page you came from, a few simple events (starting the Pioneer form, saving a pledge, confirming your email, downloading a certificate, clicking a donation link), and technical details such as browser, device type, language and an approximate location that Google derives from your connection. Google states that Google Analytics 4 does not log or store individual IP addresses.</p>
+        <p><b>What we never send.</b> We do not send your name, email address, social handles, charity, Pioneer ID, certificate, verification link or any other registration information to Google Analytics, and we never send the part of an address after a “?” or “#”, so verification and unsubscribe links are not shared. We switch off Google’s advertising features: no advertising cookies, no Google signals and no ad personalization.</p>
+        <p><b>How long.</b> The user-level and event-level data in our Google Analytics property (which includes individual visits and the events listed above) is deleted automatically after 2 months. Standard aggregated reports, which show totals and trends and are not tied to a person, may remain available for longer. Your cookie choice is remembered in your browser’s local storage on this device only (it is never sent to us or to Google) until you clear it.</p>
+        <p><b>Your choices.</b> Use <b>Cookie preferences</b> at the bottom of every page to change or withdraw your choice at any time. Choosing “Reject analytics” deletes the Google Analytics cookies and stops sending data. If your browser sends a Global Privacy Control signal we treat it as “Reject”, even if you accepted earlier: analytics stays off, we remove any Google Analytics cookies already set, and “Accept analytics” is unavailable until you turn the signal off. You can also block cookies in your browser settings or use <a href="https://tools.google.com/dlpage/gaoptout" rel="noopener">Google’s opt-out add-on</a>. Data already collected is not tied to your name and is deleted when it expires. Google acts as our service provider for this measurement and may process data in the United States and other countries; see <a href="https://policies.google.com/privacy" rel="noopener">Google’s privacy policy</a>.</p>
+      </section>
       <section class="m-priv" id="providers" aria-labelledby="providers-h">
         <h2 id="providers-h">Service providers</h2>
         <p>We use a few providers to run the registry. Each handles information only for the purpose described here and under its own terms and privacy policy.</p>
         <ul>
           <li><b>Cloudflare</b> hosts this website, runs the registration service and stores registration records in its D1 database, which is encrypted at rest by the provider and accessed over TLS. This is provider-managed encryption, not end-to-end encryption. Only the registration service and authorized II administrators can read private records. As our hosting and network provider, Cloudflare also processes visitors’ network addresses to deliver and protect the site and may keep short-lived operational logs.</li>
           <li><b>Resend</b> delivers our verification and optional emails. It receives your email address, your name and the message content, and keeps delivery records under its own policy.</li>
+          <li><b>Google</b> (Google Analytics 4) measures website visits only if you accept analytics; see <a href="#analytics">Analytics and cookies</a>. It never receives registration information.</li>
           <li><b>Zeffy</b> processes donations on its own site under its own privacy policy. II never sees or stores your card details. Donating is separate from Pioneer registration and is not linked to it.</li>
           <li><b>Google Workspace</b> handles the email you send to <a href="mailto:grants@influencersinvolved.org">grants@influencersinvolved.org</a>.</li>
         </ul>
@@ -199,6 +224,7 @@
           <li><b>Pioneer registration records</b> are kept while you take part in the registry, subject to applicable law, until you ask us to remove them.</li>
           <li><b>Email-verification links</b> work once and expire after 24 hours. The stored (hashed) link record is deleted 7 days after it is used or expires; your record keeps only whether and when you verified.</li>
           <li><b>Abuse-prevention counters</b> (the hashed network address and request count) are deleted automatically, at most about a day after they are created.</li>
+          <li><b>Analytics data</b> (only if you accept): user-level and event-level data is deleted automatically after 2 months in Google Analytics; aggregated reports that are not tied to a person may remain available longer.</li>
           <li><b>Deletion requests.</b> Verified requests to delete your registration are normally completed within 30 days. We may keep what the law requires or what is needed to resolve a dispute. Information we delete can remain in our database provider’s automatic recovery history for a limited period (currently up to 30 days) before it expires.</li>
         </ul>
       </section>
@@ -209,7 +235,7 @@
       </section>
       <section class="m-priv" id="q" aria-labelledby="q-h">
         <h2 id="q-h">Questions</h2>
-        <p>Contact: <a href="mailto:grants@influencersinvolved.org">grants@influencersinvolved.org</a><br>Influencers Involved, Inc. NFP, 800 W Central Rd, Suite 120, Mt. Prospect, IL 60056<br><span class="fine">Last updated: November 2026.</span></p>
+        <p>Contact: <a href="mailto:grants@influencersinvolved.org">grants@influencersinvolved.org</a><br>Influencers Involved, Inc. NFP, 800 W Central Rd, Suite 120, Mt. Prospect, IL 60056<br><span class="fine">Last updated: November 3, 2026.</span></p>
       </section>
       </div>
   </div>
@@ -233,7 +259,7 @@
       <div class="foot-social" aria-label="Follow Influencers Involved"><a href="https://www.facebook.com/InfluencersInvolved" rel="me noopener" target="_blank">Facebook<span class="sr-only"> (opens in a new tab)</span></a><a href="https://www.instagram.com/influencersinvolved" rel="me noopener" target="_blank">Instagram<span class="sr-only"> (opens in a new tab)</span></a><a href="https://www.linkedin.com/company/influencersinvolved" rel="me noopener" target="_blank">LinkedIn<span class="sr-only"> (opens in a new tab)</span></a></div>
     </nav>
   </div>
-  <div class="wrap foot-base"><p>influencersinvolved.org · For inquiries: <a href="mailto:grants@influencersinvolved.org">grants@influencersinvolved.org</a></p></div>
+  <div class="wrap foot-base"><p>influencersinvolved.org · For inquiries: <a href="mailto:grants@influencersinvolved.org">grants@influencersinvolved.org</a> · <button type="button" class="foot-btn" data-consent-open>Cookie preferences</button></p></div>
 </footer>
 </body>
 </html>

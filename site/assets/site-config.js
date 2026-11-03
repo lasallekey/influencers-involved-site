@@ -1,1 +1,1 @@
-window.II_CONFIG={"apiBase":"","email":"grants@influencersinvolved.org","platforms":["YouTube","Instagram","TikTok","Facebook","Twitch","LinkedIn","X","Other"]};
+window.II_CONFIG={"apiBase":"","email":"grants@influencersinvolved.org","platforms":["YouTube","Instagram","TikTok","Facebook","Twitch","LinkedIn","X","Other"],"analytics":{"id":"G-K34TWL28XS","mode":"live"}};

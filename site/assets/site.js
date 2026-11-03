@@ -6,6 +6,8 @@
   var CONSENT_VERSION = '2026-10-30';
   var MAX_ACCOUNTS = 10;
   var $ = function (s, r) { return (r || document).querySelector(s); };
+  // Analytics hook (analytics.js decides whether anything is sent). Only an event name and counts/enums are ever passed: never form values, IDs or tokens.
+  function track(name, params) { try { if (window.iiTrack) window.iiTrack(name, params); } catch (e) { /* never break the page */ } }
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
   /* ---------- Mobile menu ---------- */
@@ -41,7 +43,7 @@
         .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { status: r.status, body: j }; }); })
         .then(function (res) {
           var st = res.body && res.body.status;
-          if (res.status === 200 && st === 'ok') { token = null; return done('Thank you — your email is verified. Your pledge was already complete; verification only helps protect the registry.', false, false); }
+          if (res.status === 200 && st === 'ok') { token = null; track('pioneer_email_verified'); return done('Thank you — your email is verified. Your pledge was already complete; verification only helps protect the registry.', false, false); }
           if (st === 'used') { token = null; return done('This verification link has already been used. If you confirmed it, your email is verified and nothing more is needed.', false, false); }
           if (st === 'expired') { token = null; return done('That verification link has expired. If you still need one, submit the resend request from your confirmation, or email us.', true, false); }
           if (st === 'invalid') { token = null; return done('That verification link is not valid.', true, false); }
@@ -189,6 +191,7 @@
     var optional = t.getAttribute('data-f') === 'url'; // an optional field may legitimately be emptied
     if (!empty || optional) { e.textContent = ''; t.removeAttribute('aria-invalid'); }
   }
+  var started = false; form.addEventListener('focusin', function () { if (!started) { started = true; track('pioneer_form_start'); } });
   form.addEventListener('input', clearOn); form.addEventListener('change', clearOn);
   $$('input[name=privacy_preference]').forEach(function (r) { r.addEventListener('change', function () { $('#privacy_preference-e').textContent = ''; }); });
 
@@ -251,9 +254,11 @@
 
   /* ---------- Success + certificate ---------- */
   function success(res, sent) {
+    if (res.email_status !== 'replayed') track('pioneer_registered', { account_count: sent.accounts.length, charity_status: res.charity_status });
     $('#pid').textContent = res.pioneer_id;
     $('#join-area').hidden = true; $('#challenge-intro').hidden = true;
     var s = $('#success'); s.hidden = false;
+    var dl = $('#cert-download'); if (dl) dl.addEventListener('click', function () { track('certificate_download'); });
     var vl = $('#verify-line');
     $('#charity-later').hidden = res.charity_status !== 'undecided';
     if (res.email_status === 'failed' || res.email_status === 'not_configured') {

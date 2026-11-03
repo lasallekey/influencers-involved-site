@@ -6,6 +6,10 @@ import { fileURLToPath } from 'node:url';
 const STAGING = process.env.STAGING === '1'; // staging preview: visible banner + noindex everywhere
 const PRELAUNCH = process.env.PRELAUNCH === '1'; // production dark launch (before the domain cutover): no banner, but noindex everywhere
 const NOINDEX = STAGING || PRELAUNCH;
+// Google Analytics: live only in the real production build. Staging and the pre-launch dark launch run the whole consent flow
+// but in "dry-run" mode (calls are recorded in the page, nothing is sent to Google), so test visits never pollute the property.
+// ANALYTICS=live forces live collection in any build (deliberate testing only).
+const ANALYTICS_MODE = NOINDEX && process.env.ANALYTICS !== 'live' ? 'dry-run' : 'live';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const src = join(root, 'src');
 const out = join(root, 'site');
@@ -128,7 +132,7 @@ const staticDir = join(src, 'static');
   }
 })(staticDir, join(out, 'assets'));
 // Runtime config for the browser: only public values.
-writeFileSync(join(out, 'assets', 'site-config.js'), `window.II_CONFIG=${JSON.stringify({ apiBase: config.apiBase, email: config.email, platforms: config.platforms })};\n`);
+writeFileSync(join(out, 'assets', 'site-config.js'), `window.II_CONFIG=${JSON.stringify({ apiBase: config.apiBase, email: config.email, platforms: config.platforms, analytics: { id: config.analytics.measurementId, mode: ANALYTICS_MODE } })};\n`);
 // Security headers (honored by Cloudflare Workers assets/Pages). GitHub Pages ignores this file.
 const api = config.apiBase ? ' ' + new URL(config.apiBase).origin : '';
 writeFileSync(join(out, '_headers'), `/*
@@ -136,7 +140,7 @@ writeFileSync(join(out, '_headers'), `/*
   X-Frame-Options: DENY
 ${NOINDEX ? '  X-Robots-Tag: noindex, nofollow\n' : '  Strict-Transport-Security: max-age=2592000\n'}  Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'${api}; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self'; img-src 'self' data: blob: https://www.google-analytics.com https://*.google-analytics.com https://*.googletagmanager.com; connect-src 'self'${api} https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://*.googletagmanager.com; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none'
 /assets/*
   Cache-Control: public, max-age=600, must-revalidate
 `);

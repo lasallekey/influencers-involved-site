@@ -33,15 +33,18 @@ for (const f of pages) {
   if (/youtube\.com\/(@|channel|c\/)InfluencersInvolved|tiktok\.com\/@influencers/i.test(html)) problems.push(`${name}: unconfirmed YouTube/TikTok URL`);
   if (!/<title>[^<]{10,}<\/title>/.test(html) || !/name="description" content="[^"]{40,}"/.test(html)) problems.push(`${name}: missing title/description`);
   if (!/rel="canonical"/.test(html)) problems.push(`${name}: missing canonical`);
+  // Analytics: consent UI everywhere; Google is only ever loaded by analytics.js after consent, never referenced in page HTML.
+  if (!/src="\/assets\/analytics\.js"/.test(html) || !/id="consent"/.test(html) || !/data-consent="accept"/.test(html) || !/data-consent="reject"/.test(html) || !/data-consent-open/.test(html)) problems.push(`${name}: consent banner / Cookie preferences control missing`);
+  if (/googletagmanager|google-analytics|gtag\(/i.test(html)) problems.push(`${name}: Google Analytics referenced directly in HTML (must load only after consent)`);
 }
 
 // Required public facts and links
 const all = pages.map((f) => readFileSync(f, 'utf8')).join('\n');
-const need = ['https://www.zeffy.com/en-US/donation-form/support-influencers-involved', 'https://www.facebook.com/InfluencersInvolved', 'https://www.instagram.com/influencersinvolved', 'https://www.linkedin.com/company/influencersinvolved', 'EIN 39-2242545', '800 W Central Rd, Suite 120', 'grants@influencersinvolved.org', 'U.S. &amp; International Donations', 'Support Influencers Involved from the United States or abroad. Donate securely by card through Zeffy.', '100% of your intended donation goes to Influencers Involved, with no platform or processing fees deducted by Zeffy. A separate optional contribution to Zeffy may be offered at checkout.', 'Donations are processed in U.S. dollars (USD). Your bank may apply currency conversion or foreign transaction fees. Card availability may vary by country.'];
+const need = ['Analytics and cookies', 'Cookie preferences', 'https://www.zeffy.com/en-US/donation-form/support-influencers-involved', 'https://www.facebook.com/InfluencersInvolved', 'https://www.instagram.com/influencersinvolved', 'https://www.linkedin.com/company/influencersinvolved', 'EIN 39-2242545', '800 W Central Rd, Suite 120', 'grants@influencersinvolved.org', 'U.S. &amp; International Donations', 'Support Influencers Involved from the United States or abroad. Donate securely by card through Zeffy.', '100% of your intended donation goes to Influencers Involved, with no platform or processing fees deducted by Zeffy. A separate optional contribution to Zeffy may be offered at checkout.', 'Donations are processed in U.S. dollars (USD). Your bank may apply currency conversion or foreign transaction fees. Card availability may vary by country.'];
 for (const n of need) if (!all.includes(n)) problems.push(`missing required content: ${n}`);
 
 // Nothing private may ship in the public output.
-const bundle = [...pages, join(root, 'assets/site.js'), join(root, 'assets/site-config.js')].map((f) => readFileSync(f, 'utf8')).join('\n');
+const bundle = [...pages, join(root, 'assets/site.js'), join(root, 'assets/analytics.js'), join(root, 'assets/site-config.js')].map((f) => readFileSync(f, 'utf8')).join('\n');
 for (const bad of [/primushomecare/i, /@gmail\.com/i, /api[_-]?key/i, /BEGIN [A-Z ]*PRIVATE KEY/, /ho@influencersinvolved/i, /inflencers/i]) if (bad.test(bundle)) problems.push(`forbidden pattern in public output: ${bad}`);
 
 if (!process.env.STAGING && /stage-banner|Staging preview/.test(all)) problems.push('staging banner present in a production build');

@@ -2,6 +2,8 @@
 
 Branch `claude/happy-brown-0ytqwr`; draft PR #2 is open. `main` is untouched, nothing is deployed, production DNS and the legacy site/registry are unchanged. All tests use synthetic data.
 
+**Google Analytics 4 (branch `feature/ga4-analytics`, PR open, not merged/deployed to production):** consent-gated GA4 (`G-K34TWL28XS`) on all pages, equal Accept/Reject, footer "Cookie preferences", Privacy page updated, allow-listed events only, no URL queries/fragments or personal data sent. Details, tests and owner actions in `docs/ANALYTICS.md`.
+
 **Pre-launch audit:** `docs/LAUNCH_READINESS_AUDIT.md` (CONDITIONAL GO; see its "Remediation update" table for what is now resolved).
 
 ## Latest: launch-blocker remediation (owner-approved scope; production NOT launched)
