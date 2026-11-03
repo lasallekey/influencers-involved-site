@@ -4,7 +4,8 @@
  *  - Nothing from Google is requested, and no analytics cookie is set, until the visitor presses "Accept analytics".
  *  - "Reject analytics" and "Accept analytics" are equally available; the footer "Cookie preferences" button reopens the choice;
  *    changing to Reject removes the Google Analytics cookies and stops sending.
- *  - A browser "Global Privacy Control" signal counts as Reject (no banner, nothing loads) unless the visitor later chooses otherwise.
+ *  - A browser "Global Privacy Control" signal always counts as Reject, even after an earlier Accept: nothing loads, existing Google
+ *    Analytics cookies are removed, and Accept is unavailable while the signal is on. Remove the signal to choose again (an earlier choice is kept).
  *  - Only page paths and a short allow-list of events are sent. Page URLs are rebuilt from origin + path: query strings and
  *    #fragments (which can carry a verification token) are NEVER sent. Event parameters are allow-listed by name and value;
  *    names, email addresses, Pioneer IDs, tokens and free text cannot pass.
@@ -50,7 +51,12 @@
   /* ---------- Loading and sending ---------- */
   function ga() { window.gtag.apply(null, arguments); }
   function load() {
-    if (!ID || started) { if (ID) { window['ga-disable-' + ID] = false; granted = true; } return; }
+    if (!ID) return;
+    if (started) { // accept again on the same page after a reject: re-enable sending AND restore the GA4 consent state that unload() denied
+      granted = true; window['ga-disable-' + ID] = false;
+      ga('consent', 'update', { analytics_storage: 'granted', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
+      return;
+    }
     started = true; granted = true;
     window['ga-disable-' + ID] = false;
     if (MODE === 'dry-run') { window.__iiGa = window.__iiGa || []; window.gtag = function () { window.__iiGa.push([].slice.call(arguments)); }; }
@@ -94,10 +100,11 @@
 
   /* ---------- Consent banner ---------- */
   var banner = $('#consent');
-  function state() { var s = $('#consent-state'); if (!s) return; var c = stored(); s.textContent = c === 'granted' ? 'Your current choice: analytics accepted.' : c === 'denied' ? 'Your current choice: analytics rejected.' : gpc() ? 'Your browser sends a Global Privacy Control signal, so analytics is off.' : 'No choice made yet; analytics is off.'; }
-  function show(focus) { if (!banner) return; state(); banner.hidden = false; if (focus) { var h = $('#consent-title'); if (h) h.focus(); } }
+  function state() { var s = $('#consent-state'); if (!s) return; var c = stored(); s.textContent = gpc() ? 'Your browser sends a Global Privacy Control signal, so analytics stays off while it is on. Turn the signal off in your browser to choose again.' : c === 'granted' ? 'Your current choice: analytics accepted.' : c === 'denied' ? 'Your current choice: analytics rejected.' : 'No choice made yet; analytics is off.'; }
+  function show(focus) { if (!banner) return; state(); var a = $('[data-consent=accept]'); if (a) a.disabled = gpc(); banner.hidden = false; if (focus) { var h = $('#consent-title'); if (h) h.focus(); } }
   function hide() { if (banner) banner.hidden = true; }
   function choose(v) {
+    if (gpc() && v === 'granted') return; // the signal wins; Accept is disabled in the banner too
     store(v); hide();
     if (v === 'granted') load(); else unload();
     var live = $('#consent-live'); if (live) live.textContent = v === 'granted' ? 'Analytics accepted.' : 'Analytics rejected.';
@@ -115,6 +122,7 @@
   });
 
   var c = stored();
-  if (c === 'granted') load();
-  else if (c === null && !gpc() && ID) show(false);
+  if (gpc()) { if (ID) window['ga-disable-' + ID] = true; if (c === 'granted') expireCookies(); } // never loads; cookies from an earlier Accept are removed
+  else if (c === 'granted') load();
+  else if (c === null && ID) show(false);
 })();

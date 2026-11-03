@@ -10,7 +10,8 @@ function boot({ stored, gpc = false, mode = 'live', href = 'https://influencersi
   const calls = { scripts: [], cookieWrites: [] };
   const store = new Map(stored ? [['ii_consent', stored]] : []);
   const mk = (extra = {}) => ({ hidden: true, textContent: '', focus() { this.focused = true; }, addEventListener(t, fn) { (this.l ||= {})[t] = fn; }, ...extra });
-  const el = { '#consent': mk(), '#consent-state': mk(), '#consent-title': mk(), '#consent-live': mk(), '[data-consent-open]': mk() };
+  const accept = { disabled: false };
+  const el = { '[data-consent=accept]': accept, '#consent': mk(), '#consent-state': mk(), '#consent-title': mk(), '#consent-live': mk(), '[data-consent-open]': mk() };
   const btn = (v) => ({ getAttribute: () => v });
   let cookieJar = cookie;
   const doc = {
@@ -27,7 +28,7 @@ function boot({ stored, gpc = false, mode = 'live', href = 'https://influencersi
   vm.runInNewContext(code, sb);
   const click = (v) => el['#consent'].l.click({ target: { closest: (q) => (q === '[data-consent]' ? btn(v) : null) } });
   const docClick = (sel) => doc.l.click({ target: { closest: (q) => (q === sel ? {} : q === 'a[href]' && sel === 'zeffy' ? { href: 'https://www.zeffy.com/en-US/donation-form/support-influencers-involved' } : null) } });
-  return { sb, calls, el, store, click, docClick, doc, layer: () => (sb.dataLayer || []).map((a) => Array.from(a)) };
+  return { sb, calls, el, store, accept, click, docClick, doc, layer: () => (sb.dataLayer || []).map((a) => Array.from(a)) };
 }
 
 test('before any choice: banner shown, nothing loaded, no gtag, events are silent', () => {
@@ -103,4 +104,39 @@ test('dry-run mode (staging) runs the same flow but contacts Google never', () =
   const b = boot({ mode: 'dry-run' }); b.click('accept');
   assert.deepEqual(b.calls.scripts, []);
   assert.ok(b.sb.__iiGa.some((a) => a[0] === 'event' && a[1] === 'page_view'));
+});
+
+test('regression: Accept, Reject, then Accept again on the same page restores GA4 consent and resumes measurement', () => {
+  const b = boot(); b.click('accept');
+  b.sb.iiTrack('pioneer_email_verified');                       // measured
+  b.click('reject');
+  b.sb.iiTrack('pioneer_registered', { account_count: 1, charity_status: 'selected' }); // dropped while rejected
+  assert.equal(b.sb['ga-disable-G-K34TWL28XS'], true);
+  b.click('accept');
+  assert.equal(b.sb['ga-disable-G-K34TWL28XS'], false);
+  b.sb.iiTrack('certificate_download');                         // measured again
+  const l = JSON.parse(JSON.stringify(b.layer()));
+  const consents = l.filter((a) => a[0] === 'consent' && a[1] === 'update').map((a) => a[2].analytics_storage);
+  assert.deepEqual(consents, ['denied', 'granted'], 'GA4 consent: denied on reject, restored to granted on re-accept');
+  assert.ok(l.filter((a) => a[0] === 'consent' && a[1] === 'update').every((a) => a[2].ad_storage === 'denied' && a[2].ad_user_data === 'denied' && a[2].ad_personalization === 'denied'), 'advertising consent stays denied');
+  const names = l.filter((a) => a[0] === 'event').map((a) => a[1]);
+  assert.deepEqual(names, ['page_view', 'pioneer_email_verified', 'certificate_download'], 'events while rejected are dropped; events after re-accept are sent');
+  assert.equal(b.calls.scripts.length, 1, 'Google is not loaded a second time');
+  assert.equal(b.store.get('ii_consent'), 'granted');
+});
+
+test('Global Privacy Control after an earlier Accept: nothing loads, old Google cookies are removed, Accept is unavailable; removing the signal restores the stored choice', () => {
+  const b = boot({ stored: 'granted', gpc: true, cookie: '_ga=GA1.1.1; _ga_K34TWL28XS=GS1; keep=1' });
+  assert.deepEqual(b.calls.scripts, []); assert.equal(b.sb.dataLayer, undefined); assert.equal(b.sb.gtag, undefined);
+  assert.equal(b.el['#consent'].hidden, true, 'no banner');
+  assert.equal(b.sb['ga-disable-G-K34TWL28XS'], true);
+  const writes = b.calls.cookieWrites.join('\n'); assert.match(writes, /^_ga=;expires=/m); assert.match(writes, /_ga_K34TWL28XS=;expires=/); assert.ok(!/keep=/.test(writes));
+  b.sb.iiTrack('pioneer_email_verified'); assert.equal(b.sb.dataLayer, undefined);
+  // footer control: explains why, Accept disabled, and an attempted Accept does nothing
+  b.doc.l.click({ target: { closest: (q) => (q === '[data-consent-open]' ? {} : null) }, preventDefault() {} });
+  assert.equal(b.el['#consent'].hidden, false); assert.equal(b.accept.disabled, true);
+  assert.match(b.el['#consent-state'].textContent, /Global Privacy Control/);
+  b.click('accept'); assert.deepEqual(b.calls.scripts, []); assert.equal(b.store.get('ii_consent'), 'granted', 'stored choice untouched');
+  // without the signal the earlier choice applies again
+  const again = boot({ stored: 'granted' }); assert.equal(again.calls.scripts.length, 1);
 });

@@ -246,6 +246,8 @@ for (const [label, vp] of Object.entries(SIZES)) {
   await pg.locator('[data-consent-open]').click(); await pg.locator('[data-consent=reject]').click();
   const names = (await ctx.cookies()).map((c) => c.name);
   ok(!names.includes('_ga') && !names.includes('_ga_K34TWL28XS') && names.includes('keep') && (await pg.evaluate(() => window['ga-disable-G-K34TWL28XS'] === true)), 'analytics: withdrawing consent deletes the Google Analytics cookies, disables sending, leaves other cookies');
+  await pg.locator('[data-consent-open]').click(); await pg.locator('[data-consent=accept]').click();
+  ok(await pg.evaluate(() => window['ga-disable-G-K34TWL28XS'] === false && window.dataLayer.map((a) => Array.from(a)).filter((a) => a[0] === 'consent' && a[1] === 'update').map((a) => a[2].analytics_storage).join() === 'denied,granted'), 'analytics: Accept, Reject, Accept again on the same page restores GA4 consent and resumes sending');
   await ctx.close();
 
   // e. Registration + verification with analytics accepted: only allow-listed events; no personal data or token anywhere.

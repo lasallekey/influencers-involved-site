@@ -39,8 +39,8 @@ The proposed text is already in `src/pages/privacy.html` (built to `site/privacy
 8. ◆ **Effective date:** the page says "Last updated: November 2026"; set the real date at launch.
 
 ## Added with Google Analytics (decisions for the owner)
-9. ◆ **Consent model:** opt-in for everyone (not only EU/UK visitors), equal Accept/Reject, a footer "Cookie preferences" control, and Global Privacy Control treated as Reject. Simple and defensible; say so if you want a different regional approach.
-10. ◆ **Retention:** the page says Google Analytics data is kept 2 months. Set the same value in the GA property (see `docs/ANALYTICS.md`) or change the page.
+9. ◆ **Consent model:** opt-in for everyone (not only EU/UK visitors), equal Accept/Reject, a footer "Cookie preferences" control, and Global Privacy Control always treated as Reject (it overrides an earlier Accept; stored choice kept for when the signal is off). Simple and defensible; say so if you want a different regional approach.
+10. ◆ **Retention:** the page says user-level and event-level Google Analytics data is deleted after 2 months and that aggregated reports may remain longer. Set the same value in the GA property (see `docs/ANALYTICS.md`) or change the page.
 11. ◆ **Cookie lifetime and names** stated on the page (`_ga`, `_ga_K34TWL28XS`, up to two years) follow Google's defaults; adjust if you change them in GA.
 12. ◆ **Google as a processor / data-processing terms:** accept Google's data processing terms in the GA property if you have not, and confirm whether you want to mention cross-border transfer more formally.
 13. ◆ **Legal review:** applicability of ePrivacy/GDPR/CCPA to analytics cookies. No legal sign-off is claimed.

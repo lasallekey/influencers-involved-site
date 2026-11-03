@@ -240,6 +240,8 @@ input[aria-invalid=true],select[aria-invalid=true]{border-color:var(--danger)}
 .consent-actions{display:flex;flex-wrap:wrap;gap:.75rem}
 .consent-btn{min-height:3rem;padding:.6rem 1.5rem;border-radius:999px;border:2px solid var(--navy);background:#fff;color:var(--navy);font:700 1rem var(--sans);cursor:pointer}
 .consent-btn:hover{background:var(--navy);color:#fff}
+.consent-btn:disabled{opacity:.5;cursor:not-allowed}
+.consent-btn:disabled:hover{background:#fff;color:var(--navy)}
 .consent-btn:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
 @media (max-width:640px){.consent{padding:.85rem 0}.consent-actions{width:100%}.consent-btn{flex:1 1 0}}
 .foot-btn{background:none;border:0;padding:.4rem 0;margin:0;color:#fff;font:inherit;text-decoration:underline;cursor:pointer}
