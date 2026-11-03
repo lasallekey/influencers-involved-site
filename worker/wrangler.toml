@@ -51,7 +51,7 @@ invocation_logs = false
 # Production: separate Worker + a FRESH production D1 database (never the staging database; no legacy data).
 # Deployed only by ".github/workflows/production.yml" after manual owner approval (docs/PRODUCTION.md).
 #
-# Stage 1 (dark launch, this file as committed): reachable on its own workers.dev address only, built with noindex,
+# [CUTOVER BRANCH] Stage 2 values are applied below. Stage 1 (dark launch, the file on main before this change): reachable on its own workers.dev address only, built with noindex,
 #   SITE_URL blank so emailed links point at the address the person actually used. influencersinvolved.org and
 #   its DNS are NOT referenced here, so deploying cannot change the live website or any DNS record.
 # Stage 2 (cutover, separate owner-approved commit): see "Cutover" in docs/PRODUCTION.md. It sets SITE_URL, turns
@@ -60,7 +60,7 @@ invocation_logs = false
 # ─────────────────────────────────────────────────────────────────────────────
 [env.production]
 name = "ii-pioneer-registry"
-workers_dev = true
+workers_dev = false   # cutover: the Worker is reachable only on the custom domains below
 
 [env.production.assets]
 directory = "../site"
@@ -75,10 +75,19 @@ database_id = "REPLACE_PRODUCTION_D1_ID"
 migrations_dir = "migrations"
 
 [env.production.vars]
-SITE_URL = ""
+SITE_URL = "https://influencersinvolved.org"
 ALLOWED_ORIGINS = ""
 EMAIL_FROM = "Influencers Involved <verification@influencersinvolved.org>"
 EMAIL_API_URL = "https://api.resend.com/emails"
+
+# Custom domains (cutover). Need the zone to be ACTIVE on Cloudflare and the legacy apex A/AAAA and www CNAME removed first.
+[[env.production.routes]]
+pattern = "influencersinvolved.org"
+custom_domain = true
+
+[[env.production.routes]]
+pattern = "www.influencersinvolved.org"
+custom_domain = true
 
 [env.production.triggers]
 crons = ["17 3 * * *"]
