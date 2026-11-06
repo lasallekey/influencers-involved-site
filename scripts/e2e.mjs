@@ -261,6 +261,14 @@ for (const [label, vp] of Object.entries(SIZES)) {
   await pg.evaluate(() => { document.querySelector('#success').hidden = false; document.querySelector('#join-area').hidden = true; document.querySelector('#challenge-intro').hidden = true; });
   const l = await pg.evaluate(() => { const n = (q) => { const el = document.querySelector(q), cs = getComputedStyle(el), lh = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.2; return Math.round(el.getBoundingClientRect().height / lh); }; return { h: n('.next-h'), both: n('.next-both'), note: n('.next-note'), over: document.documentElement.scrollWidth - innerWidth }; });
   ok(l.h === 1 && l.both === 1 && l.over <= 0, `tablet success: headline lines ${l.h}/${l.both}, supporting note lines ${l.note} (may wrap), no overflow`);
+  // Regression: tablet certificate must stack so its heading and controls are not squeezed into a narrow rail.
+  const certLayout = await pg.evaluate(() => {
+    const wrap = document.querySelector('.s-cert .wrap');
+    const heading = document.querySelector('.s-cert h3');
+    const download = document.querySelector('#cert-download');
+    return { display: getComputedStyle(wrap).display, headingWidth: Math.round(heading.getBoundingClientRect().width), buttonWidth: Math.round(download.getBoundingClientRect().width) };
+  });
+  ok(certLayout.display !== 'grid' && certLayout.headingWidth >= 400 && certLayout.buttonWidth >= 180, `tablet certificate: stacked, readable heading and download button (${certLayout.display}; ${certLayout.headingWidth}px heading, ${certLayout.buttonWidth}px button)`);
   await ctx.close();
 }
 
