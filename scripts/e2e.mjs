@@ -21,6 +21,7 @@ let failed = 0;
 const ok = (c, m) => { console.log(`${c ? 'PASS' : 'FAIL'}  ${m}`); if (!c) failed++; };
 const PAGES = ['/', '/challenge/', '/about/', '/transparency/', '/donate/', '/contact/', '/privacy/'];
 const SIZES = { desktop: { width: 1366, height: 900 }, mobile: { width: 390, height: 844 } };
+const SOCIAL_URLS = { Facebook: 'https://www.facebook.com/InfluencersInvolved', Instagram: 'https://www.instagram.com/influencersinvolved', LinkedIn: 'https://www.linkedin.com/company/influencersinvolved', YouTube: 'https://www.youtube.com/@InfluencersInvolved', TikTok: 'https://www.tiktok.com/@influencersinvolved' };
 const ZEFFY = 'https://www.zeffy.com/en-US/donation-form/support-influencers-involved';
 const UNDECIDED = "I haven't chosen a charity yet — I'll decide later.";
 const OTHER = 'Another charity — let me enter its name.';
@@ -43,9 +44,10 @@ for (const [label, vp] of Object.entries(SIZES)) {
   // 1. Every page: loads, no overflow, one h1, nav of 7, footer socials, no leadership names.
   for (const p of PAGES) {
     const r = await page.goto(BASE + p, { waitUntil: 'networkidle' });
-    const info = await page.evaluate(() => ({ over: document.documentElement.scrollWidth - innerWidth, h1: document.querySelectorAll('h1').length, nav: document.querySelectorAll('#site-nav li').length, soc: [...document.querySelectorAll('.foot-social a')].map((a) => a.href), text: document.body.innerText }));
+    const info = await page.evaluate(() => ({ over: document.documentElement.scrollWidth - innerWidth, h1: document.querySelectorAll('h1').length, nav: document.querySelectorAll('#site-nav li').length, soc: [...document.querySelectorAll('.foot-social a')].map((a) => ({ href: a.href, label: a.getAttribute('aria-label'), svg: !!a.querySelector('svg[aria-hidden=true]'), target: a.target, rel: a.rel, w: Math.round(a.getBoundingClientRect().width), h: Math.round(a.getBoundingClientRect().height), top: Math.round(a.getBoundingClientRect().top) })), text: document.body.innerText }));
     ok(r.status() === 200 && info.over <= 0 && info.h1 === 1 && info.nav === 7, `${label} ${p}: 200, no horizontal overflow, one h1, 7 nav items`);
-    ok(info.soc.length === 3 && info.soc.every((u) => /facebook\.com\/InfluencersInvolved|instagram\.com\/influencersinvolved|linkedin\.com\/company\/influencersinvolved/.test(u)), `${label} ${p}: footer shows the three confirmed social links only`);
+    ok(info.soc.length === 5 && Object.entries(SOCIAL_URLS).every(([n, u]) => info.soc.some((x) => x.href === u && x.label === `Influencers Involved on ${n} (opens in a new tab)` && x.svg && x.target === '_blank' && /noopener/.test(x.rel))), `${label} ${p}: footer shows the five official social icons with exact URLs, accessible names, new-tab and noopener`);
+    ok(info.soc.every((x) => x.w >= 44 && x.h >= 44) && (label === 'mobile' || new Set(info.soc.map((x) => x.top)).size === 1), `${label} ${p}: social icons are at least 44px${label === 'desktop' ? ' and sit in one row' : ''}`);
     ok(!/Ho Chung|Johnny Kang|Sung Chul|people behind it/i.test(info.text), `${label} ${p}: no public leadership names or titles`);
     if (SHOTS) await page.screenshot({ path: `${OUT}${label}-${p === '/' ? 'home' : p.replace(/\//g, '')}.jpg`, type: 'jpeg', quality: 72, fullPage: true });
   }
@@ -79,7 +81,7 @@ for (const [label, vp] of Object.entries(SIZES)) {
   const need = ['U.S. & International Donations', 'Support Influencers Involved from the United States or abroad. Donate securely by card through Zeffy.', '100% of your intended donation goes to Influencers Involved, with no platform or processing fees deducted by Zeffy. A separate optional contribution to Zeffy may be offered at checkout.', 'Donations are processed in U.S. dollars (USD). Your bank may apply currency conversion or foreign transaction fees. Card availability may vary by country.'];
   ok(need.every((x) => donate.text.includes(x)), `${label} donate: corrected U.S. & international wording (heading, description, fee explanation, USD note) shown verbatim`);
   ok(!/have not yet established/i.test(donate.text) && !donate.paypal && !/donorbox|\bstripe\b/i.test(donate.text), `${label} donate: old notice gone; no PayPal, Donorbox or Stripe`);
-  const providers = await page.evaluate(() => [...document.querySelectorAll('a[href^="http"]')].map((a) => new URL(a.href).hostname).filter((h) => !/(^|\.)(facebook|instagram|linkedin)\.com$/.test(h)));
+  const providers = await page.evaluate(() => [...document.querySelectorAll('a[href^="http"]')].map((a) => new URL(a.href).hostname).filter((h) => !/(^|\.)(facebook|instagram|linkedin|youtube|tiktok)\.com$/.test(h)));
   ok(providers.length > 0 && providers.every((h) => h.endsWith('zeffy.com')), `${label} donate: Zeffy is the only external donation destination`);
 
   // 5. Charity selector: undecided + other pinned at the top, 9 categories, ~100 names; no search field.
@@ -140,8 +142,15 @@ for (const [label, vp] of Object.entries(SIZES)) {
     ok(su.h2 === 'Welcome, Pioneer. Your journey starts with a meaningful choice.' && su.focused === 'success', `${label} success: new heading, and the success panel still receives focus`);
     const txt = await page.locator('#success').innerText();
     ok(txt.includes('One meaningful choice can create a ripple far beyond you.') && !/Thank you, /.test(txt) && !/already (donated|given)/i.test(txt), `${label} success: heartfelt welcome with a universal greeting (no assumed first name, no claim that a gift was made)`);
+    const hero = await page.locator('.s-hero .m-copy').innerText();
+    ok(hero.includes('You’ve pledged 1% of your creator income to a cause close to your heart. That’s worth celebrating.') && hero.includes('Now share the joy—and inspire others to make a difference, too.') && hero.includes('One meaningful choice can create a ripple far beyond you.') && !/donated|has been made/i.test(hero), `${label} success: shorter welcome copy, pledge (not donation) wording`);
+    const lines = (sel) => page.evaluate((q) => { const el = document.querySelector(q), r = document.createRange(); r.selectNodeContents(el); return new Set([...r.getClientRects()].filter((x) => x.width > 1).map((x) => Math.round(x.top))).size; }, sel);
+    if (label === 'desktop') ok((await lines('.next-h')) === 1 && (await lines('.next-both')) === 1 && (await lines('.next-note')) === 1, 'desktop success: "Your voice. Your cause. Your way." is one line; "Even better? Do BOTH!" and its supporting sentence are one line each');
+    else ok((await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)) <= 0, 'mobile success: no horizontal overflow, text wraps naturally');
+    const invIcons = await page.locator('.invite .soc-row a').evaluateAll((as) => as.map((a) => [a.href, a.getAttribute('aria-label'), Math.round(a.getBoundingClientRect().width), Math.round(a.getBoundingClientRect().top)]));
+    ok(invIcons.length === 5 && Object.values(SOCIAL_URLS).every((u) => invIcons.some((x) => x[0] === u)) && invIcons.every((x) => x[1] && x[2] >= 44) && (label === 'mobile' || new Set(invIcons.map((x) => x[3])).size === 1), `${label} success: invitation has the five official icons, exact links, labelled${label === 'desktop' ? ', in one row' : ''}`);
     const inv = await page.locator('.invite').innerText();
-    ok(inv.includes('@influencersinvolved') && /Instagram:.*collaborator.*Reels/s.test(inv) && /YouTube:.*collaborator feature/s.test(inv) && inv.includes('Tag Influencers Involved, or email us the link') && inv.includes('review collaboration invitations before accepting') && inv.includes('Sharing a post with II is optional') && !/youtube\.com\/@|both channels/i.test(inv), `${label} success: collaboration invitation preferred, tag/email kept, review and optional statements present, no invented YouTube handle`);
+    ok(inv.includes('@influencersinvolved') && /Instagram: Invite @influencersinvolved as a collaborator on eligible posts or Reels\./.test(inv) && /YouTube: Invite our official @InfluencersInvolved channel as a collaborator where YouTube supports that feature\./.test(inv) && !/Email us first/.test(inv) && inv.includes('Tag Influencers Involved, or email us the link') && inv.includes('review collaboration invitations before accepting') && inv.includes('Sharing a post with II is optional') && !/both channels|appears on/i.test(inv), `${label} success: collaboration invitation preferred, tag/email kept, review and optional statements present, no invented YouTube handle`);
     ok(su.nOpts === 2 && su.optTitles.join('|') === 'Share your pledge|Champion a cause' && su.both === 'Even better? Do BOTH!' && su.note.startsWith('No scripts.'), `${label} success: two equal choices, "Or do both!", no third choice`);
     ok(su.y.h2 < su.y.opts && su.y.opts < su.y.invite && su.y.invite < Math.min(su.y.certH, su.y.cert) && Math.max(su.y.certH, su.y.cert) < su.y.reminders, `${label} success: order is confirmation → actions → invitation → certificate → reminders`);
     ok(su.mail === 'mailto:grants@influencersinvolved.org?subject=My%20post%20for%20the%201%25%20Influence%20Challenge' && su.certHeading === 'Your Pioneer Certificate', `${label} success: invitation links to grants@ by email only (no form); certificate heading present`);
@@ -149,8 +158,8 @@ for (const [label, vp] of Object.entries(SIZES)) {
     ok((await page.locator('#success form, #success input').count()) === 0, `${label} success: no new submission form`);
     if (label === 'mobile') ok(su.y.cert - su.y.h2 < 3 * su.vh, `mobile success: certificate begins within about 3 screens (richer welcome and collaboration copy) (${Math.round(su.y.cert - su.y.h2)}px of ${su.vh}px)`);
     ok(/giving 1% of your creator income directly to your chosen charity/i.test(await page.locator('.reminders').innerText()) && (await page.locator('#verify-line').count()) === 1, `${label} success: direct-giving and verification reminders kept`);
-    const seq = []; for (let i = 0; i < 3; i++) { await page.keyboard.press('Tab'); seq.push(await page.evaluate(() => document.activeElement.id || (document.activeElement.closest('.invite') ? 'email-link' : document.activeElement.tagName))); }
-    ok(seq.join(',') === 'email-link,cert-download,cert-print', `${label} success: keyboard order follows the page (email link → download → print); got ${seq}`);
+    const seq = []; for (let i = 0; i < 8; i++) { await page.keyboard.press('Tab'); seq.push(await page.evaluate(() => document.activeElement.id || (document.activeElement.closest('.invite') ? 'invite-link' : document.activeElement.tagName))); }
+    ok(seq.join(',') === 'invite-link,invite-link,invite-link,invite-link,invite-link,invite-link,cert-download,cert-print', `${label} success: keyboard order follows the page (5 social icons + email button → download → print); got ${seq}`);
     await page.locator('#success .link-btn').click(); await page.locator('.resend-msg:not(:empty)').waitFor();
     ok((await page.locator('.resend-msg').innerText()).length > 10, `${label} success: resend-verification control still works`);
     if (label === 'desktop') {
@@ -239,6 +248,18 @@ for (const [label, vp] of Object.entries(SIZES)) {
   ok(!prof.names.some((n) => /^Seed (\d+)$/.test(n) && Number(n.split(' ')[1]) % 2 === 1), `${label} dashboard: anonymous Pioneers are never listed`);
   if (SHOTS) { await pg.locator('#pioneers').scrollIntoViewIfNeeded(); await pg.locator('#pioneers').screenshot({ path: `${OUT}${label}-dashboard.jpg`, type: 'jpeg', quality: 80 }); }
   errorsAll.push(...errors.map((e) => `${label} dashboard: ${e}`));
+  await ctx.close();
+}
+
+// 8b. Tablet width: no overflow, success-page headings behave (checked on the home page and with a rendered success panel).
+{
+  const ctx = await browser.newContext({ viewport: { width: 1024, height: 800 } }); await ctx.addInitScript(() => { try { localStorage.setItem('ii_consent', 'denied'); } catch {} });
+  const pg = await ctx.newPage();
+  for (const p of PAGES) { await pg.goto(BASE + p, { waitUntil: 'networkidle' }); ok((await pg.evaluate(() => document.documentElement.scrollWidth - innerWidth)) <= 0, `tablet ${p}: no horizontal overflow`); }
+  await pg.goto(BASE + '/challenge/', { waitUntil: 'networkidle' });
+  await pg.evaluate(() => { document.querySelector('#success').hidden = false; document.querySelector('#join-area').hidden = true; document.querySelector('#challenge-intro').hidden = true; });
+  const l = await pg.evaluate(() => { const n = (q) => { const el = document.querySelector(q), r = document.createRange(); r.selectNodeContents(el); return new Set([...r.getClientRects()].filter((x) => x.width > 1).map((x) => Math.round(x.top))).size; }; return { h: n('.next-h'), both: n('.next-both'), note: n('.next-note'), over: document.documentElement.scrollWidth - innerWidth }; });
+  ok(l.h === 1 && l.both === 1 && l.over <= 0, `tablet success: headline lines ${l.h}/${l.both}, supporting note lines ${l.note} (may wrap), no overflow`);
   await ctx.close();
 }
 

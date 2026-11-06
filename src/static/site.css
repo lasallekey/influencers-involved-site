@@ -202,7 +202,7 @@ input[aria-invalid=true],select[aria-invalid=true]{border-color:var(--danger)}
 .s-id{margin:1.2rem 0 0;color:#e1edff;font-size:1.02rem}
 .s-hero .pid{background:#fff;color:var(--navy);margin-left:.3rem}
 .s-act{background:#fff;padding-block:clamp(2.2rem,5vw,4rem)}
-.next-h{font:800 clamp(1.8rem,4vw,3rem)/1.02 var(--serif);letter-spacing:-.04em;color:var(--navy);margin:0 0 1.4rem;max-width:14em}
+.next-h{font:800 clamp(1.8rem,4vw,3rem)/1.02 var(--serif);letter-spacing:-.04em;color:var(--navy);margin:0 0 1.4rem}
 .next-actions{display:grid;grid-template-columns:1fr}
 @media (min-width:760px){.next-actions{grid-template-columns:1fr 1fr}}
 .next-opt{color:#fff;padding:clamp(1.3rem,3vw,2.3rem);display:grid;gap:.45rem;align-content:start}
@@ -211,9 +211,9 @@ input[aria-invalid=true],select[aria-invalid=true]{border-color:var(--danger)}
 .opt-art{width:4.6rem;height:auto;display:block}
 .next-opt h4{font:800 clamp(1.7rem,3.2vw,2.4rem)/1 var(--serif);letter-spacing:-.04em;color:#fff;margin:.2rem 0 0}
 .next-opt p{margin:0;color:#e1edff;font-size:1.15rem;line-height:1.5;max-width:26em}
-.next-slab{background:var(--leaf);color:#0a2a06;padding:clamp(1.3rem,3vw,2.2rem) clamp(1.3rem,3vw,2.3rem);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.6rem 2.5rem}
-.next-both{margin:0;font:800 clamp(2.3rem,6.6vw,4.8rem)/.92 var(--serif);letter-spacing:-.05em;color:#0a2a06;text-wrap:balance}
-.next-note{margin:0;color:#0f2f09;font-size:1.2rem;line-height:1.4;max-width:17em;font-weight:600}
+.next-slab{background:var(--leaf);color:#0a2a06;padding:clamp(1.3rem,3vw,2.2rem) clamp(1.3rem,3vw,2.3rem);display:block}
+.next-both{margin:0 0 .5rem;font:800 clamp(2.3rem,6.6vw,4.8rem)/.92 var(--serif);letter-spacing:-.05em;color:#0a2a06;text-wrap:balance}
+.next-note{margin:0;color:#0f2f09;font-size:clamp(1.05rem,1.7vw,1.25rem);line-height:1.4;font-weight:600}
 .s-invite{background:var(--sky);padding-block:clamp(2.2rem,5vw,4rem)}
 .s-invite .wrap{display:grid;grid-template-columns:1fr;gap:1.2rem;align-items:center}
 @media (min-width:760px){.s-invite .wrap{grid-template-columns:12rem 1fr;gap:2.5rem}}
@@ -256,7 +256,6 @@ input[aria-invalid=true],select[aria-invalid=true]{border-color:var(--danger)}
   .next-opt{padding:1.1rem 1.15rem 1.2rem;gap:.3rem}
   .next-opt p{font-size:1.05rem;line-height:1.45}
   .next-slab{padding:1.1rem 1.15rem 1.3rem}
-  .next-note{font-size:1.08rem}
   .s-invite p{font-size:1.08rem}
   .s-cert .wrap>p:first-of-type{font-size:1.05rem;line-height:1.5}
   .cert-canvas{margin:1rem 0}
@@ -281,7 +280,16 @@ input[aria-invalid=true],select[aria-invalid=true]{border-color:var(--danger)}
 .foot-nav>div{display:flex;flex-wrap:wrap;gap:0 1.4rem}
 .foot-nav a{font-weight:600;text-decoration:none;padding:.65rem 0;display:inline-block}
 .foot-nav a:hover,.site-footer a:hover{color:var(--leaf);text-decoration:underline}
-.foot-social{margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.16)}
+.foot-social{margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.16);display:flex;flex-wrap:wrap;gap:.6rem}
+/* Social icons: 44px+ touch targets, one row when space allows */
+.soc{display:inline-grid;place-items:center;width:2.9rem;height:2.9rem;border-radius:50%;border:2px solid rgba(255,255,255,.45);color:#fff;text-decoration:none;transition:background .15s,color .15s,border-color .15s}
+.foot-nav .foot-social a.soc{padding:0;display:inline-grid;font-weight:400}
+.site-footer a.soc:hover,.site-footer a.soc:focus-visible{background:var(--leaf);border-color:var(--leaf);color:#0a2a06;text-decoration:none}
+.soc-row{display:flex;flex-wrap:wrap;gap:.55rem}
+.invite-follow{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem 1rem;margin:.2rem 0 1rem}
+.invite-follow>span{font-weight:700;color:var(--navy);font-size:1.05rem}
+.s-invite a.soc{width:2.75rem;height:2.75rem;border-color:var(--navy);color:var(--navy)}
+.s-invite a.soc:hover,.s-invite a.soc:focus-visible{background:var(--navy);color:#fff;border-color:var(--navy);text-decoration:none}
 .foot-base{margin-top:2.4rem;padding-block:1.3rem;border-top:1px solid rgba(255,255,255,.16);font-size:.95rem;color:#9fb1d6}
 .foot-base p{margin:0;max-width:none}
 
