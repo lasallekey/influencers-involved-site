@@ -30,7 +30,9 @@ for (const f of pages) {
   if (/have not yet established a separate international/i.test(html)) problems.push(`${name}: outdated international-donation notice`);
   if (/\sstyle="/.test(html)) problems.push(`${name}: inline style attribute (CSP)`);
   if (/<script(?![^>]*(src=|application\/ld\+json))[^>]*>/.test(html)) problems.push(`${name}: inline script`);
-  if (/youtube\.com\/(@|channel|c\/)InfluencersInvolved|tiktok\.com\/@influencers/i.test(html)) problems.push(`${name}: unconfirmed YouTube/TikTok URL`);
+  // Only the two confirmed official channels may link to YouTube/TikTok.
+  for (const m of html.matchAll(/(?:href)="(https?:\/\/[^"]*(?:youtube\.com|youtu\.be|tiktok\.com)[^"]*)"/gi)) if (!['https://www.youtube.com/@InfluencersInvolved', 'https://www.tiktok.com/@influencersinvolved'].includes(m[1])) problems.push(`${name}: unconfirmed YouTube/TikTok URL ${m[1]}`);
+  { const socs = [...html.matchAll(/<a class="soc" href="([^"]+)"[^>]*aria-label="Influencers Involved on ([A-Za-z]+) \(opens in a new tab\)"><svg/g)]; if (socs.length < 5) problems.push(`${name}: expected the five social icon links, found ${socs.length}`); }
   if (!/<title>[^<]{10,}<\/title>/.test(html) || !/name="description" content="[^"]{40,}"/.test(html)) problems.push(`${name}: missing title/description`);
   if (!/rel="canonical"/.test(html)) problems.push(`${name}: missing canonical`);
   // Analytics: consent UI everywhere; Google is only ever loaded by analytics.js after consent, never referenced in page HTML.
@@ -40,8 +42,13 @@ for (const f of pages) {
 
 // Required public facts and links
 const all = pages.map((f) => readFileSync(f, 'utf8')).join('\n');
-const need = ['Analytics and cookies', 'Cookie preferences', 'https://www.zeffy.com/en-US/donation-form/support-influencers-involved', 'https://www.facebook.com/InfluencersInvolved', 'https://www.instagram.com/influencersinvolved', 'https://www.linkedin.com/company/influencersinvolved', 'EIN 39-2242545', '800 W Central Rd, Suite 120', 'grants@influencersinvolved.org', 'U.S. &amp; International Donations', 'Support Influencers Involved from the United States or abroad. Donate securely by card through Zeffy.', '100% of your intended donation goes to Influencers Involved, with no platform or processing fees deducted by Zeffy. A separate optional contribution to Zeffy may be offered at checkout.', 'Donations are processed in U.S. dollars (USD). Your bank may apply currency conversion or foreign transaction fees. Card availability may vary by country.'];
+const need = ['https://www.youtube.com/@InfluencersInvolved', 'https://www.tiktok.com/@influencersinvolved', 'Analytics and cookies', 'Cookie preferences', 'https://www.zeffy.com/en-US/donation-form/support-influencers-involved', 'https://www.facebook.com/InfluencersInvolved', 'https://www.instagram.com/influencersinvolved', 'https://www.linkedin.com/company/influencersinvolved', 'EIN 39-2242545', '800 W Central Rd, Suite 120', 'grants@influencersinvolved.org', 'U.S. &amp; International Donations', 'Support Influencers Involved from the United States or abroad. Donate securely by card through Zeffy.', '100% of your intended donation goes to Influencers Involved, with no platform or processing fees deducted by Zeffy. A separate optional contribution to Zeffy may be offered at checkout.', 'Donations are processed in U.S. dollars (USD). Your bank may apply currency conversion or foreign transaction fees. Card availability may vary by country.'];
 for (const n of need) if (!all.includes(n)) problems.push(`missing required content: ${n}`);
+
+// Structured data lists exactly the five official accounts.
+{ const m = /<script type="application\/ld\+json">([^<]+)<\/script>/.exec(readFileSync(join(root, 'index.html'), 'utf8')); const same = m ? JSON.parse(m[1]).sameAs : [];
+  const want = ['https://www.facebook.com/InfluencersInvolved', 'https://www.instagram.com/influencersinvolved', 'https://www.linkedin.com/company/influencersinvolved', 'https://www.youtube.com/@InfluencersInvolved', 'https://www.tiktok.com/@influencersinvolved'];
+  if (JSON.stringify([...same].sort()) !== JSON.stringify([...want].sort())) problems.push(`structured data sameAs wrong: ${JSON.stringify(same)}`); }
 
 // Nothing private may ship in the public output.
 const bundle = [...pages, join(root, 'assets/site.js'), join(root, 'assets/analytics.js'), join(root, 'assets/site-config.js')].map((f) => readFileSync(f, 'utf8')).join('\n');
