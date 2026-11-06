@@ -127,6 +127,33 @@ for (const [label, vp] of Object.entries(SIZES)) {
   await page.waitForSelector('#success:not([hidden])');
   const pid = (await page.locator('#pid').innerText()).trim();
   ok(/^II-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(pid), `${label} success: confirmed Pioneer ID ${pid}`);
+  // Success page order: confirmation → two action choices → invitation → certificate → reminders; nothing prewritten.
+  {
+    const su = await page.evaluate(() => {
+      const q = (s) => document.querySelector(s), top = (el) => el.getBoundingClientRect().top + scrollY;
+      const opts = [...document.querySelectorAll('.next-opt')];
+      return { h2: q('#success h2').textContent, focused: document.activeElement && document.activeElement.id, nOpts: opts.length, optTitles: opts.map((o) => o.querySelector('h4').textContent), both: q('.next-both').textContent, note: q('.next-note').textContent,
+        y: { h2: top(q('#success h2')), opts: top(q('.next-actions')), invite: top(q('.invite')), certH: top(q('.cert-sec h3')), cert: top(q('#cert')), reminders: top(q('.reminders')), verify: top(q('#verify-line')) },
+        mail: q('.invite a.btn').getAttribute('href'), sample: !!q('.sample-post') || /optional sample/i.test(q('#success').textContent), copyBtn: [...document.querySelectorAll('#success button')].some((b) => /copy/i.test(b.textContent)),
+        hashtag: /#\w/.test(q('#success').textContent.replace(/Pioneer ID/g, '')), certHeading: q('.cert-sec h3').textContent, vh: innerHeight };
+    });
+    ok(su.h2 === 'You’re a Pioneer. Now inspire others.' && su.focused === 'success', `${label} success: new heading, and the success panel still receives focus`);
+    ok(su.nOpts === 2 && su.optTitles.join('|') === 'Share your pledge|Champion a cause' && su.both === 'Or do both!' && su.note.startsWith('No scripts.'), `${label} success: two equal choices, "Or do both!", no third choice`);
+    ok(su.y.h2 < su.y.opts && su.y.opts < su.y.invite && su.y.invite < su.y.certH && su.y.certH < su.y.cert && su.y.cert < su.y.reminders, `${label} success: order is confirmation → actions → invitation → certificate → reminders`);
+    ok(su.mail === 'mailto:grants@influencersinvolved.org?subject=My%20post%20for%20the%201%25%20Influence%20Challenge' && su.certHeading === 'Your Pioneer Certificate', `${label} success: invitation links to grants@ by email only (no form); certificate heading present`);
+    ok(!su.sample && !su.copyBtn && !su.hashtag, `${label} success: no sample post, no copy button, no prescribed hashtag`);
+    ok((await page.locator('#success form, #success input').count()) === 0, `${label} success: no new submission form`);
+    if (label === 'mobile') ok(su.y.cert - su.y.h2 < 1.6 * su.vh, `mobile success: certificate begins within about 1.5 screens (${Math.round(su.y.cert - su.y.h2)}px of ${su.vh}px)`);
+    ok(/giving 1% of your creator income directly to your chosen charity/i.test(await page.locator('.reminders').innerText()) && (await page.locator('#verify-line').count()) === 1, `${label} success: direct-giving and verification reminders kept`);
+    const seq = []; for (let i = 0; i < 3; i++) { await page.keyboard.press('Tab'); seq.push(await page.evaluate(() => document.activeElement.id || (document.activeElement.closest('.invite') ? 'email-link' : document.activeElement.tagName))); }
+    ok(seq.join(',') === 'email-link,cert-download,cert-print', `${label} success: keyboard order follows the page (email link → download → print); got ${seq}`);
+    await page.locator('#success .link-btn').click(); await page.locator('.resend-msg:not(:empty)').waitFor();
+    ok((await page.locator('.resend-msg').innerText()).length > 10, `${label} success: resend-verification control still works`);
+    if (label === 'desktop') {
+      const [popup] = await Promise.all([page.waitForEvent('popup'), page.click('#cert-print')]); await popup.waitForLoadState();
+      ok((await popup.locator('img').getAttribute('src')).startsWith('data:image/png') && (await popup.title()) === 'Pioneer Pledge Certificate', 'desktop success: print opens the certificate image'); await popup.close();
+    }
+  }
   await page.waitForFunction(() => document.querySelector('#cert-download').href.startsWith('blob:'));
   const ct = await page.evaluate(() => window.__ct.join(' | '));
   if (label === 'desktop') {
