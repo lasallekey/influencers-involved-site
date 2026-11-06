@@ -137,14 +137,17 @@ for (const [label, vp] of Object.entries(SIZES)) {
         mail: q('.invite a.m-btn').getAttribute('href'), sample: !!q('.sample-post') || /optional sample/i.test(q('#success').textContent), copyBtn: [...document.querySelectorAll('#success button')].some((b) => /copy/i.test(b.textContent)),
         hashtag: /#\w/.test(q('#success').textContent.replace(/Pioneer ID/g, '')), certHeading: q('.cert-sec h3').textContent, vh: innerHeight };
     });
-    ok(su.h2 === 'You’re a Pioneer. Now inspire others.' && su.focused === 'success', `${label} success: new heading, and the success panel still receives focus`);
-    ok((await page.locator('#s-thanks').innerText()) === 'Thank you, Synthetic.', `${label} success: personal greeting uses the first name from the person's own form`);
+    ok(su.h2 === 'Welcome, Pioneer. Your journey starts with a meaningful choice.' && su.focused === 'success', `${label} success: new heading, and the success panel still receives focus`);
+    const txt = await page.locator('#success').innerText();
+    ok(txt.includes('One meaningful choice can create a ripple far beyond you.') && !/Thank you, /.test(txt) && !/already (donated|given)/i.test(txt), `${label} success: heartfelt welcome with a universal greeting (no assumed first name, no claim that a gift was made)`);
+    const inv = await page.locator('.invite').innerText();
+    ok(inv.includes('@influencersinvolved') && /Instagram:.*collaborator.*Reels/s.test(inv) && /YouTube:.*collaborator feature/s.test(inv) && inv.includes('Tag Influencers Involved, or email us the link') && inv.includes('review collaboration invitations before accepting') && inv.includes('Sharing a post with II is optional') && !/youtube\.com\/@|both channels/i.test(inv), `${label} success: collaboration invitation preferred, tag/email kept, review and optional statements present, no invented YouTube handle`);
     ok(su.nOpts === 2 && su.optTitles.join('|') === 'Share your pledge|Champion a cause' && su.both === 'Even better? Do BOTH!' && su.note.startsWith('No scripts.'), `${label} success: two equal choices, "Or do both!", no third choice`);
     ok(su.y.h2 < su.y.opts && su.y.opts < su.y.invite && su.y.invite < Math.min(su.y.certH, su.y.cert) && Math.max(su.y.certH, su.y.cert) < su.y.reminders, `${label} success: order is confirmation → actions → invitation → certificate → reminders`);
     ok(su.mail === 'mailto:grants@influencersinvolved.org?subject=My%20post%20for%20the%201%25%20Influence%20Challenge' && su.certHeading === 'Your Pioneer Certificate', `${label} success: invitation links to grants@ by email only (no form); certificate heading present`);
     ok(!su.sample && !su.copyBtn && !su.hashtag, `${label} success: no sample post, no copy button, no prescribed hashtag`);
     ok((await page.locator('#success form, #success input').count()) === 0, `${label} success: no new submission form`);
-    if (label === 'mobile') ok(su.y.cert - su.y.h2 < 2.2 * su.vh, `mobile success: certificate begins within about 2 screens (${Math.round(su.y.cert - su.y.h2)}px of ${su.vh}px)`);
+    if (label === 'mobile') ok(su.y.cert - su.y.h2 < 3 * su.vh, `mobile success: certificate begins within about 3 screens (richer welcome and collaboration copy) (${Math.round(su.y.cert - su.y.h2)}px of ${su.vh}px)`);
     ok(/giving 1% of your creator income directly to your chosen charity/i.test(await page.locator('.reminders').innerText()) && (await page.locator('#verify-line').count()) === 1, `${label} success: direct-giving and verification reminders kept`);
     const seq = []; for (let i = 0; i < 3; i++) { await page.keyboard.press('Tab'); seq.push(await page.evaluate(() => document.activeElement.id || (document.activeElement.closest('.invite') ? 'email-link' : document.activeElement.tagName))); }
     ok(seq.join(',') === 'email-link,cert-download,cert-print', `${label} success: keyboard order follows the page (email link → download → print); got ${seq}`);

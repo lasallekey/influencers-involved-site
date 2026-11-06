@@ -256,8 +256,6 @@
   function success(res, sent) {
     if (res.email_status !== 'replayed') track('pioneer_registered', { account_count: sent.accounts.length, charity_status: res.charity_status });
     $('#pid').textContent = res.pioneer_id;
-    var first = String(sent.creator_name || '').trim().split(/\s+/)[0].slice(0, 30); // greeting on the person's own screen only; shown with textContent, never sent anywhere
-    if (first) { $('#pioneer-first').textContent = first; $('#s-thanks').hidden = false; }
     $('#join-area').hidden = true; $('#challenge-intro').hidden = true;
     var s = $('#success'); s.hidden = false;
     var dl = $('#cert-download'); if (dl) dl.addEventListener('click', function () { track('certificate_download'); });
