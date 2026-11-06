@@ -206,37 +206,77 @@ class: page-challenge
     </form>
   </div>
 
-  <div id="success" class="success" hidden tabindex="-1">
-    <p class="eyebrow">Pledge saved</p>
-    <h2>You’re a Pioneer. Now inspire others.</h2>
-    <p class="lede">You’ve pledged 1% of your creator income to a charity of your choice. Now put your creativity and influence into action.</p>
-    <p class="fine pid-line">Pioneer ID: <span class="pid" id="pid"></span></p>
+  </div>
+</section>
 
-    <h3 class="next-h">Your voice. Your cause. Your way.</h3>
-    <div class="next-actions">
-      <div class="next-opt">
-        <p class="opt-label">Option 1</p>
-        <h4>Share your pledge</h4>
-        <p>Tell your audience why you joined the 1% Influence Challenge and inspire fellow creators to join.</p>
+<div id="success" class="success" hidden tabindex="-1">
+  <section class="m-hero s-hero" aria-labelledby="s-title">
+    <div class="wrap m-hero-grid">
+      <div class="m-copy">
+        <p class="s-thanks" id="s-thanks" hidden>Thank you, <span id="pioneer-first"></span>.</p>
+        <h2 id="s-title"><span>You’re a Pioneer.</span> <span>Now inspire others.</span></h2>
+        <p class="m-sub">You’ve pledged 1% of your creator income to a charity of your choice. Now put your creativity and influence into action.</p>
+        <p class="s-id">Pioneer ID <span class="pid" id="pid"></span></p>
       </div>
-      <div class="next-opt b">
-        <p class="opt-label">Option 2</p>
-        <h4>Champion a cause</h4>
-        <p>Use your creativity to spotlight a charity close to your heart and help others discover its work.</p>
+      <div class="m-scene" role="img" aria-label="Illustration: a creator proudly holding up a Pioneer pledge certificate while a smiling crowd cheers.">
+        <svg viewBox="0 0 600 520" aria-hidden="true" focusable="false">
+          <use href="#b-bun" class="pf" x="4" y="296" width="100" height="300"/>
+          <use href="#b-glasses" class="pj" x="478" y="292" width="100" height="300"/>
+          <use href="#b-curly" class="pd" x="398" y="322" width="100" height="300"/>
+          <use href="#b-long" class="pe" x="-36" y="366" width="140" height="420"/>
+          <use href="#b-beard" class="pi" x="456" y="372" width="140" height="420"/>
+          <use href="#b-short" class="pb" x="112" y="112" width="210" height="630"/>
+          <use href="#hp" class="pb" x="112" y="112" width="210" height="630"/>
+          <path class="sv-sleeve pb" d="M282 346C326 356 352 310 360 262" fill="none" stroke-width="40" stroke-linecap="round"/>
+          <g class="prop"><g transform="rotate(-6 440 170)"><use href="#p-cert" x="334" y="82" width="212" height="152"/></g></g>
+          <circle class="sv-skin pb" cx="362" cy="250" r="19"/>
+          <use href="#heart" class="hz h1" x="60" y="236" width="30" height="30"/>
+          <use href="#heart" class="hz h2" x="236" y="86" width="24" height="24"/>
+          <use href="#heart" class="hz h3" x="516" y="232" width="36" height="36"/>
+          <use href="#heart" class="hz h4" x="410" y="292" width="24" height="24"/>
+          <use href="#heart" class="hz h5" x="130" y="300" width="22" height="22"/>
+        </svg>
       </div>
     </div>
-    <p class="next-both">Or do both!</p>
-    <p class="next-note">No scripts. No prescribed format. Just your authentic voice and influence.</p>
+  </section>
 
-    <div class="invite">
-      <h3>We’d love to see what you create.</h3>
-      <p>Tag Influencers Involved or send us the link to your post. With your permission, we may spotlight your story to inspire other creators.</p>
-      <div class="cta-row"><a class="btn" href="mailto:{{email}}?subject=My%20post%20for%20the%201%25%20Influence%20Challenge">Email us your post link</a><span class="fine">{{email}}</span></div>
-      <p class="fine">Optional, and never required for your pledge or certificate.</p>
+  <section class="s-act" aria-labelledby="s-act-h">
+    <div class="wrap">
+      <h3 class="next-h" id="s-act-h">Your voice. Your cause. Your way.</h3>
+      <div class="next-actions">
+        <div class="next-opt a">
+          <svg class="opt-art" viewBox="0 0 120 90" aria-hidden="true" focusable="false"><use href="#p-bubble" width="120" height="90"/><use href="#heart" x="40" y="16" width="40" height="40" fill="#005eca"/></svg>
+          <h4>Share your pledge</h4>
+          <p>Tell your audience why you joined the 1% Influence Challenge and inspire fellow creators to join.</p>
+        </div>
+        <div class="next-opt b">
+          <svg class="opt-art" viewBox="0 0 120 90" aria-hidden="true" focusable="false"><circle cx="60" cy="45" r="42" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="3"/><circle cx="60" cy="45" r="29" fill="none" stroke="#fff" stroke-opacity=".4" stroke-width="3"/><use href="#heart" x="40" y="25" width="40" height="40" fill="#7bdc0a"/></svg>
+          <h4>Champion a cause</h4>
+          <p>Use your creativity to spotlight a charity close to your heart and help others discover its work.</p>
+        </div>
+      </div>
+      <div class="next-slab">
+        <p class="next-both">Even better? Do BOTH!</p>
+        <p class="next-note">No scripts. No prescribed format. Just your authentic voice and influence.</p>
+      </div>
     </div>
+  </section>
 
-    <div class="cert-sec">
-      <h3>Your Pioneer Certificate</h3>
+  <section class="s-invite invite" aria-labelledby="s-invite-h">
+    <div class="wrap">
+      <svg class="invite-art" viewBox="0 0 160 110" aria-hidden="true" focusable="false"><use href="#p-envelope" x="30" y="22" width="110" height="77"/><use href="#heart" class="hz2" x="6" y="8" width="30" height="30"/><use href="#heart" x="124" y="2" width="22" height="22" fill="#005eca"/></svg>
+      <div>
+        <h3 id="s-invite-h">We’d love to see what you create.</h3>
+        <p>Tag Influencers Involved or send us the link to your post. With your permission, we may spotlight your story to inspire other creators.</p>
+        <div class="cta-row"><a class="m-btn" href="mailto:{{email}}?subject=My%20post%20for%20the%201%25%20Influence%20Challenge">Email us your post link</a><span class="fine">{{email}}</span></div>
+        <p class="fine">Optional, and never required for your pledge or certificate.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="s-cert cert-sec" aria-labelledby="s-cert-h">
+    <div class="wrap">
+      <h3 id="s-cert-h">Your Pioneer Certificate</h3>
       <p>A recognition of your 1% pledge and commitment to making a difference. It recognizes your pledge; it is not a donation receipt or proof of payment.</p>
       <canvas id="cert" class="cert-canvas" width="1600" height="1130" role="img" aria-label="Your Pioneer pledge certificate"></canvas>
       <div class="cta-row">
@@ -245,13 +285,15 @@ class: page-challenge
       </div>
       <p class="fine">Download it locally to share if you like. We do not offer a public lookup of registration records.</p>
     </div>
+  </section>
 
-    <div class="reminders">
+  <section class="s-rem reminders" aria-label="Good to know">
+    <div class="wrap">
       <p id="charity-later" class="notice" hidden>You haven’t chosen a charity yet, and that’s fine. Your pledge stands as 1% of your creator income to a charity of your choice. When you decide, email <a href="mailto:{{email}}">{{email}}</a> with your Pioneer ID and we’ll update your record.</p>
       <p><b>Give directly.</b> You fulfill your pledge by giving 1% of your creator income directly to your chosen charity, on the schedule you choose. II doesn’t collect or redistribute it and won’t ask for proof.</p>
       <p id="verify-line">Check your inbox for an optional email-verification link so we can protect the registry and contact you if you opt in. Your optional Pioneer Certificate is ready now; email verification is separate and is not required to make a pledge or receive recognition.</p>
+      <div class="cta-row"><a class="text-link" href="/challenge/">Back to the Challenge</a><a class="text-link" href="/">Visit the homepage</a></div>
     </div>
-    <div class="cta-row"><a class="text-link" href="/challenge/">Back to the Challenge</a><a class="text-link" href="/">Visit the homepage</a></div>
-  </div>
-  </div>
-</section>
+  </section>
+</div>
+

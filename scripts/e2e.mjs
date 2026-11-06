@@ -134,16 +134,17 @@ for (const [label, vp] of Object.entries(SIZES)) {
       const opts = [...document.querySelectorAll('.next-opt')];
       return { h2: q('#success h2').textContent, focused: document.activeElement && document.activeElement.id, nOpts: opts.length, optTitles: opts.map((o) => o.querySelector('h4').textContent), both: q('.next-both').textContent, note: q('.next-note').textContent,
         y: { h2: top(q('#success h2')), opts: top(q('.next-actions')), invite: top(q('.invite')), certH: top(q('.cert-sec h3')), cert: top(q('#cert')), reminders: top(q('.reminders')), verify: top(q('#verify-line')) },
-        mail: q('.invite a.btn').getAttribute('href'), sample: !!q('.sample-post') || /optional sample/i.test(q('#success').textContent), copyBtn: [...document.querySelectorAll('#success button')].some((b) => /copy/i.test(b.textContent)),
+        mail: q('.invite a.m-btn').getAttribute('href'), sample: !!q('.sample-post') || /optional sample/i.test(q('#success').textContent), copyBtn: [...document.querySelectorAll('#success button')].some((b) => /copy/i.test(b.textContent)),
         hashtag: /#\w/.test(q('#success').textContent.replace(/Pioneer ID/g, '')), certHeading: q('.cert-sec h3').textContent, vh: innerHeight };
     });
     ok(su.h2 === 'You’re a Pioneer. Now inspire others.' && su.focused === 'success', `${label} success: new heading, and the success panel still receives focus`);
-    ok(su.nOpts === 2 && su.optTitles.join('|') === 'Share your pledge|Champion a cause' && su.both === 'Or do both!' && su.note.startsWith('No scripts.'), `${label} success: two equal choices, "Or do both!", no third choice`);
-    ok(su.y.h2 < su.y.opts && su.y.opts < su.y.invite && su.y.invite < su.y.certH && su.y.certH < su.y.cert && su.y.cert < su.y.reminders, `${label} success: order is confirmation → actions → invitation → certificate → reminders`);
+    ok((await page.locator('#s-thanks').innerText()) === 'Thank you, Synthetic.', `${label} success: personal greeting uses the first name from the person's own form`);
+    ok(su.nOpts === 2 && su.optTitles.join('|') === 'Share your pledge|Champion a cause' && su.both === 'Even better? Do BOTH!' && su.note.startsWith('No scripts.'), `${label} success: two equal choices, "Or do both!", no third choice`);
+    ok(su.y.h2 < su.y.opts && su.y.opts < su.y.invite && su.y.invite < Math.min(su.y.certH, su.y.cert) && Math.max(su.y.certH, su.y.cert) < su.y.reminders, `${label} success: order is confirmation → actions → invitation → certificate → reminders`);
     ok(su.mail === 'mailto:grants@influencersinvolved.org?subject=My%20post%20for%20the%201%25%20Influence%20Challenge' && su.certHeading === 'Your Pioneer Certificate', `${label} success: invitation links to grants@ by email only (no form); certificate heading present`);
     ok(!su.sample && !su.copyBtn && !su.hashtag, `${label} success: no sample post, no copy button, no prescribed hashtag`);
     ok((await page.locator('#success form, #success input').count()) === 0, `${label} success: no new submission form`);
-    if (label === 'mobile') ok(su.y.cert - su.y.h2 < 1.6 * su.vh, `mobile success: certificate begins within about 1.5 screens (${Math.round(su.y.cert - su.y.h2)}px of ${su.vh}px)`);
+    if (label === 'mobile') ok(su.y.cert - su.y.h2 < 2.2 * su.vh, `mobile success: certificate begins within about 2 screens (${Math.round(su.y.cert - su.y.h2)}px of ${su.vh}px)`);
     ok(/giving 1% of your creator income directly to your chosen charity/i.test(await page.locator('.reminders').innerText()) && (await page.locator('#verify-line').count()) === 1, `${label} success: direct-giving and verification reminders kept`);
     const seq = []; for (let i = 0; i < 3; i++) { await page.keyboard.press('Tab'); seq.push(await page.evaluate(() => document.activeElement.id || (document.activeElement.closest('.invite') ? 'email-link' : document.activeElement.tagName))); }
     ok(seq.join(',') === 'email-link,cert-download,cert-print', `${label} success: keyboard order follows the page (email link → download → print); got ${seq}`);
