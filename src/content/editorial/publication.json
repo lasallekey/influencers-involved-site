@@ -1,4 +1,4 @@
 {
-  "publishedAt": null,
-  "_note": "Set publishedAt (ISO 8601 with a time zone offset, e.g. 2026-12-01T09:00:00-06:00) in the founder-authorized release commit. Left null until then: pages render without a date and without datePublished; npm run check:editorial-release fails while it is null."
+  "publishedAt": "2026-11-20T01:46:00+00:00",
+  "_note": "Real publication time recorded in the founder-authorized release commit (ISO 8601 with offset). Do not change it after deployment."
 }

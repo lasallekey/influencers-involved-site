@@ -1,24 +1,24 @@
 # GivingTuesday 2026 editorial: release record
 
-**Status: PREPARED on a feature branch. NOT PUBLISHED. NOT AUTHORIZED.** A clean PR and a staging preview are not authorization to publish.
+**Status: FOUNDER-AUTHORIZED for release on 2026-11-20 (UTC). Release commit recorded; production deployment follows through the approved workflow.** Publication time recorded: 2026-11-20T01:46:00+00:00.
 
-Founder authorization: NOT GRANTED
-Release-day fact check: PENDING
+Founder authorization: GRANTED (founder, 2026-11-20: reviewed and approved the complete batch including the revised layouts and messaging; authorized merging PR #9 and publishing all eight pages via the approved production workflow, with scope limited to this editorial launch)
+Release-day fact check: COMPLETED (Claude Code, 2026-11-20T01:46Z: scripts/editorial-source-check.mjs, 18 official URLs, all HTTP 200 and all claims SUPPORTED, no discrepancies)
 
 `npm run check:editorial-release` fails until both lines above are changed (to `GRANTED (<who, date>)` / `COMPLETED (<who, date>)`) in the founder-authorized release commit, together with the recorded publication date (see "Release steps").
 
-## Pages (all eight built and staged; none published)
+## Pages (all eight built, staged and authorized; live status is recorded after deployment)
 
 | ID | Page | Exact URL | Status |
 |---|---|---|---|
-| Index | Editorial | https://influencersinvolved.org/editorial/ | READY (pending authorization) |
-| GT26-01 | GivingTuesday 2026: What It Is and How You Can Take Part | https://influencersinvolved.org/editorial/givingtuesday-2026-guide/ | READY (pending authorization) |
-| GT26-02 | GivingTuesday for Content Creators | https://influencersinvolved.org/editorial/givingtuesday-for-content-creators/ | READY (pending authorization) |
-| GT26-03 | How to Choose a GivingTuesday Charity | https://influencersinvolved.org/editorial/how-to-choose-a-givingtuesday-charity/ | READY (pending authorization) |
-| GT26-04 | Four Animal-Related Charity Campaigns | https://influencersinvolved.org/editorial/givingtuesday-2026-animal-charity-campaigns/ | READY (pending authorization) |
-| GT26-05 | SAFE Haven for Cats | https://influencersinvolved.org/editorial/safe-haven-for-cats-givingtuesday-2026/ | READY (pending authorization) |
-| GT26-06 | Save The Animals Foundation (#JustOneMore) | https://influencersinvolved.org/editorial/staf-just-one-more-givingtuesday-2026/ | READY (pending authorization) |
-| GT26-07 | Dogs for Better Lives | https://influencersinvolved.org/editorial/dogs-for-better-lives-givingtuesday-2026/ | READY (pending authorization) |
+| Index | Editorial | https://influencersinvolved.org/editorial/ | READY (authorized 2026-11-20) |
+| GT26-01 | GivingTuesday 2026: What It Is and How You Can Take Part | https://influencersinvolved.org/editorial/givingtuesday-2026-guide/ | READY (authorized 2026-11-20) |
+| GT26-02 | GivingTuesday for Content Creators | https://influencersinvolved.org/editorial/givingtuesday-for-content-creators/ | READY (authorized 2026-11-20) |
+| GT26-03 | How to Choose a GivingTuesday Charity | https://influencersinvolved.org/editorial/how-to-choose-a-givingtuesday-charity/ | READY (authorized 2026-11-20) |
+| GT26-04 | Four Animal-Related Charity Campaigns | https://influencersinvolved.org/editorial/givingtuesday-2026-animal-charity-campaigns/ | READY (authorized 2026-11-20) |
+| GT26-05 | SAFE Haven for Cats | https://influencersinvolved.org/editorial/safe-haven-for-cats-givingtuesday-2026/ | READY (authorized 2026-11-20) |
+| GT26-06 | Save The Animals Foundation (#JustOneMore) | https://influencersinvolved.org/editorial/staf-just-one-more-givingtuesday-2026/ | READY (authorized 2026-11-20) |
+| GT26-07 | Dogs for Better Lives | https://influencersinvolved.org/editorial/dogs-for-better-lives-givingtuesday-2026/ | READY (authorized 2026-11-20) |
 
 Sitemap: 15 canonical URLs (the seven core pages, `/editorial/`, and the seven articles). Staging preview: the "Deploy staging" run for this branch (URL in that run's summary); it is noindex by design.
 
@@ -26,8 +26,8 @@ Sitemap: 15 canonical URLs (the seven core pages, `/editorial/`, and the seven a
 
 | # | Severity | Issue | Status |
 |---|---|---|---|
-| 1 | Release gate | **Publication date is not recorded.** `src/content/editorial/publication.json` has `publishedAt: null`, so the pages currently show no date and the Article schema has no `datePublished`. It must be set to the real release time (ISO 8601 with time zone) in the founder-authorized release commit. Never the November 19 prep date. | OPEN, by design |
-| 2 | Release gate | **Release-day fact check not done.** Sources were checked on 2026-11-20 (below); the brief requires a re-check on the actual release date (`scripts/editorial-source-check.mjs`). | OPEN, by design |
+| 1 | Release gate | **Publication date is not recorded.** `src/content/editorial/publication.json` has `publishedAt: null`, so the pages currently show no date and the Article schema has no `datePublished`. It must be set to the real release time (ISO 8601 with time zone) in the founder-authorized release commit. Never the November 19 prep date. | RESOLVED 2026-11-20 |
+| 2 | Release gate | **Release-day fact check not done.** Sources were checked on 2026-11-20 (below); the brief requires a re-check on the actual release date (`scripts/editorial-source-check.mjs`). | RESOLVED 2026-11-20 |
 | 3 | Editorial, low | Article 02's "many forms of generosity" statement linked GivingTuesday's `/participate/` page, a campaign-planning hub. **Resolved at the founder's request:** the link now points to the official FAQ page (`/about/faq/`), which states "voice, goods, your time, or your money". Link target only; no other change to the article. | RESOLVED |
 | 4 | Editorial, info | After December 1 the prospective wording ("on December 1", "plans to") needs a retrospective pass (brief rule 9). | FOLLOW-UP |
 | 5 | Info | Staging and pre-launch builds keep `rel=canonical` pointing at the production URL, as every other page on this site already does; they are `noindex` and carry the staging banner, so this does not create duplicate-content risk. | NO ACTION |

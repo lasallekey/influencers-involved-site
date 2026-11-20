@@ -88,11 +88,34 @@ test('index lists each article exactly once, using the article titles, with real
   assert.ok(index.main.includes('<h1>Editorial</h1>') && !index.schemaTag);
 });
 
-test('release gate refuses to pass while the publication date and founder authorization are unrecorded', async () => {
+test('release gate: passes only with a recorded date, built pages, founder authorization and release-day check; fails when any is missing', async () => {
   const { spawnSync } = await import('node:child_process');
-  const r = spawnSync('node', ['scripts/editorial-release-gate.mjs'], { cwd: root, encoding: 'utf8' });
-  assert.equal(r.status, 1);
-  assert.match(r.stderr, /publishedAt is not recorded/); assert.match(r.stderr, /Founder authorization/);
+  const { mkdirSync, rmSync } = await import('node:fs');
+  const sandbox = (mutate) => {
+    const t = mkdtempSync(join(tmpdir(), 'gate-'));
+    mkdirSync(join(t, 'scripts'), { recursive: true }); mkdirSync(join(t, 'docs', 'editorial'), { recursive: true });
+    for (const f of ['editorial-release-gate.mjs', 'editorial.mjs']) cpSync(join(root, 'scripts', f), join(t, 'scripts', f));
+    cpSync(join(root, 'src'), join(t, 'src'), { recursive: true }); cpSync(join(root, 'site'), join(t, 'site'), { recursive: true });
+    cpSync(join(root, 'docs', 'editorial', 'RELEASE_RECORD.md'), join(t, 'docs', 'editorial', 'RELEASE_RECORD.md'));
+    mutate(t);
+    const r = spawnSync('node', ['scripts/editorial-release-gate.mjs'], { cwd: t, encoding: 'utf8' });
+    rmSync(t, { recursive: true, force: true });
+    return r;
+  };
+  // 1. Unrecorded state: no date, no authorization, no fact check.
+  const unrecorded = sandbox((t) => {
+    writeFileSync(join(t, 'src/content/editorial/publication.json'), '{"publishedAt":null}');
+    const rp = join(t, 'docs/editorial/RELEASE_RECORD.md');
+    writeFileSync(rp, readFileSync(rp, 'utf8').replace(/^Founder authorization: .*$/m, 'Founder authorization: NOT GRANTED').replace(/^Release-day fact check: .*$/m, 'Release-day fact check: PENDING'));
+  });
+  assert.equal(unrecorded.status, 1);
+  assert.match(unrecorded.stderr, /publishedAt is not recorded/); assert.match(unrecorded.stderr, /Founder authorization/); assert.match(unrecorded.stderr, /Release-day fact check/);
+  // 2. Authorization recorded but the release-day fact check is not.
+  const noCheck = sandbox((t) => { const rp = join(t, 'docs/editorial/RELEASE_RECORD.md'); writeFileSync(rp, readFileSync(rp, 'utf8').replace(/^Release-day fact check: .*$/m, 'Release-day fact check: PENDING')); });
+  assert.equal(noCheck.status, 1); assert.match(noCheck.stderr, /Release-day fact check/);
+  // 3. The recorded release state passes (only once the committed date, record and built site all agree).
+  const recorded = sandbox(() => {});
+  assert.equal(recorded.status, 0, recorded.stderr); assert.match(recorded.stdout, /Editorial release gate: OK/);
 });
 
 test('every external link in the articles is covered by the release-day source check; none goes through Zeffy or a tracker', async () => {
