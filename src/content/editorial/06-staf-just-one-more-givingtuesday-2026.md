@@ -55,7 +55,7 @@ A published goal is not the same as money raised. We have not independently veri
 
 If you are able to give financially, use the organization's official site and make a contribution appropriate to your circumstances.
 
-If you cannot donate, there are still meaningful ways to help people understand the cause. You could share Rex and Bubba's official stories with someone who cares about rescue, or introduce STAF to a friend in the Cincinnati area who might want to learn about volunteering or adoption. Be clear that you are sharing the organization's campaign, not acting on its behalf.
+If you cannot donate, there are still meaningful ways to help people understand the cause. You could share Rex and Bubba's official stories with someone who cares about rescue, or introduce STAF to a friend in the Cincinnati area who might want to learn about volunteering or adoption. Make clear that you're sharing STAF's campaign in your own voice.
 
 And if you've been thinking about adopting, start with the charity's [adoption information](https://staf.org/adopt/), which describes its process. Adoption is a serious commitment, not an impulse response to a seasonal appeal.
 
@@ -63,7 +63,9 @@ And if you've been thinking about adopting, start with the charity's [adoption i
 
 A hashtag such as #JustOneMore is memorable because it points to a real choice. Behind it are people making space and providing care when another animal comes through the door.
 
-Creators who want to share this campaign have a good place to begin: read the original stories, think about the work they represent, and help their audience get to STAF's information. There is no need to add dramatic claims or promise outcomes.
+Creators who want to share this campaign have a good place to begin: read the original stories, think about the work they represent, and help their audience get to STAF's information. The real stories are compelling enough as they are.
+
+If Rex and Bubba's stories make you want to put your own influence to work, the Challenge is open today. [Join the 1% Influence Challenge](/challenge/#join), pledge 1% of your creator income to a charity you choose, and inspire others to do the same.
 
 For more campaigns, see our [GivingTuesday animal-charity roundup](/editorial/givingtuesday-2026-animal-charity-campaigns/). For a practical approach to charitable content, read our [creator guide](/editorial/givingtuesday-for-content-creators/).
 

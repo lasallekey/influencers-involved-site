@@ -49,15 +49,17 @@ Matching opportunities can have limits and conditions. Anyone considering donati
 
 **Give through the official organization, if you're able.** The campaign page describes how donations support care such as food, shelter and medical treatment. Check the live terms if a match influences your decision.
 
-**Share accurate campaign information.** Know someone who loves cats or regularly supports rescue groups? Send them the official page with a short personal note. Mention the December 1 deadline accurately. Don't suggest that the recipient has to donate to appreciate the story.
+**Share accurate campaign information.** Know someone who loves cats or regularly supports rescue groups? Send them the official page with a short personal note, and mention the December 1 date accurately. A good story is worth passing along on its own.
 
-**Consider involvement beyond one day.** Adoption, volunteering and other support options are described on SAFE Haven's main site. Not all will fit every person, but the information is available for people who want a longer relationship with the cause.
+**Consider involvement beyond one day.** Adoption, volunteering and other support options are described on SAFE Haven's main site. The information is there for anyone who wants a longer relationship with the cause.
 
 ## Why this is an interesting campaign for creators
 
 The book-club concept is a useful reminder that nonprofit storytelling doesn't always need to be solemn to be sincere. A compelling frame can help someone stop scrolling. The facts and the animals still need to carry the meaning.
 
-For a book reviewer or cat-loving creator, this campaign may offer a natural conversation starter: what makes an animal's story memorable, and what does it take for a shelter to help write the next chapter? An independent creator can point followers to the campaign without copying its artwork or presenting themselves as an official spokesperson.
+For a book reviewer or cat-loving creator, this campaign may offer a natural conversation starter: what makes an animal's story memorable, and what does it take for a shelter to help write the next chapter? An independent creator can point followers to the campaign in their own voice, linking to SAFE Haven's official page.
+
+And if a story like this makes you want to turn your own influence into giving, you can start now: [join the 1% Influence Challenge](/challenge/#join) today and pledge 1% of your creator income to a charity you choose.
 
 We've written more broadly about [how content creators can participate in GivingTuesday](/editorial/givingtuesday-for-content-creators/). SAFE Haven is one of several campaigns in our [2026 animal-related GivingTuesday roundup](/editorial/givingtuesday-2026-animal-charity-campaigns/).
 

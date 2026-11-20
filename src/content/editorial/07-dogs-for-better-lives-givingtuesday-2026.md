@@ -57,7 +57,7 @@ The nonprofit's toolkit also explains how supporters can help by sharing its con
 
 **Help people understand the work.** If you've never thought about the difference between a pet and a trained assistance dog, the organization's program pages provide a place to learn. Sharing that explanation may help interested people understand the campaign's purpose.
 
-**Share an official post with your own context.** Dogs for Better Lives specifically encourages supporters to share campaign messages. The useful addition is a personal reason for passing it on, not a claim of direct involvement you don't have.
+**Share an official post with your own context.** Dogs for Better Lives specifically encourages supporters to share campaign messages. The most useful addition is your own reason for passing it on.
 
 **Follow the story beyond December 1.** The campaign supports a longer process. Readers can keep up with the nonprofit's programs and see what it reports after the giving day.
 
@@ -65,7 +65,9 @@ The nonprofit's toolkit also explains how supporters can help by sharing its con
 
 A dog trainer, accessibility advocate, parent or local creator might each approach this story differently. Someone with dog-training expertise may explain the time involved in teaching reliable tasks. An accessibility-focused account may point people toward the nonprofit's description of its programs. A creator with no relevant background can simply share the official information with humility.
 
-Creators should avoid presenting an assistance dog as a prop, speculating about a client's private medical circumstances or reposting an individual handler's image without authorization. The organization's verified information is enough to begin a useful conversation.
+Treat assistance dogs and their handlers with respect: no prop-style posts, no speculation about a client's private medical circumstances, and no reposting of a handler's image without authorization. The organization's verified information is enough to begin a useful conversation.
+
+If this campaign inspires you to turn your own influence into giving, your first step can come before GivingTuesday: [join the 1% Influence Challenge](/challenge/#join) and pledge 1% of your creator income to a charity you choose.
 
 We have a [guide to GivingTuesday participation for creators](/editorial/givingtuesday-for-content-creators/) and a [roundup of other animal-related 2026 campaigns](/editorial/givingtuesday-2026-animal-charity-campaigns/) for readers exploring related causes.
 

@@ -122,3 +122,33 @@ test('GT26-02 supports its "many forms of generosity" statement with the officia
   assert.match(a.html, /GivingTuesday&#39;s <a href="https:\/\/www\.givingtuesday\.org\/about\/faq\/" rel="noopener">official participation resources<\/a> include many forms of generosity besides fundraising\./);
   assert.ok(!a.html.includes('givingtuesday.org/participate/'));
 });
+
+test('every article invites readers to the Challenge registration at /challenge/#join; the guides carry it most prominently; no absolute or bare challenge links remain', () => {
+  const articles = loadArticles(dir, DOMAIN);
+  assert.equal(articles.length, 7);
+  for (const a of articles) {
+    const src = readFileSync(join(dir, a.file), 'utf8');
+    const links = [...src.matchAll(/\]\(([^)\s]*challenge[^)\s]*)\)/g)].map((m) => m[1]);
+    assert.ok(links.length >= 1, `${a.meta.slug}: no Challenge link`);
+    for (const l of links) assert.equal(l, '/challenge/#join', `${a.meta.slug}: Challenge links must go to the registration form`);
+    if (['GT26-01', 'GT26-02'].includes(a.meta.id)) assert.ok(links.length >= 2, `${a.meta.slug}: the general and creator guides carry the clearest invitations (two or more)`);
+  }
+});
+
+test('the built articles link to /challenge/#join and the Challenge page has a #join target', () => {
+  const challenge = readFileSync(join(root, 'site', 'challenge', 'index.html'), 'utf8');
+  assert.match(challenge, /id="join"/);
+  for (const slug of ['givingtuesday-2026-guide', 'givingtuesday-for-content-creators', 'how-to-choose-a-givingtuesday-charity', 'givingtuesday-2026-animal-charity-campaigns', 'safe-haven-for-cats-givingtuesday-2026', 'staf-just-one-more-givingtuesday-2026', 'dogs-for-better-lives-givingtuesday-2026']) {
+    const html = readFileSync(join(root, 'site', 'editorial', slug, 'index.html'), 'utf8');
+    assert.match(html, /href="\/challenge\/#join"/, slug);
+    assert.doesNotMatch(html, /href="https:\/\/influencersinvolved\.org\/challenge\/"/, slug);
+  }
+});
+
+test('the voice stays honest: no article promises donations, partnerships or equates a pledge with giving already done', () => {
+  for (const a of loadArticles(dir, DOMAIN)) {
+    const src = readFileSync(join(dir, a.file), 'utf8');
+    assert.doesNotMatch(src, /\b(official partner|in partnership with|guaranteed?|will raise|donations? (?:are|is) guaranteed)\b/i, a.meta.slug);
+    assert.doesNotMatch(src, /pledge[^.]{0,40}(is|=|equals) (a )?donation/i, a.meta.slug);
+  }
+});

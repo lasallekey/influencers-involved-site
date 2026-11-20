@@ -75,10 +75,12 @@ If you are a creator, take the extra step of checking any photograph, story or q
 
 We've assembled a [short guide to documented 2026 animal-related GivingTuesday campaigns](/editorial/givingtuesday-2026-animal-charity-campaigns/) as one place to practice those checks. It is a starting point, not a ranking of the best charities.
 
-## You can be generous without rushing
+## Give with confidence
 
-GivingTuesday is an invitation, not a test. You can decide to donate on December 1, volunteer later, or spend the day learning more about an organization. There is no requirement to make a public declaration.
+GivingTuesday is an invitation. You can donate on December 1, volunteer later, or spend the day learning more about an organization. Each of those is a good way to begin.
 
-And if you create content, remember that your audience trusts you for judgment, not just enthusiasm. A careful introduction to a real charity can be a meaningful contribution in itself.
+And if you create content, your audience trusts you for judgment, not just enthusiasm. A careful introduction to a real charity can be a meaningful contribution in itself.
+
+Once you've found a cause you trust, you can make your intention official right away. Creators can [join the 1% Influence Challenge](/challenge/#join) today and pledge 1% of their creator income to the charity they've chosen.
 
 *This article is general information, not tax or legal advice. Influencers Involved does not process donations for the independent charities it covers.*

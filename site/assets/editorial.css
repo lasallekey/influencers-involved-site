@@ -1,5 +1,5 @@
 /* Editorial index and articles. Scoped to .page-editorial; reuses the site's tokens, fonts and shared header/footer. */
-.page-editorial{background:#fff}
+.page-editorial{background:#fff;--ed-col:46rem}
 .ed-index-head{padding-block:clamp(2.4rem,6vw,4.6rem) clamp(1.8rem,4vw,3rem)}
 .ed-kicker{margin:0 0 .8rem;font:700 1.05rem/1.2 var(--sans);color:var(--green-d);display:flex;align-items:center;gap:.8rem}
 .ed-kicker::before{content:"";width:2.2rem;height:4px;background:var(--leaf);border-radius:2px;flex:none}
@@ -28,19 +28,18 @@
 .ed-group-animals .ed-card:not(:first-child){background:#fff;border:1px solid var(--rule);border-top:6px solid var(--leaf)}
 .ed-closing{margin:2.2rem 0 0;padding-bottom:clamp(2.5rem,6vw,4rem);color:var(--muted);font-size:1rem;max-width:44em}
 /* Article */
+.ed-crumbs,.ed-article,.ed-back{width:min(100%,var(--ed-col));margin-inline:auto}
 .ed-crumbs{padding-top:1.4rem;font-size:1rem}
 .ed-crumbs ol{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:.3rem .6rem;color:var(--muted)}
 .ed-crumbs li+li::before{content:"/";margin-right:.6rem;color:var(--rule)}
 .ed-crumbs a{font-weight:600}
 .ed-article{padding-block:clamp(1.2rem,3vw,2rem) 1rem}
-.ed-article-head{max-width:52rem;padding-bottom:1.4rem;margin-bottom:1.8rem;border-bottom:1px solid var(--rule)}
+.ed-article-head{padding-bottom:1.4rem;margin-bottom:1.8rem;border-bottom:1px solid var(--rule)}
 .ed-article-head h1{font:800 clamp(2.1rem,5.2vw,3.7rem)/1.02 var(--serif);letter-spacing:-.045em;color:var(--navy);margin:0 0 .5em;max-width:17em;text-wrap:balance}
 .ed-dek{font-size:clamp(1.2rem,2vw,1.45rem);line-height:1.5;color:#1d305c;max-width:36em;margin:0 0 1.1rem}
 .ed-byline{margin:0;display:flex;flex-wrap:wrap;gap:.2rem 1.4rem;font-size:1rem;color:var(--muted)}
 .ed-byline span:first-child{font-weight:700;color:var(--navy)}
 .ed-body{max-width:none}
-.ed-body>*:not(.table-wrap){max-width:min(100%,68ch)}
-.ed-body>.table-wrap{max-width:62rem}
 .ed-body p,.ed-body li{font-size:1.2rem;line-height:1.7;max-width:none}
 .ed-body p{margin:0 0 1.25em}
 .ed-body h2{font:800 clamp(1.5rem,3vw,2rem)/1.12 var(--serif);letter-spacing:-.035em;color:var(--navy);margin:2.2em 0 .6em}
@@ -50,12 +49,12 @@
 .table-hint{display:none;margin:0 0 .4rem;font-size:.95rem;color:var(--muted)}
 .table-wrap{overflow-x:auto;margin:0 0 1.6rem;border:1px solid var(--rule);background:#fff}
 .table-wrap:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
-.ed-body table{border-collapse:collapse;width:100%;min-width:42rem;font-size:1.05rem;line-height:1.5}
+.ed-body table{border-collapse:collapse;width:100%;min-width:40rem;font-size:1.05rem;line-height:1.5}
 .ed-body th,.ed-body td{padding:.8rem 1rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
 .ed-body thead th{background:var(--navy);color:#fff;font-weight:700}
 .ed-body tbody th{font-weight:700;color:var(--navy);background:var(--sky);min-width:12rem}
 @media (max-width:760px){.table-hint{display:block}}
-.ed-note{max-width:min(100%,68ch);margin:2.2rem 0 0;padding:1rem 1.2rem;background:var(--sky);border-left:5px solid var(--blue)}
+.ed-note{max-width:none;margin:2.2rem 0 0;padding:1rem 1.2rem;background:var(--sky);border-left:5px solid var(--blue)}
 .ed-note p{margin:0;font-size:1.02rem;line-height:1.55;color:var(--ink)}
-.ed-back{margin:1.6rem 0 0;padding-bottom:clamp(2.5rem,6vw,4rem);font-weight:700}
+.ed-back{margin:1.6rem auto 0;max-width:none;padding-bottom:clamp(2.5rem,6vw,4rem);font-weight:700}
 @media (max-width:640px){.ed-body p,.ed-body li{font-size:1.12rem}}

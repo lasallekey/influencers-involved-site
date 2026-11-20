@@ -51,15 +51,19 @@ If you choose to share a nonprofit's fundraiser, the best post may be a modest o
 
 People follow creators for all sorts of reasons: practical advice, humor, entertainment, specialized knowledge and the comfort of a familiar voice. That relationship can help someone discover a cause they might otherwise miss.
 
-A cooking creator might highlight a community pantry. A pet-care creator might explain what a rescue needs before accepting donated supplies. A local lifestyle account might share a nearby volunteer opportunity. None requires a huge audience or a professionally produced fundraising video.
+A cooking creator might highlight a community pantry. A pet-care creator might explain what a rescue needs before accepting donated supplies. A local lifestyle account might share a nearby volunteer opportunity. None requires a huge audience or a professionally produced fundraising video. Creators who want to go further can make that generosity a standing commitment through the [1% Influence Challenge](/challenge/#join).
 
-We put together a [practical GivingTuesday guide for content creators](/editorial/givingtuesday-for-content-creators/) for anyone wondering how to approach that responsibly. If you're still choosing an organization, our [charity-selection checklist](/editorial/how-to-choose-a-givingtuesday-charity/) can help.
+We put together a [practical GivingTuesday guide for content creators](/editorial/givingtuesday-for-content-creators/) to help you get started. If you're still choosing an organization, our [charity-selection checklist](/editorial/how-to-choose-a-givingtuesday-charity/) can help.
 
-## What happens on December 2?
+## Why wait for December 1?
+
+GivingTuesday is December 1. But you don't have to wait until then to show your intention to make a difference. If you're a creator, you can make it count today: **[join the 1% Influence Challenge](/challenge/#join)**.
+
+The idea is simple and generous. You pledge 1% of your creator income to a charity you choose, and you give it directly to that charity on a schedule that works for you. You become a Pioneer, part of a growing movement of creators turning influence into impact, and you receive a certificate recognizing your pledge. You can name your charity when you register or choose it a little later, and when you're ready, your voice can inspire others to join you.
+
+## And on December 2?
 
 GivingTuesday is a date, not an expiration date for caring. If an organization captures your attention, follow its work after the campaign. Consider volunteering regularly, learning more about its needs or making a future gift when it works for you.
-
-At **Influencers Involved**, we also invite eligible social media creators to explore the [1% Influence Challenge](https://influencersinvolved.org/challenge/): a voluntary pledge to give 1% of creator income **directly to a legitimate charity of the creator's choosing**, on a schedule the creator sets. Signing up recognizes a commitment, not proof that a donation has already been made. Public posting and inviting peers are optional.
 
 GivingTuesday can be a good beginning. The cause you choose—and what you do next—belongs to you.
 

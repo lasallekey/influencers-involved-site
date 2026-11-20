@@ -66,6 +66,6 @@ If you want more guidance, use our [seven-question charity checklist](/editorial
 
 Creators and community pages can help people discover these appeals without claiming a formal collaboration. Say where your information came from, link to the relevant charity, and explain why the work resonates with you. Don't borrow the charity's photos or logos automatically, and don't describe unconfirmed totals as results.
 
-For tips, see our [GivingTuesday guide for content creators](/editorial/givingtuesday-for-content-creators/). If you want to build your own ongoing charitable commitment, learn about the separate, voluntary [1% Influence Challenge](https://influencersinvolved.org/challenge/).
+For tips, see our [GivingTuesday guide for content creators](/editorial/givingtuesday-for-content-creators/). And if these stories make you want to build an ongoing commitment of your own, you can begin before December 1 arrives: [join the 1% Influence Challenge](/challenge/#join) and pledge 1% of your creator income to a charity you choose.
 
 *Independent editorial by Influencers Involved, Inc. NFP. This selection is not paid placement, a formal partnership, or a claim of endorsement by any featured organization. Donations go to each charity through its own official channels, not through Influencers Involved.*
