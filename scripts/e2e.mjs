@@ -272,6 +272,37 @@ for (const [label, vp] of Object.entries(SIZES)) {
   await ctx.close();
 }
 
+// 8c. Editorial: the index and the seven articles, at desktop and 360px.
+{
+  const ED = ['/editorial/', '/editorial/givingtuesday-2026-guide/', '/editorial/givingtuesday-for-content-creators/', '/editorial/how-to-choose-a-givingtuesday-charity/', '/editorial/givingtuesday-2026-animal-charity-campaigns/', '/editorial/safe-haven-for-cats-givingtuesday-2026/', '/editorial/staf-just-one-more-givingtuesday-2026/', '/editorial/dogs-for-better-lives-givingtuesday-2026/'];
+  for (const [label, vp] of [['desktop', { width: 1366, height: 900 }], ['mobile-360', { width: 360, height: 780 }]]) {
+    const ctx = await browser.newContext({ viewport: vp }); const pg = await ctx.newPage(); const errs = [];
+    pg.on('pageerror', (e) => errs.push(String(e))); pg.on('console', (m) => { if (m.type() === 'error') errs.push(m.text()); });
+    for (const r of ED) {
+      const resp = await pg.goto(BASE + r, { waitUntil: 'networkidle' });
+      const info = await pg.evaluate(() => ({ over: document.documentElement.scrollWidth - innerWidth, h1: document.querySelectorAll('h1').length, canon: document.querySelectorAll('link[rel=canonical]').length, banner: !!document.querySelector('#consent'), footer: !!document.querySelector('.site-footer a[href="/editorial/"]'), skip: !!document.querySelector('a.skip'), headingOrder: [...document.querySelectorAll('main h1,main h2,main h3,main h4')].map((h) => Number(h.tagName[1])) }));
+      const jumps = info.headingOrder.filter((n, i, a) => i > 0 && n - a[i - 1] > 1).length;
+      ok(resp.status() === 200 && info.over <= 0 && info.h1 === 1 && info.canon === 1 && info.banner && info.footer && info.skip && jumps === 0, `${label} ${r}: 200, no overflow, one H1, one canonical, no skipped heading levels, consent banner and footer Editorial link present`);
+    }
+    // index → article → breadcrumb back, using the real links
+    await pg.goto(BASE + '/editorial/', { waitUntil: 'networkidle' });
+    const hrefs = await pg.locator('.ed-cards h3 a').evaluateAll((as) => as.map((a) => a.getAttribute('href')));
+    ok(hrefs.length === 7 && new Set(hrefs).size === 7, `${label} editorial index: seven distinct article links`);
+    await pg.locator('.ed-cards h3 a').first().click(); await pg.waitForLoadState('networkidle');
+    ok(pg.url().endsWith('/editorial/givingtuesday-2026-guide/'), `${label} editorial index: first link opens the lead guide`);
+    await pg.locator('.ed-crumbs a').click(); await pg.waitForLoadState('networkidle');
+    ok(pg.url().endsWith('/editorial/'), `${label} article: breadcrumb returns to the index`);
+    // the comparison table
+    await pg.goto(BASE + '/editorial/givingtuesday-2026-animal-charity-campaigns/', { waitUntil: 'networkidle' });
+    const tb = await pg.evaluate(() => { const w = document.querySelector('.table-wrap'), h = document.querySelector('.table-hint'); return { scroll: w.scrollWidth > w.clientWidth, focusable: w.tabIndex === 0, hintVisible: getComputedStyle(h).display !== 'none', rows: document.querySelectorAll('.table-wrap tbody tr').length, links: [...document.querySelectorAll('.table-wrap a')].map((a) => a.href) }; });
+    ok(tb.rows === 4 && tb.focusable && tb.links.length === 4 && tb.links.every((u) => u.startsWith('https://')) && (label === 'desktop' ? !tb.scroll && !tb.hintVisible : tb.scroll && tb.hintVisible), `${label} roundup table: four records with official links, keyboard-focusable${label === 'desktop' ? '; fits without scrolling' : '; scrolls sideways with a visible cue'}`);
+    // nothing is sent to Google before consent on an editorial page
+    ok(!(await pg.evaluate(() => 'dataLayer' in window || typeof window.gtag === 'function')), `${label} editorial: no analytics before consent`);
+    errorsAll.push(...errs.map((e) => `editorial ${label}: ${e}`));
+    await ctx.close();
+  }
+}
+
 // 9. Analytics consent (Google endpoints are intercepted and stubbed: nothing leaves this machine).
 {
   const TOKEN_RE = /[A-Za-z0-9_-]{43}/;

@@ -1,6 +1,7 @@
 // Renders src/ page fragments into the static site/ directory. No dependencies.
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, copyFileSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
+import { buildEditorialPages, esc as escHtml } from './editorial.mjs';
 import { fileURLToPath } from 'node:url';
 
 const STAGING = process.env.STAGING === '1'; // staging preview: visible banner + noindex everywhere
@@ -27,6 +28,7 @@ const NAV = [
   ['/contact/', 'Contact'],
   ['/privacy/', 'Privacy'],
 ];
+const FOOT_NAV = [...NAV, ['/editorial/', 'Editorial']].map(([href, label]) => `<a href="${href}">${label}</a>`).join('');
 const SOCIAL = [['facebook', 'Facebook'], ['instagram', 'Instagram'], ['linkedin', 'LinkedIn'], ['youtube', 'YouTube'], ['tiktok', 'TikTok']];
 
 // Local, dependency-free 24x24 platform glyphs (filled with currentColor). Instagram is drawn with basic shapes; the others are single paths.
@@ -100,10 +102,13 @@ for (const f of readdirSync(join(src, 'pages')).filter((n) => n.endsWith('.html'
   const { meta, body } = parsePage(join(src, 'pages', f));
   const path = meta.path;
   const nav = NAV.map(([href, label]) => `<li><a href="${href}"${href === path ? ' aria-current="page"' : ''}>${label}</a></li>`).join('');
-  const footNav = NAV.map(([href, label]) => `<a href="${href}">${label}</a>`).join('');
+  const footNav = FOOT_NAV;
   const html = render(layout, {
     title: esc(meta.title),
     description: esc(meta.description),
+    ogType: 'website',
+    ogTitle: esc(meta.title),
+    ogDescription: esc(meta.description),
     canonical: config.domain + path,
     path,
     pageClass: meta.class || '',
@@ -118,18 +123,38 @@ for (const f of readdirSync(join(src, 'pages')).filter((n) => n.endsWith('.html'
   const dir = path === '/' ? out : join(out, path);
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, 'index.html'), html);
-  if (!meta.robots) sitemap.push(path);
+  if (!meta.robots) sitemap.push({ path });
+}
+
+// Editorial: /editorial/ plus the article pages, from src/content/editorial. The publication date comes from publication.json (recorded in the
+// founder-authorized release commit); only staging previews may override it with EDITORIAL_PUBLISH_AT to look at the dated layout.
+{
+  const dir = join(src, 'content', 'editorial');
+  const recorded = JSON.parse(readFileSync(join(dir, 'publication.json'), 'utf8')).publishedAt;
+  const publishedAt = STAGING && process.env.EDITORIAL_PUBLISH_AT ? process.env.EDITORIAL_PUBLISH_AT : recorded;
+  const { pages } = buildEditorialPages({ dir, domain: config.domain, publishedAt });
+  const nav = NAV.map(([href, label]) => `<li><a href="${href}">${label}</a></li>`).join('');
+  for (const pg of pages) {
+    const html = render(layout, {
+      title: escHtml(pg.title), description: escHtml(pg.description), ogType: pg.ogType, ogTitle: escHtml(pg.ogTitle), ogDescription: escHtml(pg.ogDescription),
+      canonical: config.domain + pg.path, path: pg.path, pageClass: pg.pageClass,
+      headExtra: `<link rel="stylesheet" href="/assets/${pg.css}">`, nav, footNav: FOOT_NAV, schemaTag: pg.schemaTag, main: pg.main,
+      robots: NOINDEX ? 'noindex,nofollow' : 'index,follow', banner: STAGING ? STAGING_BANNER : '',
+    });
+    const d = join(out, pg.path); mkdirSync(d, { recursive: true }); writeFileSync(join(d, 'index.html'), html);
+    sitemap.push({ path: pg.path, lastmod: pg.lastmod });
+  }
 }
 
 // 404 page (small, no nav surprises)
 {
   const { meta, body } = parsePage(join(src, 'pages-extra', '404.html'));
   const nav = NAV.map(([href, label]) => `<li><a href="${href}">${label}</a></li>`).join('');
-  const footNav = NAV.map(([href, label]) => `<a href="${href}">${label}</a>`).join('');
-  writeFileSync(join(out, '404.html'), render(layout, { title: esc(meta.title), description: esc(meta.description), canonical: config.domain + '/', path: '/404', pageClass: 'page-404', headExtra: '', nav, footNav, schemaTag: '', main: render(body), robots: 'noindex', banner: STAGING ? STAGING_BANNER : '' }));
+  const footNav = FOOT_NAV;
+  writeFileSync(join(out, '404.html'), render(layout, { title: esc(meta.title), description: esc(meta.description), ogType: 'website', ogTitle: esc(meta.title), ogDescription: esc(meta.description), canonical: config.domain + '/', path: '/404', pageClass: 'page-404', headExtra: '', nav, footNav, schemaTag: '', main: render(body), robots: 'noindex', banner: STAGING ? STAGING_BANNER : '' }));
 }
 
-writeFileSync(join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemap.map((p) => `  <url><loc>${config.domain}${p}</loc></url>`).join('\n')}\n</urlset>\n`);
+writeFileSync(join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemap.map((p) => `  <url><loc>${config.domain}${p.path}</loc>${p.lastmod ? `<lastmod>${p.lastmod}</lastmod>` : ''}</url>`).join('\n')}\n</urlset>\n`);
 writeFileSync(join(out, 'robots.txt'), NOINDEX ? 'User-agent: *\nDisallow: /\n' : `User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${config.domain}/sitemap.xml\n`);
 
 // Static files (css/js/fonts) copied recursively into site/assets.

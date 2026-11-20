@@ -66,6 +66,10 @@ jobs:
           fi
           npm run check
           if grep -rq --include="*.html" 'class="stage-banner"' site; then echo "::error::A staging build must never be deployed to production."; exit 1; fi
+      - name: Editorial release gate (stops the run before anything is created, migrated or deployed)
+        # Fails unless the real publication date is recorded and built into the pages and sitemap, the founder's authorization is
+        # recorded, and the release-day fact check is recorded (docs/editorial/RELEASE_RECORD.md). See scripts/editorial-release-gate.mjs.
+        run: npm run check:editorial-release
       - name: Production database (created only when asked)
         run: node scripts/d1-provision.mjs production ${{ inputs.create_database && '--create' || '' }}
       - name: Record the database restore point before changing anything

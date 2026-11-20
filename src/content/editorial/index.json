@@ -1,0 +1,59 @@
+{
+  "title": "Editorial | GivingTuesday 2026 Guides and Charity Campaigns | Influencers Involved",
+  "description": "Explore GivingTuesday 2026 guides for donors and creators, plus sourced features on four animal-related charity campaigns for December 1.",
+  "ogTitle": "GivingTuesday 2026: Guides, Causes and Real Campaigns",
+  "ogDescription": "Practical advice for December 1, with official sources and independent stories behind animal-related charitable campaigns.",
+  "h1": "Editorial",
+  "kicker": "GivingTuesday 2026 · December 1",
+  "intro": "GivingTuesday brings many kinds of generosity into focus. If you're wondering how to take part, how to choose a cause, or how to share a campaign responsibly, start here. We explain the essentials, then look closely at four animal-related organizations with published plans for December 1, 2026.",
+  "transparency": "These are independent articles by Influencers Involved, Inc. NFP. We are not the organizer of GivingTuesday, and none of the featured charities is presented as our partner or endorser. When you choose to donate to a featured charity, use that charity's official giving page.",
+  "closing": "Campaign figures, dates and matching opportunities may change. Please consult each charity's official website before giving.",
+  "groups": [
+    {
+      "kind": "lead",
+      "heading": "Lead guide",
+      "items": [
+        {
+          "id": "GT26-01",
+          "blurb": "December 1 is about more than making a donation. Learn where GivingTuesday came from and how time, skills, supplies and a useful introduction can matter."
+        }
+      ]
+    },
+    {
+      "kind": "guides",
+      "heading": "Practical guides",
+      "items": [
+        {
+          "id": "GT26-02",
+          "blurb": "A practical way to choose a cause, check the facts, and talk to your audience without turning trust into pressure."
+        },
+        {
+          "id": "GT26-03",
+          "blurb": "Before donating or recommending a nonprofit, use this clear checklist to check the organization, the campaign and the route your money takes."
+        }
+      ]
+    },
+    {
+      "kind": "animals",
+      "heading": "Animal-related GivingTuesday campaigns",
+      "items": [
+        {
+          "id": "GT26-04",
+          "blurb": "A source-linked look at four different approaches to animal care, rescue and service-dog training. This is a researched shortlist, not a ranked national directory."
+        },
+        {
+          "id": "GT26-05",
+          "blurb": "Six imagined book covers, real cats and a one-day giving opportunity in Raleigh. Explore the campaign and its published triple-match terms."
+        },
+        {
+          "id": "GT26-06",
+          "blurb": "Meet the campaign behind #JustOneMore, with STAF's reported rescue stories of Rex and Bubba."
+        },
+        {
+          "id": "GT26-07",
+          "blurb": "A look at the work behind service-dog placement and the organization's published GivingTuesday goal and match limit."
+        }
+      ]
+    }
+  ]
+}
