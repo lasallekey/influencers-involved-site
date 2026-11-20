@@ -28,7 +28,7 @@ Sitemap: 15 canonical URLs (the seven core pages, `/editorial/`, and the seven a
 |---|---|---|---|
 | 1 | Release gate | **Publication date is not recorded.** `src/content/editorial/publication.json` has `publishedAt: null`, so the pages currently show no date and the Article schema has no `datePublished`. It must be set to the real release time (ISO 8601 with time zone) in the founder-authorized release commit. Never the November 19 prep date. | OPEN, by design |
 | 2 | Release gate | **Release-day fact check not done.** Sources were checked on 2026-11-20 (below); the brief requires a re-check on the actual release date (`scripts/editorial-source-check.mjs`). | OPEN, by design |
-| 3 | Editorial, low | Article 02 says GivingTuesday's "official participation resources include many forms of generosity besides fundraising" and links `/participate/`. That page is mostly a campaign-planning hub for organizations; the wording of the claim is supported by the FAQ page (`/about/faq/`: "voice, goods, your time, or your money"). Article 01 links the same page for "ideas for individuals and communities", which its text ("nonprofit, business, or individual") supports. **Not edited** (the brief restricts changes to traceable defects); suggested optional fix: point the article 02 link at the FAQ page. | FOR FOUNDER DECISION |
+| 3 | Editorial, low | Article 02's "many forms of generosity" statement linked GivingTuesday's `/participate/` page, a campaign-planning hub. **Resolved at the founder's request:** the link now points to the official FAQ page (`/about/faq/`), which states "voice, goods, your time, or your money". Link target only; no other change to the article. | RESOLVED |
 | 4 | Editorial, info | After December 1 the prospective wording ("on December 1", "plans to") needs a retrospective pass (brief rule 9). | FOLLOW-UP |
 | 5 | Info | Staging and pre-launch builds keep `rel=canonical` pointing at the production URL, as every other page on this site already does; they are `noindex` and carry the staging banner, so this does not create duplicate-content risk. | NO ACTION |
 | 6 | Info | External schema validators (Schema.org Validator, Google Rich Results Test) need a public URL and were not run; structural validation is automated (below). Run them once after an authorized release. | POST-RELEASE |
@@ -37,7 +37,7 @@ No page is BLOCKED. Heartland Animal Shelter and Operation Pets Alive are not fe
 
 ## Corrections to the supplied copy
 
-Exactly one, as logged in the package: GT26-03, penultimate section, "verified 2026 animal-related" to "documented 2026 animal-related". The supplied `articles/` files already contain it (checked against `original_source_archive/`: the archive has "verified"); no other body edit was made. Front matter is used as import metadata and is never rendered.
+Two. (1) As logged in the package: GT26-03, penultimate section, "verified 2026 animal-related" to "documented 2026 animal-related". The supplied `articles/` files already contain it (checked against `original_source_archive/`: the archive has "verified"); no other body edit was made. (2) Founder-requested: in GT26-02 the participation-resources link target changed from `https://www.givingtuesday.org/participate/` to `https://www.givingtuesday.org/about/faq/` (the anchor text and the rest of the article are unchanged). Front matter is used as import metadata and is never rendered.
 
 ## Fact verification (2026-11-20, UTC; repeat on release day)
 
@@ -143,7 +143,7 @@ One `Article` object per article (headline = visible H1, description = meta desc
 
 1. On the release day run `NODE_USE_ENV_PROXY=1 node scripts/editorial-source-check.mjs`; read any row that is not SUPPORTED. If a central claim fails, mark that page BLOCKED here, remove it from `index.json`, delete it from `src/content/editorial/`, rebuild (the sitemap and index update from the same registry) and get the founder's decision on the reduced scope.
 2. Release commit on this branch: set `publishedAt` in `src/content/editorial/publication.json` to the real release time, e.g. `2026-12-01T09:00:00-06:00` (ISO 8601 with offset); update the two marker lines at the top of this file; run `npm run build`; commit `site/`.
-3. Run `npm run check:editorial-release` (must print OK), `npm test`, `npm run check`, and confirm CI.
+3. Run `npm run check:editorial-release` (must print OK), `npm test`, `npm run check`, and confirm CI. The production workflow now runs the same gate as an enforced step, right after the site is built and before the database, migrations, deploy or secrets steps, so a missing date, authorization or release-day verification stops the run before anything changes. (Until the editorial release is recorded, that also blocks any other production deployment from this workflow.)
 4. Merge, then run `.github/workflows/production.yml` on `main` (create database: off, cutover complete: on, smoke test: on) with the approval gate, exactly as for earlier releases.
 5. Verify live: the eight routes return 200, canonical, date, H1 and source links; `https://influencersinvolved.org/sitemap.xml` lists 15 URLs; `robots.txt` allows crawling; analytics consent works on an editorial page.
 6. Site owner: submit the sitemap in Search Console and inspect priority URLs. Indexing is not guaranteed by any date.

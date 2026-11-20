@@ -107,3 +107,18 @@ test('every external link in the articles is covered by the release-day source c
   }
   assert.equal([...urls].filter((u) => !u.startsWith('https://influencersinvolved.org/')).length, 17); // the brief's 18 includes the II Challenge link; the source check also covers the GivingTuesday U.S. date page that is cited only in the register
 });
+
+test('the production workflow runs the editorial release gate before anything is created, migrated or deployed', () => {
+  const wf = readFileSync(join(root, '.github/workflows/production.yml'), 'utf8');
+  const at = (needle) => { const i = wf.indexOf(needle); assert.ok(i > -1, `missing: ${needle}`); return i; };
+  const gate = at('run: npm run check:editorial-release');
+  for (const later of ['d1-provision.mjs production', 'migrations apply', 'wrangler deploy --env production', 'wrangler secret put']) assert.ok(gate < at(later), `gate must come before ${later}`);
+  assert.ok(at('npm run build') < gate, 'the gate inspects the freshly built site');
+  assert.ok(!/continue-on-error/.test(wf.slice(wf.lastIndexOf('- name:', gate), gate + 400)), 'the gate step must not be allowed to fail silently');
+});
+
+test('GT26-02 supports its "many forms of generosity" statement with the official FAQ page', () => {
+  const a = loadArticles(dir, DOMAIN).find((x) => x.meta.id === 'GT26-02');
+  assert.match(a.html, /GivingTuesday&#39;s <a href="https:\/\/www\.givingtuesday\.org\/about\/faq\/" rel="noopener">official participation resources<\/a> include many forms of generosity besides fundraising\./);
+  assert.ok(!a.html.includes('givingtuesday.org/participate/'));
+});

@@ -73,7 +73,7 @@ This example works because the creator's usual subject and the charitable work b
 
 Some people can make a donation; others cannot. Some will share a campaign, volunteer later or quietly save the organization's name. Those are different actions. Don't present likes, views or comments as donations, or assume a post has raised money unless the charity verifies the result.
 
-GivingTuesday's [official participation resources](https://www.givingtuesday.org/participate/) include many forms of generosity besides fundraising.
+GivingTuesday's [official participation resources](https://www.givingtuesday.org/about/faq/) include many forms of generosity besides fundraising.
 
 ## What about giving beyond December 1?
 
