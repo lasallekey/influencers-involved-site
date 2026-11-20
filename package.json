@@ -11,7 +11,8 @@
     "test": "node --disable-warning=ExperimentalWarning --test \"worker/test/*.test.js\" \"scripts/test/*.test.js\"",
     "check": "node scripts/check-site.mjs",
     "dev": "node --disable-warning=ExperimentalWarning scripts/dev-server.mjs",
-    "deploy:staging": "wrangler deploy --env staging --config worker/wrangler.toml"
+    "deploy:staging": "wrangler deploy --env staging --config worker/wrangler.toml",
+    "check:editorial-release": "node scripts/editorial-release-gate.mjs"
   },
   "devDependencies": {
     "playwright": "^1.63.0",

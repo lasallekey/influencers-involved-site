@@ -56,10 +56,65 @@ for (const bad of [/primushomecare/i, /@gmail\.com/i, /api[_-]?key/i, /BEGIN [A-
 
 if (!process.env.STAGING && /stage-banner|Staging preview/.test(all)) problems.push('staging banner present in a production build');
 
-// Seven routes, in the sitemap, no extras.
+// Fifteen routes in the sitemap (seven core + the editorial index + seven articles), no extras, no duplicates.
+const CORE = ['/', '/challenge/', '/about/', '/transparency/', '/donate/', '/contact/', '/privacy/'];
+const EDITORIAL = ['/editorial/', '/editorial/givingtuesday-2026-guide/', '/editorial/givingtuesday-for-content-creators/', '/editorial/how-to-choose-a-givingtuesday-charity/', '/editorial/givingtuesday-2026-animal-charity-campaigns/', '/editorial/safe-haven-for-cats-givingtuesday-2026/', '/editorial/staf-just-one-more-givingtuesday-2026/', '/editorial/dogs-for-better-lives-givingtuesday-2026/'];
 const sm = readFileSync(join(root, 'sitemap.xml'), 'utf8');
 const locs = [...sm.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1].replace('https://influencersinvolved.org', ''));
-if (locs.length !== 7 || !['/', '/challenge/', '/about/', '/transparency/', '/donate/', '/contact/', '/privacy/'].every((r) => locs.includes(r))) problems.push(`sitemap routes wrong: ${locs}`);
+if (locs.length !== 15 || new Set(locs).size !== 15 || ![...CORE, ...EDITORIAL].every((r) => locs.includes(r))) problems.push(`sitemap routes wrong: ${locs}`);
+
+// ---- Editorial: one canonical, H1, real byline, schema, links, sources, no media, no payment routing ----
+{
+  const OFFICIAL = /^(www\.givingtuesday\.org|consumer\.ftc\.gov|www\.irs\.gov|www\.safehavenforcats\.org|staf\.org|dogsforbetterlives\.org|operationpetsalive\.org|influencersinvolved\.org)$/;
+  const read = (r) => readFileSync(join(root, r, 'index.html'), 'utf8');
+  const idx = read('/editorial/');
+  const titles = new Set(), descs = new Set();
+  const indexAnchors = [...idx.matchAll(/<a href="(\/editorial\/[^"]+\/)"/g)].map((m) => m[1]);
+  for (const r of EDITORIAL) {
+    const html = read(r), name = r;
+    const canon = [...html.matchAll(/<link rel="canonical" href="([^"]+)"/g)].map((m) => m[1]);
+    if (canon.length !== 1 || canon[0] !== `https://influencersinvolved.org${r}`) problems.push(`${name}: canonical wrong (${canon})`);
+    if ((html.match(/<h1[ >]/g) || []).length !== 1) problems.push(`${name}: needs exactly one H1`);
+    if ((html.match(/<meta property="og:title"/g) || []).length !== 1 || (html.match(/<meta property="og:type"/g) || []).length !== 1) problems.push(`${name}: duplicate or missing og tags`);
+    const ogType = /<meta property="og:type" content="([^"]+)"/.exec(html)[1];
+    if (ogType !== (r === '/editorial/' ? 'website' : 'article')) problems.push(`${name}: og:type ${ogType}`);
+    const t = /<title>([^<]+)<\/title>/.exec(html)[1], d = /name="description" content="([^"]+)"/.exec(html)[1];
+    if (titles.has(t) || descs.has(d)) problems.push(`${name}: title or description is not unique`);
+    titles.add(t); descs.add(d);
+    if (/^seo_title:|^og_title:|^publication_date:|USE_ACTUAL_DATE|hero_image_brief/m.test(html)) problems.push(`${name}: front matter leaked into the page`);
+    if (/<img\b/i.test(html.replace(/<header class="site-header">[\s\S]*?<\/header>|<footer[\s\S]*<\/footer>/g, ''))) problems.push(`${name}: editorial pages must not embed third-party or unreviewed images`);
+    const main = /<main[\s\S]*?<\/main>/.exec(html)[0];
+    for (const m of main.matchAll(/href="(https?:\/\/[^"]+)"/g)) { const h = new URL(m[1]).hostname; if (!OFFICIAL.test(h)) problems.push(`${name}: unexpected external host ${h}`); if (/zeffy/i.test(h)) problems.push(`${name}: donations to featured charities must not route through Zeffy`); }
+    if (/zeffy/i.test(main)) problems.push(`${name}: mentions Zeffy`);
+    if (r !== '/editorial/') {
+      if (!main.includes('<nav class="ed-crumbs" aria-label="Breadcrumb"><ol><li><a href="/editorial/">Editorial</a></li>')) problems.push(`${name}: breadcrumb back to /editorial/ missing`);
+      if (!/<p class="ed-byline"><span>By Influencers Involved<\/span>/.test(main)) problems.push(`${name}: byline missing`);
+      if (!/<aside class="ed-note"/.test(main)) problems.push(`${name}: independent-editorial disclosure missing`);
+      const ldm = /<script type="application\/ld\+json">([^<]+)<\/script>/.exec(html);
+      if (!ldm) problems.push(`${name}: Article JSON-LD missing`);
+      else {
+        const ld = JSON.parse(ldm[1]), h1 = /<h1>([\s\S]*?)<\/h1>/.exec(main)[1].replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"');
+        if (ld['@type'] !== 'Article' || ld.headline !== h1 || ld.mainEntityOfPage !== `https://influencersinvolved.org${r}` || ld.author?.['@type'] !== 'Organization' || ld.author?.name !== 'Influencers Involved, Inc. NFP' || ld.description !== d.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'")) problems.push(`${name}: Article JSON-LD does not match the visible page`);
+        const time = /<time datetime="([^"]+)">([^<]+)<\/time>/.exec(main);
+        if (!!time !== !!ld.datePublished || (time && time[1] !== ld.datePublished)) problems.push(`${name}: visible date and datePublished disagree`);
+        for (const bad of ['FAQPage', 'Review', 'AggregateRating', 'Event', 'Person', 'dateModified', 'image']) if (JSON.stringify(ld).includes(`"${bad}"`) || ld[bad]) problems.push(`${name}: schema must not include ${bad}`);
+      }
+      const n = indexAnchors.filter((a) => a === r).length;
+      if (n !== 1) problems.push(`${name}: expected exactly one index entry, found ${n}`);
+    } else if (/application\/ld\+json/.test(html)) problems.push('/editorial/: the index must not carry Article schema');
+  }
+  if (indexAnchors.length !== 7) problems.push(`index lists ${indexAnchors.length} article links, expected 7`);
+  // Link graph from the brief: who must link to whom.
+  const need = { guide: ['givingtuesday-for-content-creators', 'how-to-choose-a-givingtuesday-charity'], creators: ['how-to-choose-a-givingtuesday-charity'], choose: ['givingtuesday-2026-animal-charity-campaigns'], roundup: ['safe-haven-for-cats-givingtuesday-2026', 'staf-just-one-more-givingtuesday-2026', 'dogs-for-better-lives-givingtuesday-2026'], feature: ['givingtuesday-2026-animal-charity-campaigns', 'givingtuesday-for-content-creators'] };
+  const g = { 'givingtuesday-2026-guide': need.guide, 'givingtuesday-for-content-creators': need.creators, 'how-to-choose-a-givingtuesday-charity': need.choose, 'givingtuesday-2026-animal-charity-campaigns': need.roundup };
+  for (const f of ['safe-haven-for-cats-givingtuesday-2026', 'staf-just-one-more-givingtuesday-2026', 'dogs-for-better-lives-givingtuesday-2026']) g[f] = need.feature;
+  for (const [slug, targets] of Object.entries(g)) { const html = read(`/editorial/${slug}/`); for (const t of targets) if (!html.includes(`href="/editorial/${t}/"`)) problems.push(`/editorial/${slug}/: must link to /editorial/${t}/`); }
+  // The Editorial entry is discoverable from the footer of every core page.
+  for (const r of CORE) if (!read(r === '/' ? '' : r).includes('<a href="/editorial/">Editorial</a>')) problems.push(`${r}: footer link to /editorial/ missing`);
+  // The comparison table keeps its semantics.
+  const rt = read('/editorial/givingtuesday-2026-animal-charity-campaigns/');
+  if ((rt.match(/<th scope="col">/g) || []).length !== 3 || (rt.match(/<th scope="row">/g) || []).length !== 4 || !/class="table-hint"/.test(rt) || !/<div class="table-wrap" role="region" aria-label="[^"]+" tabindex="0">/.test(rt)) problems.push('animal roundup: accessible table markup missing');
+}
 
 if (problems.length) { console.error(problems.join('\n')); process.exit(1); }
 console.log(`site check OK: ${pages.length} html files, ${locs.length} routes`);

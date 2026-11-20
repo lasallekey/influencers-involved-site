@@ -1,0 +1,8 @@
+# Editorial section: how it works
+
+- **Source:** `src/content/editorial/NN-slug.md` (front matter + Markdown), `index.json` (index copy and grouping), `publication.json` (the recorded publication date).
+- **Render:** `scripts/editorial.mjs` validates the content (unique ids and slugs, `proposed_url` must equal `https://influencersinvolved.org/editorial/<slug>/`, one H1, index lists every article exactly once) and produces the index and article pages; `scripts/build.mjs` wraps them in the shared layout and adds them to the sitemap from the same registry. Styling: `src/static/editorial.css`.
+- **Markdown subset:** headings, paragraphs, bold, italic, links (https, root-relative, mailto only), lists, tables (scoped headers, scroll cue), rules. Raw HTML in a source file is escaped, never rendered. The first italic paragraph after the H1 is the dek; a final italic paragraph is the editorial note.
+- **Dates:** `publishedAt` stays `null` until the founder-authorized release commit. While null there is no visible date and no `datePublished`. Staging previews can look at the dated layout with `STAGING=1 EDITORIAL_PUBLISH_AT=2026-12-01T09:00:00-06:00 npm run build`; the variable is ignored in non-staging builds.
+- **Add or hold an article:** add or delete the Markdown file and its entry in `index.json`; sitemap, index and checks follow. `scripts/check-site.mjs` fails if the index points to a missing page or the sitemap disagrees.
+- **Release:** `docs/editorial/RELEASE_RECORD.md`, `scripts/editorial-source-check.mjs` (release-day source check) and `npm run check:editorial-release` (hard stop).

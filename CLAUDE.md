@@ -5,7 +5,7 @@ You are the lead product-minded developer and restrained creative director for *
 
 ## Public website and brand
 - Do not publish individual leadership names, titles or bios on the site (legal name, EIN, address and contact email stay).
-- Preserve seven pages: Home, 1% Challenge, About, Transparency, Donate, Contact, Privacy. Registration is embedded in the Challenge, not an additional menu destination.
+- Preserve seven core pages: Home, 1% Challenge, About, Transparency, Donate, Contact, Privacy. Registration is embedded in the Challenge, not an additional menu destination. The GivingTuesday 2026 editorial (`/editorial/` plus seven articles, from `src/content/editorial/`) is additional, linked from the footer only, and stays unpublished until the founder authorizes it (see `docs/editorial/RELEASE_RECORD.md`).
 - Use the approved II horizontal, vertical and emblem logo files. Design for a human-crafted editorial/nonprofit feel: well-chosen typography, balanced white space, intentional imagery, visual hierarchy, and responsive clarity. Avoid generic AI/SaaS templates, endless equal cards, excessive gradients/glows, glass effects, invented testimonials, fake statistics, and decorative animations.
 - Keep content compact. Improve wording, spacing and small UX decisions when useful; do not add sections solely to accommodate internal engineering rules.
 - Creators pledge 1% of creator income to a charity they select and donate **directly to that charity**. II does not collect these pledges. II's own donations fund its nonprofit operations and program.
@@ -45,7 +45,7 @@ You are the lead product-minded developer and restrained creative director for *
 - Perform safe coding, tests, commits, previews and PR preparation autonomously. Require owner consent for new spending, credentials, live DNS, production deployment/merges, and destructive handling of the legacy site or registry.
 
 ## Repository layout (rebuild)
-- `src/` page fragments, layout, CSS/JS; `scripts/build.mjs` renders them to `site/` (static output, committed).
+- `src/` page fragments, layout, CSS/JS; `scripts/build.mjs` renders them to `site/` (static output, committed). Editorial Markdown in `src/content/editorial/` is rendered by `scripts/editorial.mjs` (no dependency, raw HTML never passes through).
 - `worker/` Cloudflare Worker API + D1 migrations + tests. `shared/` data used by both.
 - Legacy files at the repository root (`index.html`, `pioneer.*`, Apps Script) are reference only and untouched.
 - Commands: `npm run build`, `npm test`, `npm run dev` (local preview with in-memory database and synthetic data).

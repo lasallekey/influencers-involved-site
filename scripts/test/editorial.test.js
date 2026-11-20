@@ -1,0 +1,109 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync, mkdtempSync, writeFileSync, cpSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { tmpdir } from 'node:os';
+import { fileURLToPath } from 'node:url';
+import { parseFrontMatter, renderMarkdown, renderInline, parsePublishedAt, loadArticles, buildEditorialPages, articleSchema } from '../editorial.mjs';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+const dir = join(root, 'src', 'content', 'editorial');
+const DOMAIN = 'https://influencersinvolved.org';
+
+test('front matter is parsed (quoted values with punctuation) and never part of the body', () => {
+  const { meta, body } = parseFrontMatter('---\nid: GT1\nseo_title: "A: B, \\"C\\""\npublication_date: USE_ACTUAL_DATE\n---\n# H\n');
+  assert.equal(meta.seo_title, 'A: B, "C"'); assert.equal(meta.publication_date, 'USE_ACTUAL_DATE'); assert.equal(body, '# H\n');
+  assert.throws(() => parseFrontMatter('# no front matter'));
+});
+
+test('markdown: raw HTML and unsafe links stay inert; formatting and safe links work', () => {
+  assert.equal(renderInline('<script>alert(1)</script> & **bold** *it*'), '&lt;script&gt;alert(1)&lt;/script&gt; &amp; <strong>bold</strong> <em>it</em>');
+  assert.ok(!renderInline('[x](javascript:alert(1))').includes('href')); // the link is dropped; only inert text remains
+  assert.ok(!renderInline('[x](data:text/html,hi)').includes('href'));
+  assert.equal(renderInline('[x](http://insecure.example/)'), 'x');
+  assert.equal(renderInline('[ok](https://example.org/a?b=1&c=2)'), '<a href="https://example.org/a?b=1&amp;c=2" rel="noopener">ok</a>');
+  assert.equal(renderInline('[in](/editorial/x/)'), '<a href="/editorial/x/">in</a>');
+  const inj = renderInline('[a](https://e.org/"onmouseover="alert(1))'); // a quote in a URL cannot break out of the attribute
+  assert.ok(inj.includes('&quot;onmouseover=&quot;') && !/"onmouseover/.test(inj));
+});
+
+test('markdown: one H1 becomes the title, dek and note are separated, tables get scoped headers and a scroll cue', () => {
+  const r = renderMarkdown('# Title\n\n*The dek.*\n\nBody with [link](https://example.org).\n\n## Section\n\n| A | B |\n|---|---|\n| one | [two](https://example.org) |\n\n*Closing note.*\n');
+  assert.equal(r.title, 'Title'); assert.equal(r.dek, 'The dek.'); assert.equal(r.note, 'Closing note.');
+  assert.ok(!r.html.includes('<h1')); assert.ok(r.html.includes('<h2 id="section">Section</h2>'));
+  assert.ok(r.html.includes('<th scope="col">A</th>') && r.html.includes('<th scope="row">one</th>') && r.html.includes('class="table-hint"') && r.html.includes('tabindex="0"'));
+  assert.throws(() => renderMarkdown('# One\n\n# Two'), /more than one H1/);
+  assert.throws(() => renderMarkdown('No heading'), /no H1/);
+});
+
+test('publication date: null is undated, ISO with offset is accepted, anything else is rejected', () => {
+  assert.equal(parsePublishedAt(null), null);
+  assert.deepEqual(parsePublishedAt('2026-12-01T09:30:00-06:00'), { iso: '2026-12-01T09:30:00-06:00', display: 'December 1, 2026', ymd: '2026-12-01' });
+  for (const bad of ['2026-12-01', '2026-12-01T09:00:00', 'Dec 1 2026', '2026-13-01T00:00:00Z', 'USE_ACTUAL_DATE']) assert.throws(() => parsePublishedAt(bad), bad);
+});
+
+test('the seven supplied articles load: unique ids and slugs, URLs match slugs, one H1 each, dek and disclosure present', () => {
+  const a = loadArticles(dir, DOMAIN);
+  assert.equal(a.length, 7);
+  assert.deepEqual(a.map((x) => x.meta.id), ['GT26-01', 'GT26-02', 'GT26-03', 'GT26-04', 'GT26-05', 'GT26-06', 'GT26-07']);
+  for (const x of a) { assert.ok(x.title.length > 20 && x.dek && x.note, x.file); assert.ok(!/^---|seo_title/.test(x.html), x.file); assert.ok(x.note.includes('Influencers Involved'), x.file); }
+  assert.match(a[2].html, /short guide to documented 2026 animal-related GivingTuesday campaigns/, 'logged terminology correction present');
+});
+
+test('invalid content is refused: wrong URL for a slug, duplicate ids', () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'ed-'));
+  cpSync(dir, tmp, { recursive: true });
+  const f = join(tmp, '01-givingtuesday-2026-guide.md');
+  writeFileSync(f, readFileSync(f, 'utf8').replace('/editorial/givingtuesday-2026-guide/', '/editorial/wrong/'));
+  assert.throws(() => loadArticles(tmp, DOMAIN), /proposed_url/);
+  const tmp2 = mkdtempSync(join(tmpdir(), 'ed-')); cpSync(dir, tmp2, { recursive: true });
+  const g = join(tmp2, '02-givingtuesday-for-content-creators.md'); writeFileSync(g, readFileSync(g, 'utf8').replace('id: GT26-02', 'id: GT26-01'));
+  assert.throws(() => loadArticles(tmp2, DOMAIN), /duplicate id/);
+});
+
+test('pages: undated build has no date and no datePublished; dated build shows one visible date that matches the schema', () => {
+  const undated = buildEditorialPages({ dir, domain: DOMAIN, publishedAt: null }).pages;
+  assert.equal(undated.length, 8); assert.equal(undated[0].path, '/editorial/');
+  for (const p of undated.slice(1)) { assert.ok(!p.main.includes('<time'), p.path); assert.ok(!p.schemaTag.includes('datePublished'), p.path); assert.equal(p.lastmod, null); }
+  const dated = buildEditorialPages({ dir, domain: DOMAIN, publishedAt: '2026-12-01T09:00:00-06:00' }).pages;
+  for (const p of dated.slice(1)) {
+    assert.ok(p.main.includes('<time datetime="2026-12-01T09:00:00-06:00">December 1, 2026</time>'), p.path);
+    const ld = JSON.parse(/<script type="application\/ld\+json">(.*)<\/script>/.exec(p.schemaTag)[1]);
+    assert.equal(ld.datePublished, '2026-12-01T09:00:00-06:00'); assert.equal(ld['@type'], 'Article'); assert.equal(ld.author.name, 'Influencers Involved, Inc. NFP');
+    assert.equal(p.lastmod, '2026-12-01');
+  }
+});
+
+test('JSON-LD is safely serialized (a "<" can never close the script element)', () => {
+  const a = { title: 'A </script><b> title', path: '/editorial/x/', meta: { meta_description: 'd </script>' } };
+  const tag = articleSchema(a, DOMAIN, null);
+  assert.equal((tag.match(/<\/script>/g) || []).length, 1);
+  assert.ok(JSON.parse(/>(.*)<\/script>/.exec(tag)[1]).headline.includes('</script>'));
+});
+
+test('index lists each article exactly once, using the article titles, with real anchors', () => {
+  const index = buildEditorialPages({ dir, domain: DOMAIN, publishedAt: null }).pages[0];
+  const hrefs = [...index.main.matchAll(/<a href="(\/editorial\/[^"]+\/)"/g)].map((m) => m[1]);
+  assert.equal(hrefs.length, 7); assert.equal(new Set(hrefs).size, 7);
+  assert.ok(index.main.includes('<h1>Editorial</h1>') && !index.schemaTag);
+});
+
+test('release gate refuses to pass while the publication date and founder authorization are unrecorded', async () => {
+  const { spawnSync } = await import('node:child_process');
+  const r = spawnSync('node', ['scripts/editorial-release-gate.mjs'], { cwd: root, encoding: 'utf8' });
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /publishedAt is not recorded/); assert.match(r.stderr, /Founder authorization/);
+});
+
+test('every external link in the articles is covered by the release-day source check; none goes through Zeffy or a tracker', async () => {
+  const { CHECKS } = await import('../editorial-source-check.mjs');
+  const covered = new Set(CHECKS.map((c) => c.url));
+  const urls = new Set();
+  for (const a of loadArticles(dir, DOMAIN)) for (const m of a.html.matchAll(/href="(https:\/\/[^"]+)"/g)) urls.add(m[1].replace(/&amp;/g, '&'));
+  for (const u of urls) {
+    if (u.startsWith('https://influencersinvolved.org/')) continue;
+    assert.ok(covered.has(u), `not covered by editorial-source-check: ${u}`);
+    assert.ok(!/zeffy|utm_|ref=|affiliate/i.test(u), u);
+  }
+  assert.equal([...urls].filter((u) => !u.startsWith('https://influencersinvolved.org/')).length, 17); // the brief's 18 includes the II Challenge link; the source check also covers the GivingTuesday U.S. date page that is cited only in the register
+});
